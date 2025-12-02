@@ -1,0 +1,103 @@
+/**
+ * OpenRouter API client for making LLM requests.
+ */
+
+export interface Message {
+  role: string;
+  content: string;
+}
+
+export interface ModelResponse {
+  content: string;
+  reasoning_details?: any;
+}
+
+export interface OpenRouterConfig {
+  apiKey: string;
+  apiUrl?: string;
+}
+
+const DEFAULT_API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+export class OpenRouterClient {
+  private apiKey: string;
+  private apiUrl: string;
+
+  constructor(config: OpenRouterConfig) {
+    this.apiKey = config.apiKey;
+    this.apiUrl = config.apiUrl || DEFAULT_API_URL;
+  }
+
+  /**
+   * Query a single model via OpenRouter API.
+   */
+  async queryModel(
+    model: string,
+    messages: Message[],
+    timeout: number = 120000
+  ): Promise<ModelResponse | null> {
+    const headers = {
+      "Authorization": `Bearer ${this.apiKey}`,
+      "Content-Type": "application/json",
+    };
+
+    const payload = {
+      model,
+      messages,
+    };
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(this.apiUrl, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Error querying model ${model}: ${response.status} ${errorText}`);
+        return null;
+      }
+
+      const data = await response.json();
+      const message = data.choices?.[0]?.message;
+
+      if (!message) {
+        console.error(`No message in response from model ${model}`);
+        return null;
+      }
+
+      return {
+        content: message.content || "",
+        reasoning_details: message.reasoning_details,
+      };
+    } catch (error) {
+      console.error(`Error querying model ${model}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Query multiple models in parallel.
+   */
+  async queryModelsParallel(
+    models: string[],
+    messages: Message[]
+  ): Promise<Record<string, ModelResponse | null>> {
+    const tasks = models.map((model) => this.queryModel(model, messages));
+    const responses = await Promise.all(tasks);
+
+    const result: Record<string, ModelResponse | null> = {};
+    models.forEach((model, index) => {
+      result[model] = responses[index];
+    });
+
+    return result;
+  }
+}

@@ -25,4 +25,34 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Conversations table - stores chat conversations
+ */
+export const conversations = mysqlTable("conversations", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  userId: int("userId").notNull().references(() => users.id),
+  title: text("title"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Conversation = typeof conversations.$inferSelect;
+export type InsertConversation = typeof conversations.$inferInsert;
+
+/**
+ * Messages table - stores messages in conversations
+ */
+export const messages = mysqlTable("messages", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  conversationId: varchar("conversationId", { length: 64 }).notNull().references(() => conversations.id),
+  role: mysqlEnum("role", ["user", "assistant"]).notNull(),
+  content: text("content"),
+  stage1: text("stage1"),
+  stage2: text("stage2"),
+  stage3: text("stage3"),
+  metadata: text("metadata"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = typeof messages.$inferInsert;

@@ -2,9 +2,13 @@ import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import Sidebar from "@/components/council/Sidebar";
 import ChatInterface from "@/components/council/ChatInterface";
+import MobileSidebar from "@/components/council/MobileSidebar";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export default function Council() {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const { data: conversations = [], refetch: refetchConversations } =
     trpc.council.listConversations.useQuery();
@@ -19,6 +23,7 @@ export default function Council() {
     onSuccess: (data) => {
       setCurrentConversationId(data.id);
       refetchConversations();
+      setSidebarOpen(false);
     },
   });
 
@@ -35,6 +40,7 @@ export default function Council() {
 
   const handleSelectConversation = (id: string) => {
     setCurrentConversationId(id);
+    setSidebarOpen(false);
   };
 
   const handleSendMessage = async (content: string) => {
@@ -47,17 +53,30 @@ export default function Council() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar
-        conversations={conversations}
-        currentConversationId={currentConversationId}
-        onSelectConversation={handleSelectConversation}
-        onNewConversation={handleNewConversation}
-      />
+    <div className="flex h-screen bg-background overflow-hidden">
+      {isMobile ? (
+        <MobileSidebar
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onSelectConversation={handleSelectConversation}
+          onNewConversation={handleNewConversation}
+          open={sidebarOpen}
+          onOpenChange={setSidebarOpen}
+        />
+      ) : (
+        <Sidebar
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onSelectConversation={handleSelectConversation}
+          onNewConversation={handleNewConversation}
+        />
+      )}
       <ChatInterface
         conversation={currentConversation}
         onSendMessage={handleSendMessage}
         isLoading={sendMessage.isPending}
+        onOpenSidebar={() => setSidebarOpen(true)}
+        isMobile={isMobile}
       />
     </div>
   );

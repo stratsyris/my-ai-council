@@ -27,3 +27,12 @@
 - [x] OpenRouter API key setup
 - [x] Council models configuration
 - [x] Chairman model configuration
+
+## Mobile Optimization
+- [x] Responsive sidebar with mobile drawer/sheet
+- [x] Mobile-friendly header with hamburger menu
+- [x] Touch-optimized input controls
+- [x] Improved spacing and typography for small screens
+- [x] Collapsible stage sections on mobile
+- [x] Better tab navigation for touch devices
+- [x] Optimized message display for narrow screens

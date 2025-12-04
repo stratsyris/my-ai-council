@@ -3,11 +3,14 @@ import { trpc } from "@/lib/trpc";
 import Sidebar from "@/components/council/Sidebar";
 import ChatInterface from "@/components/council/ChatInterface";
 import MobileSidebar from "@/components/council/MobileSidebar";
+import ConfigurationGuide from "@/components/council/ConfigurationGuide";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { TRPCClientError } from "@trpc/client";
 
 export default function Council() {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [configError, setConfigError] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const { data: conversations = [], refetch: refetchConversations } =
@@ -24,6 +27,17 @@ export default function Council() {
       setCurrentConversationId(data.id);
       refetchConversations();
       setSidebarOpen(false);
+      setConfigError(null);
+    },
+    onError: (error) => {
+      if (error instanceof TRPCClientError) {
+        const message = error.message;
+        if (message.includes("OPENROUTER_API_KEY")) {
+          setConfigError("OPENROUTER_API_KEY");
+        } else {
+          setConfigError(message);
+        }
+      }
     },
   });
 
@@ -31,6 +45,16 @@ export default function Council() {
     onSuccess: () => {
       refetchConversation();
       refetchConversations();
+    },
+    onError: (error) => {
+      if (error instanceof TRPCClientError) {
+        const message = error.message;
+        if (message.includes("OPENROUTER_API_KEY")) {
+          setConfigError("OPENROUTER_API_KEY");
+        } else {
+          setConfigError(message);
+        }
+      }
     },
   });
 
@@ -51,6 +75,11 @@ export default function Council() {
       content,
     });
   };
+
+  // Show configuration guide if API key is missing
+  if (configError === "OPENROUTER_API_KEY") {
+    return <ConfigurationGuide missingKeys={["OPENROUTER_API_KEY"]} />;
+  }
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">

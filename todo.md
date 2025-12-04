@@ -36,3 +36,9 @@
 - [x] Collapsible stage sections on mobile
 - [x] Better tab navigation for touch devices
 - [x] Optimized message display for narrow screens
+
+## Error Handling & UX
+- [x] Add user-friendly error message for missing API key
+- [x] Create configuration setup guide component
+- [x] Add error boundary with helpful instructions
+- [x] Display configuration status on startup

@@ -100,28 +100,24 @@ export const councilRouter = router({
 
       // Run council process
       const orchestrator = getCouncilOrchestrator();
-      const result = await orchestrator.runFullCouncil(input.content);
+      const result = await orchestrator.executeCouncil(input.content);
 
       // Add assistant message
       await dbService.addAssistantMessage(
         input.conversationId,
-        result.stage1Results,
-        result.stage2Results,
-        result.stage3Result,
-        result.metadata
+        result.stage1,
+        result.stage2
       );
 
       // Generate title if this is the first message
       if (conversation.messages.length === 0) {
-        const title = await orchestrator.generateConversationTitle(input.content);
+        const title = `Council Discussion: ${input.content.substring(0, 50)}...`;
         await dbService.updateConversationTitle(input.conversationId, title);
       }
 
       return {
-        stage1: result.stage1Results,
-        stage2: result.stage2Results,
-        stage3: result.stage3Result,
-        metadata: result.metadata,
+        stage1: result.stage1,
+        stage2: result.stage2,
       };
     }),
 

@@ -73,3 +73,11 @@
 - [x] Add fallback synthesis logic
 - [x] Enhance result validation and error display
 - [x] Update chairman to Gemini 3 Pro Preview
+
+## Flow Restructuring - Option A
+- [x] Remove peer ranking Stage 2
+- [x] Restructure Stage 2: Chairman analyzes all 4 responses
+- [x] Restructure Stage 3: Chairman creates consensus-based final answer
+- [x] Update database service for new flow
+- [x] Update council router for new flow
+- [x] Remove rankings display from UI

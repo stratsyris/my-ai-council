@@ -153,9 +153,7 @@ export class DatabaseService {
   async addAssistantMessage(
     conversationId: string,
     stage1: any,
-    stage2: any,
-    stage3: any,
-    metadata: any
+    stage2: any
   ): Promise<string> {
     const db = await getDb();
     if (!db) {
@@ -172,8 +170,6 @@ export class DatabaseService {
       content: null,
       stage1: JSON.stringify(stage1),
       stage2: JSON.stringify(stage2),
-      stage3: JSON.stringify(stage3),
-      metadata: JSON.stringify(metadata),
       createdAt: now,
     };
 

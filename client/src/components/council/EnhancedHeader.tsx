@@ -78,7 +78,7 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
         </div>
 
         {/* Council Member Avatars with Labels - 2x2 grid on mobile, row on desktop */}
-        <div className={isMobile ? "grid grid-cols-4 gap-3" : "flex gap-6 items-end justify-center"}>
+        <div className={isMobile ? "grid grid-cols-4 gap-3" : "flex gap-12 items-end justify-center"}>
           {COUNCIL_MEMBERS.map((member) => (
             <div
               key={member.name}

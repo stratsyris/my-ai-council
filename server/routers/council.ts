@@ -30,12 +30,12 @@ const getCouncilOrchestrator = () => {
     : [
         "openai/gpt-5.1",
         "anthropic/claude-sonnet-4.5",
-        "google/gemini-3-pro",
+        "google/gemini-3-pro-preview",
         "x-ai/grok-4",
       ];
 
-  // Chairman model - using latest Gemini 3
-  const chairmanModel = process.env.CHAIRMAN_MODEL || "google/gemini-3-pro";
+  // Chairman model - using latest Gemini 3 Preview
+  const chairmanModel = process.env.CHAIRMAN_MODEL || "google/gemini-3-pro-preview";
 
   return new CouncilOrchestrator(client, { councilModels, chairmanModel });
 };

@@ -89,12 +89,12 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <Tabs defaultValue="0" className="w-full">
-                  <TabsList className="w-full justify-start flex-wrap h-auto gap-1">
+                  <TabsList className="w-full justify-start flex-wrap h-auto gap-1 bg-muted">
                     {message.stage1.map((result: any, index: number) => (
                       <TabsTrigger
                         key={index}
                         value={index.toString()}
-                        className="text-xs px-2 py-1 md:text-sm md:px-3 md:py-1.5"
+                        className="text-xs px-2 py-1 md:text-sm md:px-3 md:py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                       >
                         <span className="truncate max-w-[100px] md:max-w-none">
                           {result.model.split("/").pop()}

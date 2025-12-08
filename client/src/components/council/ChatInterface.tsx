@@ -5,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Loader2, Menu, Paperclip } from "lucide-react";
 import MessageDisplay from "./MessageDisplay";
 import DocumentUpload from "./DocumentUpload";
+import EnhancedHeader from "./EnhancedHeader";
+import AnimatedCard from "./AnimatedCard";
 
 interface Message {
   id: string;
@@ -73,25 +75,7 @@ export default function ChatInterface({
 
   return (
     <div className="flex-1 flex flex-col min-w-0 h-screen">
-      {/* Header */}
-      <div className="border-b p-3 md:p-4 flex items-center gap-3 flex-shrink-0">
-        {isMobile && onOpenSidebar && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onOpenSidebar}
-            className="flex-shrink-0"
-          >
-            <Menu className="w-5 h-5" />
-          </Button>
-        )}
-        <div className="flex-1 min-w-0">
-          <h1 className="text-lg md:text-2xl font-bold truncate">LLM Council</h1>
-          <p className="text-xs md:text-sm text-muted-foreground truncate">
-            Multiple LLMs work together to answer your questions
-          </p>
-        </div>
-      </div>
+      <EnhancedHeader onOpenSidebar={onOpenSidebar} isMobile={isMobile} />
 
       {/* Messages Area */}
       {!conversation ? (
@@ -114,8 +98,10 @@ export default function ChatInterface({
                 </div>
               ) : (
                 <div className="space-y-4 md:space-y-6 max-w-5xl mx-auto">
-                  {conversation.messages.map((message) => (
-                    <MessageDisplay key={message.id} message={message} isMobile={isMobile} />
+                  {conversation.messages.map((message, idx) => (
+                    <AnimatedCard key={message.id} delay={idx}>
+                      <MessageDisplay message={message} isMobile={isMobile} />
+                    </AnimatedCard>
                   ))}
                   {isLoading && (
                     <div className="flex items-center gap-2 text-muted-foreground text-sm">

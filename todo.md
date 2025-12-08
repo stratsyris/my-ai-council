@@ -60,3 +60,9 @@
 
 ## Bug Fixes
 - [x] Mobile input area not visible/accessible
+
+## UI/UX Improvements
+- [x] Dark mode toggle
+- [x] Gradient header with council member avatars
+- [x] Animated response cards
+- [x] Improve contrast on stage tabs

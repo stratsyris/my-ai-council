@@ -87,12 +87,14 @@ export default function Council() {
     deleteConversation.mutate({ conversationId: id });
   };
 
-  // Auto-load last conversation on mount
+  // Auto-load last conversation on mount, or create one if none exist
   useEffect(() => {
     if (conversations.length > 0 && !currentConversationId) {
       setCurrentConversationId(conversations[0].id);
+    } else if (conversations.length === 0 && !currentConversationId && !createConversation.isPending) {
+      createConversation.mutate();
     }
-  }, [conversations, currentConversationId]);
+  }, [conversations, currentConversationId, createConversation.isPending]);
 
   // Show configuration guide if API key is missing
   if (configError === "OPENROUTER_API_KEY") {

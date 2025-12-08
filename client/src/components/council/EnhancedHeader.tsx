@@ -11,22 +11,26 @@ const COUNCIL_MEMBERS = [
   { 
     name: "GPT-5.1", 
     logo: "/gpt-logo.jpg",
-    company: "OpenAI"
+    company: "OpenAI",
+    displayName: "GPT-5.1"
   },
   { 
     name: "Claude", 
     logo: "/claude-logo.jpg",
-    company: "Anthropic"
+    company: "Anthropic",
+    displayName: "Sonnet 4.5"
   },
   { 
     name: "Gemini", 
     logo: "/gemini-logo.jpg",
-    company: "Google"
+    company: "Google",
+    displayName: "Gemini 3 Preview"
   },
   { 
     name: "Grok", 
     logo: "/grok-logo.jpg",
-    company: "xAI"
+    company: "xAI",
+    displayName: "Grok 4"
   },
 ];
 
@@ -73,21 +77,30 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
           </Button>
         </div>
 
-        {/* Council Member Avatars - 2x2 grid on mobile, row on desktop */}
-        <div className={isMobile ? "grid grid-cols-4 gap-2" : "flex gap-2 items-center"}>
+        {/* Council Member Avatars with Labels - 2x2 grid on mobile, row on desktop */}
+        <div className={isMobile ? "grid grid-cols-4 gap-3" : "flex gap-3 items-end"}>
           {COUNCIL_MEMBERS.map((member) => (
             <div
               key={member.name}
-              className={`rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors ${
-                isMobile ? "w-12 h-12" : "w-10 h-10 sm:w-12 sm:h-12 md:w-10 md:h-10"
-              }`}
-              title={`${member.name} (${member.company})`}
+              className="flex flex-col items-center gap-1"
+              title={`${member.displayName} (${member.company})`}
             >
-              <img
-                src={member.logo}
-                alt={member.name}
-                className="w-full h-full object-cover"
-              />
+              <div
+                className={`rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors ${
+                  isMobile ? "w-12 h-12" : "w-10 h-10 sm:w-12 sm:h-12 md:w-10 md:h-10"
+                }`}
+              >
+                <img
+                  src={member.logo}
+                  alt={member.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className={`text-white/80 font-medium text-center leading-tight ${
+                isMobile ? "text-xs" : "text-xs md:text-xs"
+              }`}>
+                {member.displayName}
+              </span>
             </div>
           ))}
         </div>

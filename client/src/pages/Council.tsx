@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 import Sidebar from "@/components/council/Sidebar";
 import ChatInterface from "@/components/council/ChatInterface";
 import MobileSidebar from "@/components/council/MobileSidebar";
@@ -13,13 +14,20 @@ export default function Council() {
   const [configError, setConfigError] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  // Check authentication first
+  const { isAuthenticated, loading: authLoading } = useAuth({
+    redirectOnUnauthenticated: true,
+  });
+
   const { data: conversations = [], refetch: refetchConversations } =
-    trpc.council.listConversations.useQuery();
+    trpc.council.listConversations.useQuery(undefined, {
+      enabled: isAuthenticated && !authLoading,
+    });
 
   const { data: currentConversation, refetch: refetchConversation } =
     trpc.council.getConversation.useQuery(
       { conversationId: currentConversationId! },
-      { enabled: !!currentConversationId }
+      { enabled: !!currentConversationId && isAuthenticated && !authLoading }
     );
 
   const createConversation = trpc.council.createConversation.useMutation({
@@ -87,12 +95,25 @@ export default function Council() {
     deleteConversation.mutate({ conversationId: id });
   };
 
-  // Auto-load last conversation on mount
+  // Auto-load last conversation on mount, only after auth is confirmed
   useEffect(() => {
+    if (!isAuthenticated || authLoading) return;
     if (conversations.length > 0 && !currentConversationId) {
       setCurrentConversationId(conversations[0].id);
     }
-  }, [conversations, currentConversationId]);
+  }, [conversations, currentConversationId, isAuthenticated, authLoading]);
+
+  // Show loading state while authenticating
+  if (authLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show configuration guide if API key is missing
   if (configError === "OPENROUTER_API_KEY") {

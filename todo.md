@@ -105,3 +105,8 @@
 ## Mobile Logo Sizing Issue
 - [x] Logos too narrow/small on mobile - need larger sizing
 - [x] Improve responsive sizing for header logos
+
+## Auto-Load & Input Visibility
+- [x] Auto-load last conversation on page load
+- [x] Show input section by default without clicking new conversation
+- [x] Reorganize mobile header logos to 2x2 grid for better spacing

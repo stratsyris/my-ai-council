@@ -76,6 +76,17 @@ export default function Council() {
     });
   };
 
+  const deleteConversation = trpc.council.deleteConversation.useMutation({
+    onSuccess: () => {
+      setCurrentConversationId(null);
+      refetchConversations();
+    },
+  });
+
+  const handleDeleteConversation = (id: string) => {
+    deleteConversation.mutate({ conversationId: id });
+  };
+
   // Show configuration guide if API key is missing
   if (configError === "OPENROUTER_API_KEY") {
     return <ConfigurationGuide missingKeys={["OPENROUTER_API_KEY"]} />;
@@ -98,6 +109,7 @@ export default function Council() {
           currentConversationId={currentConversationId}
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
+          onDeleteConversation={handleDeleteConversation}
         />
       )}
       <ChatInterface

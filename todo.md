@@ -90,3 +90,9 @@
 - [x] Stage 2 chairman final answer not displaying in UI
 - [x] Only Stage 1 responses visible
 - [x] Need to show Stage 2 section below Stage 1 tabs
+
+## UI Enhancements
+- [x] Replace header avatars with model logos (OpenAI, Anthropic, Google, xAI)
+- [x] Add delete button to each conversation in sidebar
+- [x] Add delete confirmation dialog
+- [x] Implement conversation deletion API endpoint

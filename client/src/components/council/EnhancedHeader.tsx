@@ -8,10 +8,26 @@ interface EnhancedHeaderProps {
 }
 
 const COUNCIL_MEMBERS = [
-  { name: "GPT-5.1", color: "bg-blue-500" },
-  { name: "Claude", color: "bg-orange-500" },
-  { name: "Gemini", color: "bg-red-500" },
-  { name: "Grok", color: "bg-purple-500" },
+  { 
+    name: "GPT-5.1", 
+    logo: "🤖",
+    company: "OpenAI"
+  },
+  { 
+    name: "Claude", 
+    logo: "🧠",
+    company: "Anthropic"
+  },
+  { 
+    name: "Gemini", 
+    logo: "✨",
+    company: "Google"
+  },
+  { 
+    name: "Grok", 
+    logo: "⚡",
+    company: "xAI"
+  },
 ];
 
 export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHeaderProps) {
@@ -39,15 +55,15 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
           </div>
         </div>
 
-        {/* Council Member Avatars */}
+        {/* Council Member Avatars with Logos */}
         <div className="flex gap-2 items-center">
           {COUNCIL_MEMBERS.map((member) => (
             <div
               key={member.name}
-              className={`${member.color} w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg`}
-              title={member.name}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-lg md:text-xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors"
+              title={`${member.name} (${member.company})`}
             >
-              {member.name[0]}
+              {member.logo}
             </div>
           ))}
 

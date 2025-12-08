@@ -197,4 +197,19 @@ export const councilRouter = router({
 
       return dbService.getDocumentsByConversation(input.conversationId);
     }),
+
+  deleteConversation: protectedProcedure
+    .input(z.object({ conversationId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
+      if (!conversation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found",
+        });
+      }
+
+      await dbService.deleteConversation(input.conversationId);
+      return { success: true };
+    }),
 });

@@ -265,4 +265,17 @@ export class DatabaseService {
 
     return doc.length > 0 && doc[0].userId === userId ? doc[0] : null;
   }
+
+  /**
+   * Delete a conversation and all its messages.
+   */
+  async deleteConversation(conversationId: string): Promise<void> {
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database not available");
+    }
+
+    await db.delete(messages).where(eq(messages.conversationId, conversationId));
+    await db.delete(conversations).where(eq(conversations.id, conversationId));
+  }
 }

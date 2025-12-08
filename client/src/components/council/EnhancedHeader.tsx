@@ -39,7 +39,7 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
 
   return (
     <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-4 md:p-6 shadow-lg">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         {/* Title and Menu Row */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1">
@@ -78,16 +78,16 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
         </div>
 
         {/* Council Member Avatars with Labels - 2x2 grid on mobile, row on desktop */}
-        <div className={isMobile ? "grid grid-cols-4 gap-3" : "flex gap-3 items-end"}>
+        <div className={isMobile ? "grid grid-cols-4 gap-3" : "flex gap-6 items-end justify-center"}>
           {COUNCIL_MEMBERS.map((member) => (
             <div
               key={member.name}
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-2"
               title={`${member.displayName} (${member.company})`}
             >
               <div
                 className={`rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors ${
-                  isMobile ? "w-12 h-12" : "w-10 h-10 sm:w-12 sm:h-12 md:w-10 md:h-10"
+                  isMobile ? "w-12 h-12" : "w-14 h-14 md:w-14 md:h-14"
                 }`}
               >
                 <img
@@ -97,7 +97,7 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
                 />
               </div>
               <span className={`text-white/80 font-medium text-center leading-tight ${
-                isMobile ? "text-xs" : "text-xs md:text-xs"
+                isMobile ? "text-xs" : "text-sm"
               }`}>
                 {member.displayName}
               </span>

@@ -54,7 +54,7 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
               </Button>
             )}
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold">LLM Council</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">My AI Council</h1>
               <p className="text-sm md:text-base text-white/90">
                 Multiple LLMs collaborate to answer your questions
               </p>

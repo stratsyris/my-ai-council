@@ -202,4 +202,71 @@ export class DatabaseService {
       .set({ title })
       .where(eq(conversations.id, conversationId));
   }
+
+  /**
+   * Add a document to a conversation.
+   */
+  async addDocument(
+    id: string,
+    conversationId: string,
+    userId: number,
+    fileName: string,
+    fileType: string,
+    s3Key: string,
+    s3Url: string,
+    extractedText: string,
+    fileSize: number
+  ) {
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database not available");
+    }
+
+    const { documents: documentsTable } = await import("../../drizzle/schema");
+    await db.insert(documentsTable).values({
+      id,
+      conversationId,
+      userId,
+      fileName,
+      fileType,
+      s3Key,
+      s3Url,
+      extractedText,
+      fileSize,
+    });
+
+    return { id, conversationId, userId, fileName, fileType, s3Key, s3Url, extractedText, fileSize, createdAt: new Date() };
+  }
+
+  /**
+   * Get documents for a conversation.
+   */
+  async getDocumentsByConversation(conversationId: string) {
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database not available");
+    }
+
+    const { documents: documentsTable } = await import("../../drizzle/schema");
+    return db.select().from(documentsTable).where(eq(documentsTable.conversationId, conversationId));
+  }
+
+  /**
+   * Get a specific document.
+   */
+  async getDocument(documentId: string, userId: number) {
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database not available");
+    }
+
+    const { documents: documentsTable } = await import("../../drizzle/schema");
+    const doc = await db
+      .select()
+      .from(documentsTable)
+      .where(eq(documentsTable.id, documentId))
+      .limit(1);
+
+    return doc.length > 0 && doc[0].userId === userId ? doc[0] : null;
+  }
 }

@@ -56,3 +56,21 @@ export const messages = mysqlTable("messages", {
 
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = typeof messages.$inferInsert;
+/**
+ * Documents table - stores uploaded documents for council evaluation
+ */
+export const documents = mysqlTable("documents", {
+  id: varchar("id", { length: 64 }).primaryKey(),
+  conversationId: varchar("conversationId", { length: 64 }).notNull().references(() => conversations.id),
+  userId: int("userId").notNull().references(() => users.id),
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  fileType: varchar("fileType", { length: 50 }).notNull(),
+  s3Key: varchar("s3Key", { length: 512 }).notNull(),
+  s3Url: text("s3Url").notNull(),
+  extractedText: text("extractedText"),
+  fileSize: int("fileSize").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Document = typeof documents.$inferSelect;
+export type InsertDocument = typeof documents.$inferInsert;

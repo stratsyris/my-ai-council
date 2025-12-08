@@ -52,7 +52,7 @@ export const councilRouter = router({
   }),
 
   /**
-   * List all conversations for the current user.
+   * List conversations for the current user.
    */
   listConversations: protectedProcedure.query(async ({ ctx }) => {
     const conversations = await dbService.listConversations(ctx.user.id);
@@ -60,28 +60,23 @@ export const councilRouter = router({
   }),
 
   /**
-   * Get a conversation with all its messages.
+   * Get a specific conversation.
    */
   getConversation: protectedProcedure
     .input(z.object({ conversationId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const conversation = await dbService.getConversation(
-        input.conversationId,
-        ctx.user.id
-      );
-
+      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Conversation not found",
         });
       }
-
       return conversation;
     }),
 
   /**
-   * Send a message and run the council process.
+   * Send a message to the council.
    */
   sendMessage: protectedProcedure
     .input(
@@ -91,12 +86,8 @@ export const councilRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Verify conversation ownership
-      const conversation = await dbService.getConversation(
-        input.conversationId,
-        ctx.user.id
-      );
-
+      // Verify conversation exists and belongs to user
+      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -132,5 +123,82 @@ export const councilRouter = router({
         stage3: result.stage3Result,
         metadata: result.metadata,
       };
+    }),
+
+  /**
+   * Upload a document for council evaluation.
+   */
+  uploadDocument: protectedProcedure
+    .input(
+      z.object({
+        conversationId: z.string(),
+        fileName: z.string(),
+        fileType: z.string(),
+        fileSize: z.number(),
+        fileData: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
+      if (!conversation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found",
+        });
+      }
+
+      const { DocumentService } = await import("../services/document");
+      const docService = new DocumentService();
+
+      const fileBuffer = Buffer.from(input.fileData, "base64");
+
+      const uploadedDoc = await docService.uploadDocument(
+        {
+          name: input.fileName,
+          type: input.fileType,
+          size: input.fileSize,
+          data: fileBuffer,
+        },
+        input.conversationId,
+        ctx.user.id
+      );
+
+      const doc = await dbService.addDocument(
+        uploadedDoc.id,
+        uploadedDoc.conversationId,
+        uploadedDoc.userId,
+        uploadedDoc.fileName,
+        uploadedDoc.fileType,
+        uploadedDoc.s3Key,
+        uploadedDoc.s3Url,
+        uploadedDoc.extractedText,
+        uploadedDoc.fileSize
+      );
+
+      return {
+        id: doc.id,
+        fileName: doc.fileName,
+        fileType: doc.fileType,
+        fileSize: doc.fileSize,
+        s3Url: doc.s3Url,
+        extractedText: doc.extractedText,
+      };
+    }),
+
+  /**
+   * Get documents for a conversation.
+   */
+  getDocuments: protectedProcedure
+    .input(z.object({ conversationId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
+      if (!conversation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found",
+        });
+      }
+
+      return dbService.getDocumentsByConversation(input.conversationId);
     }),
 });

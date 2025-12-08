@@ -48,3 +48,12 @@
 - [x] Ensure message input is visible on mobile devices
 - [x] Test question submission on mobile
 - [x] Verify keyboard handling on mobile
+
+## Document Upload Feature
+- [x] Add document upload endpoint to backend
+- [x] Implement file storage to S3
+- [x] Extract text from documents (PDF, DOCX, TXT)
+- [x] Create document upload UI component
+- [x] Add document preview in chat
+- [x] Pass document content to council for evaluation
+- [x] Display document analysis in council responses

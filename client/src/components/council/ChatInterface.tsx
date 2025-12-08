@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Loader2, Menu } from "lucide-react";
+import { Send, Loader2, Menu, Paperclip } from "lucide-react";
 import MessageDisplay from "./MessageDisplay";
+import DocumentUpload from "./DocumentUpload";
 
 interface Message {
   id: string;
@@ -38,6 +39,7 @@ export default function ChatInterface({
   isMobile = false,
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -127,7 +129,13 @@ export default function ChatInterface({
           </ScrollArea>
 
           {/* Input Area - Always visible when conversation exists */}
-          <div className="border-t p-3 md:p-4 bg-background flex-shrink-0">
+          <div className="border-t p-3 md:p-4 bg-background flex-shrink-0 space-y-3">
+            {showDocumentUpload && conversation && (
+              <DocumentUpload
+                conversationId={conversation.id}
+                onDocumentUploaded={() => setShowDocumentUpload(false)}
+              />
+            )}
             <form onSubmit={handleSubmit} className="max-w-5xl mx-auto">
               <div className="flex gap-2 items-end">
                 <Textarea
@@ -140,6 +148,16 @@ export default function ChatInterface({
                   disabled={isLoading}
                   rows={isMobile ? 2 : 3}
                 />
+                <Button
+                  type="button"
+                  onClick={() => setShowDocumentUpload(!showDocumentUpload)}
+                  size="icon"
+                  variant="outline"
+                  className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] flex-shrink-0"
+                  title="Upload document"
+                >
+                  <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
+                </Button>
                 <Button
                   type="submit"
                   disabled={!input.trim() || isLoading}

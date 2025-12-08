@@ -101,3 +101,7 @@
 - [x] Replace emoji logos with actual model logo images in header
 - [x] Fix delete button placement - show on ALL conversations in sidebar
 - [x] Position red delete icon clearly below conversation text
+
+## Mobile Logo Sizing Issue
+- [x] Logos too narrow/small on mobile - need larger sizing
+- [x] Improve responsive sizing for header logos

@@ -60,7 +60,7 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
           {COUNCIL_MEMBERS.map((member) => (
             <div
               key={member.name}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors"
+              className="w-10 h-10 sm:w-12 sm:h-12 md:w-10 md:h-10 rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors"
               title={`${member.name} (${member.company})`}
             >
               <img

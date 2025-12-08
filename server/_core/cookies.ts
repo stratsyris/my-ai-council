@@ -24,25 +24,26 @@ function isSecureRequest(req: Request) {
 export function getSessionCookieOptions(
   req: Request
 ): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure"> {
-  // const hostname = req.hostname;
-  // const shouldSetDomain =
-  //   hostname &&
-  //   !LOCAL_HOSTS.has(hostname) &&
-  //   !isIpAddress(hostname) &&
-  //   hostname !== "127.0.0.1" &&
-  //   hostname !== "::1";
+  const hostname = req.hostname;
+  let domain: string | undefined = undefined;
 
-  // const domain =
-  //   shouldSetDomain && !hostname.startsWith(".")
-  //     ? `.${hostname}`
-  //     : shouldSetDomain
-  //       ? hostname
-  //       : undefined;
+  // Set domain for non-localhost environments
+  if (hostname && !LOCAL_HOSTS.has(hostname) && !isIpAddress(hostname)) {
+    // For manus.space subdomains, set domain to allow cookie sharing
+    if (hostname.includes("manus.space")) {
+      domain = ".manus.space";
+    } else if (!hostname.startsWith(".")) {
+      domain = `.${hostname}`;
+    } else {
+      domain = hostname;
+    }
+  }
 
   return {
+    domain,
     httpOnly: true,
     path: "/",
-    sameSite: "none",
+    sameSite: "lax",
     secure: isSecureRequest(req),
   };
 }

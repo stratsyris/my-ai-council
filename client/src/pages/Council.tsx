@@ -1,15 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import Sidebar from "@/components/council/Sidebar";
 import ChatInterface from "@/components/council/ChatInterface";
 import MobileSidebar from "@/components/council/MobileSidebar";
 import ConfigurationGuide from "@/components/council/ConfigurationGuide";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useAuth } from "@/_core/hooks/useAuth";
 import { TRPCClientError } from "@trpc/client";
 
 export default function Council() {
-  const { isAuthenticated, loading } = useAuth({ redirectOnUnauthenticated: true });
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
@@ -77,17 +75,6 @@ export default function Council() {
       content,
     });
   };
-
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   // Show configuration guide if API key is missing
   if (configError === "OPENROUTER_API_KEY") {

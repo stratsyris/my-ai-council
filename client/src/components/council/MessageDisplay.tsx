@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Collapsible,
@@ -28,7 +27,7 @@ interface MessageDisplayProps {
 
 export default function MessageDisplay({ message, isMobile = false }: MessageDisplayProps) {
   const [stage1Open, setStage1Open] = useState(!isMobile);
-  const [stage2Open, setStage2Open] = useState(!isMobile);
+  const [stage2Open, setStage2Open] = useState(true);
 
   if (message.role === "user") {
     return (
@@ -46,7 +45,7 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
     );
   }
 
-  // Assistant message with stages
+  // Assistant message with stages (Option A flow)
   return (
     <div className="flex gap-2 md:gap-3">
       <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
@@ -55,30 +54,31 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
       <div className="flex-1 min-w-0">
         <div className="font-semibold mb-2 md:mb-3 text-sm md:text-base">LLM Council</div>
 
-        {/* Stage 3: Final Answer (shown first) */}
-        {message.stage3 && (
-          <Card className="p-3 md:p-4 mb-3 md:mb-4 bg-primary/5 border-primary/20">
-            <h3 className="font-semibold mb-2 text-primary text-sm md:text-base">Final Answer</h3>
+        {/* Stage 2: Chairman Final Answer (shown first - most important) */}
+        {message.stage2 && (
+          <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg">
+            <h3 className="font-bold text-sm md:text-base text-primary mb-2">
+              🎯 Chairman's Final Answer
+            </h3>
             <div className="prose prose-sm max-w-none text-sm md:text-base break-words">
-              <ReactMarkdown>{message.stage3.response}</ReactMarkdown>
+              <ReactMarkdown>
+                {message.stage2.finalAnswer || message.stage2.analysis || ""}
+              </ReactMarkdown>
             </div>
-            <div className="text-xs text-muted-foreground mt-2 truncate">
-              Synthesized by: {message.stage3.model}
-            </div>
-          </Card>
+          </div>
         )}
 
-        {/* Stage 1: Individual Responses */}
+        {/* Stage 1: Individual Responses from Council Members */}
         {message.stage1 && message.stage1.length > 0 && (
           <Collapsible open={stage1Open} onOpenChange={setStage1Open}>
-            <Card className="p-3 md:p-4 mb-3 md:mb-4">
+            <div className="border border-muted rounded-lg overflow-hidden">
               <CollapsibleTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="w-full justify-between p-0 h-auto hover:bg-transparent mb-2"
+                  className="w-full justify-between p-3 md:p-4 h-auto hover:bg-muted/50 rounded-none"
                 >
                   <h3 className="font-semibold text-sm md:text-base">
-                    Stage 1: Individual Responses
+                    📋 Stage 1: Individual Council Responses
                   </h3>
                   {stage1Open ? (
                     <ChevronUp className="w-4 h-4" />
@@ -87,100 +87,37 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
                   )}
                 </Button>
               </CollapsibleTrigger>
-              <CollapsibleContent>
-                <Tabs defaultValue="0" className="w-full">
-                  <TabsList className="w-full justify-start flex-wrap h-auto gap-1 bg-muted">
-                    {message.stage1.map((result: any, index: number) => (
-                      <TabsTrigger
-                        key={index}
-                        value={index.toString()}
-                        className="text-xs px-2 py-1 md:text-sm md:px-3 md:py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                      >
-                        <span className="truncate max-w-[100px] md:max-w-none">
-                          {result.model.split("/").pop()}
-                        </span>
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                  {message.stage1.map((result: any, index: number) => (
-                    <TabsContent key={index} value={index.toString()} className="mt-3 md:mt-4">
-                      <div className="prose prose-sm max-w-none text-sm md:text-base break-words">
-                        <ReactMarkdown>{result.response}</ReactMarkdown>
-                      </div>
-                    </TabsContent>
-                  ))}
-                </Tabs>
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
-        )}
-
-        {/* Stage 2: Rankings */}
-        {message.stage2 && message.stage2.length > 0 && (
-          <Collapsible open={stage2Open} onOpenChange={setStage2Open}>
-            <Card className="p-3 md:p-4 mb-3 md:mb-4">
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between p-0 h-auto hover:bg-transparent mb-2"
-                >
-                  <h3 className="font-semibold text-sm md:text-base">
-                    Stage 2: Peer Reviews
-                  </h3>
-                  {stage2Open ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                {/* Aggregate Rankings */}
-                {message.metadata?.aggregate_rankings && (
-                  <div className="mb-3 md:mb-4 p-2 md:p-3 bg-muted rounded-lg">
-                    <h4 className="text-xs md:text-sm font-semibold mb-2">Aggregate Rankings</h4>
-                    <div className="space-y-1">
-                      {message.metadata.aggregate_rankings.map((rank: any, index: number) => (
-                        <div
+              <CollapsibleContent className="border-t border-muted">
+                <div className="p-3 md:p-4">
+                  <Tabs defaultValue="0" className="w-full">
+                    <TabsList className="w-full justify-start flex-wrap h-auto gap-1 bg-muted/50 p-1">
+                      {message.stage1.map((result: any, index: number) => (
+                        <TabsTrigger
                           key={index}
-                          className="text-xs md:text-sm flex items-center justify-between gap-2"
+                          value={index.toString()}
+                          className="text-xs px-2 py-1 md:text-sm md:px-3 md:py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                         >
-                          <span className="truncate">
-                            {index + 1}. {rank.model.split("/").pop()}
+                          <span className="truncate max-w-[100px] md:max-w-none">
+                            {result.model.split("/").pop() || `Model ${index + 1}`}
                           </span>
-                          <span className="text-muted-foreground flex-shrink-0">
-                            Avg: {rank.average_rank.toFixed(2)}
-                          </span>
-                        </div>
+                        </TabsTrigger>
                       ))}
-                    </div>
-                  </div>
-                )}
-
-                <Tabs defaultValue="0" className="w-full">
-                  <TabsList className="w-full justify-start flex-wrap h-auto gap-1">
-                    {message.stage2.map((result: any, index: number) => (
-                      <TabsTrigger
+                    </TabsList>
+                    {message.stage1.map((result: any, index: number) => (
+                      <TabsContent
                         key={index}
                         value={index.toString()}
-                        className="text-xs px-2 py-1 md:text-sm md:px-3 md:py-1.5"
+                        className="mt-3 md:mt-4"
                       >
-                        <span className="truncate max-w-[100px] md:max-w-none">
-                          {result.model.split("/").pop()}
-                        </span>
-                      </TabsTrigger>
+                        <div className="prose prose-sm max-w-none text-sm md:text-base break-words">
+                          <ReactMarkdown>{result.response}</ReactMarkdown>
+                        </div>
+                      </TabsContent>
                     ))}
-                  </TabsList>
-                  {message.stage2.map((result: any, index: number) => (
-                    <TabsContent key={index} value={index.toString()} className="mt-3 md:mt-4">
-                      <div className="prose prose-sm max-w-none whitespace-pre-wrap text-xs md:text-sm break-words">
-                        {result.ranking}
-                      </div>
-                    </TabsContent>
-                  ))}
-                </Tabs>
+                  </Tabs>
+                </div>
               </CollapsibleContent>
-            </Card>
+            </div>
           </Collapsible>
         )}
       </div>

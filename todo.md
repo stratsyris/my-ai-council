@@ -85,3 +85,8 @@
 ## Chairman Synthesis Bug
 - [x] Stage 2 chairman not completing synthesis after receiving Stage 1 responses
 - [x] Final answer not being generated or displayed
+
+## Stage 2 UI Display Bug
+- [x] Stage 2 chairman final answer not displaying in UI
+- [x] Only Stage 1 responses visible
+- [x] Need to show Stage 2 section below Stage 1 tabs

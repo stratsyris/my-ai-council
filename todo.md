@@ -66,3 +66,6 @@
 - [x] Gradient header with council member avatars
 - [x] Animated response cards
 - [x] Improve contrast on stage tabs
+
+## Critical Bugs
+- [x] New conversation button redirects to login page

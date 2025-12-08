@@ -37,6 +37,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
+  const [hoveredConvId, setHoveredConvId] = useState<string | null>(null);
 
   const handleDeleteClick = (e: React.MouseEvent, conversationId: string) => {
     e.stopPropagation();
@@ -67,21 +68,22 @@ export default function Sidebar({
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="p-2 space-y-1">
+          <div className="p-2 space-y-2">
             {conversations.map((conv) => (
               <div
                 key={conv.id}
                 className={cn(
-                  "w-full text-left p-3 rounded-lg transition-colors group",
-                  "hover:bg-muted",
+                  "w-full p-3 rounded-lg transition-colors",
                   currentConversationId === conv.id
                     ? "bg-muted"
-                    : "bg-transparent"
+                    : "bg-transparent hover:bg-muted/50"
                 )}
+                onMouseEnter={() => setHoveredConvId(conv.id)}
+                onMouseLeave={() => setHoveredConvId(null)}
               >
                 <button
                   onClick={() => onSelectConversation(conv.id)}
-                  className="w-full text-left flex items-start gap-2"
+                  className="w-full text-left flex items-start gap-2 mb-2"
                 >
                   <MessageSquare className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
@@ -93,13 +95,17 @@ export default function Sidebar({
                     </div>
                   </div>
                 </button>
-                <button
-                  onClick={(e) => handleDeleteClick(e, conv.id)}
-                  className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-destructive/20 rounded"
-                  title="Delete conversation"
-                >
-                  <Trash2 className="w-4 h-4 text-destructive" />
-                </button>
+                
+                {hoveredConvId === conv.id && (
+                  <button
+                    onClick={(e) => handleDeleteClick(e, conv.id)}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 rounded transition-colors"
+                    title="Delete conversation"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                )}
               </div>
             ))}
           </div>

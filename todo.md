@@ -96,3 +96,8 @@
 - [x] Add delete button to each conversation in sidebar
 - [x] Add delete confirmation dialog
 - [x] Implement conversation deletion API endpoint
+
+## Logo & Delete Button Updates
+- [x] Replace emoji logos with actual model logo images in header
+- [x] Fix delete button placement - show on ALL conversations in sidebar
+- [x] Position red delete icon clearly below conversation text

@@ -10,22 +10,22 @@ interface EnhancedHeaderProps {
 const COUNCIL_MEMBERS = [
   { 
     name: "GPT-5.1", 
-    logo: "🤖",
+    logo: "/gpt-logo.jpg",
     company: "OpenAI"
   },
   { 
     name: "Claude", 
-    logo: "🧠",
+    logo: "/claude-logo.jpg",
     company: "Anthropic"
   },
   { 
     name: "Gemini", 
-    logo: "✨",
+    logo: "/gemini-logo.jpg",
     company: "Google"
   },
   { 
     name: "Grok", 
-    logo: "⚡",
+    logo: "/grok-logo.jpg",
     company: "xAI"
   },
 ];
@@ -60,10 +60,14 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
           {COUNCIL_MEMBERS.map((member) => (
             <div
               key={member.name}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-lg md:text-xl bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors"
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors"
               title={`${member.name} (${member.company})`}
             >
-              {member.logo}
+              <img
+                src={member.logo}
+                alt={member.name}
+                className="w-full h-full object-cover"
+              />
             </div>
           ))}
 

@@ -24,17 +24,18 @@ const getOpenRouterClient = () => {
 const getCouncilOrchestrator = () => {
   const client = getOpenRouterClient();
   
-  // Default council models
+  // Default council models - using latest top-performing models
   const councilModels = process.env.COUNCIL_MODELS
     ? process.env.COUNCIL_MODELS.split(",")
     : [
-        "openai/gpt-4o",
-        "google/gemini-2.0-flash-exp:free",
-        "anthropic/claude-3.5-sonnet",
-        "x-ai/grok-2-1212",
+        "openai/gpt-5.1",
+        "anthropic/claude-sonnet-4.5",
+        "google/gemini-3-pro",
+        "x-ai/grok-4",
       ];
 
-  const chairmanModel = process.env.CHAIRMAN_MODEL || "google/gemini-2.0-flash-exp:free";
+  // Chairman model - using latest Gemini 3
+  const chairmanModel = process.env.CHAIRMAN_MODEL || "google/gemini-3-pro";
 
   return new CouncilOrchestrator(client, { councilModels, chairmanModel });
 };

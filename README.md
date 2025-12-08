@@ -108,16 +108,24 @@ The designated Chairman of the LLM Council takes all of the model's responses an
 You can customize which models participate in the council by setting the `COUNCIL_MODELS` environment variable:
 
 ```bash
-COUNCIL_MODELS=openai/gpt-4o,anthropic/claude-3.5-sonnet,google/gemini-2.0-flash-exp:free
+COUNCIL_MODELS=openai/gpt-5.1,anthropic/claude-sonnet-4.5,google/gemini-3-pro,x-ai/grok-4
 ```
+
+Default council members (latest top performers):
+- OpenAI GPT-5.1
+- Anthropic Claude Sonnet 4.5
+- Google Gemini 3 Pro
+- xAI Grok 4
 
 ### Changing the Chairman
 
 Set a different model as the chairman who synthesizes the final answer:
 
 ```bash
-CHAIRMAN_MODEL=anthropic/claude-3.5-sonnet
+CHAIRMAN_MODEL=google/gemini-3-pro
 ```
+
+Default chairman: Google Gemini 3 Pro
 
 ### Available Models
 

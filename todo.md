@@ -81,3 +81,7 @@
 - [x] Update database service for new flow
 - [x] Update council router for new flow
 - [x] Remove rankings display from UI
+
+## Chairman Synthesis Bug
+- [x] Stage 2 chairman not completing synthesis after receiving Stage 1 responses
+- [x] Final answer not being generated or displayed

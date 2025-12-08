@@ -101,12 +101,12 @@ Please provide:
       throw new Error("Chairman failed to generate response");
     }
 
-    // Parse chairman response - split into analysis and final answer
+    // Parse chairman response - entire response is the final answer
     const content = chairmanResponse.content;
-    const parts = content.split(/(?=Your final|Final Answer|FINAL ANSWER|Synthesized Answer)/i);
     
-    const analysis = parts[0]?.trim() || content;
-    const finalAnswer = parts.length > 1 ? parts.slice(1).join("\n").trim() : content;
+    // Chairman's full analysis and synthesis is the final answer
+    const analysis = content;
+    const finalAnswer = content;
 
     return {
       analysis,

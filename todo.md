@@ -57,3 +57,6 @@
 - [x] Add document preview in chat
 - [x] Pass document content to council for evaluation
 - [x] Display document analysis in council responses
+
+## Bug Fixes
+- [x] Mobile input area not visible/accessible

@@ -72,7 +72,7 @@ export default function ChatInterface({
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 h-screen md:h-auto">
+    <div className="flex-1 flex flex-col min-w-0 h-screen">
       {/* Header */}
       <div className="border-b p-3 md:p-4 flex items-center gap-3 flex-shrink-0">
         {isMobile && onOpenSidebar && (

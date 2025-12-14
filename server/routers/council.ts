@@ -3,7 +3,7 @@
  */
 
 import { z } from "zod";
-import { protectedProcedure, router } from "../_core/trpc";
+import { publicProcedure, router } from "../_core/trpc";
 import { OpenRouterClient } from "../services/openrouter";
 import { CouncilOrchestrator } from "../services/council";
 import { DatabaseService } from "../services/database";
@@ -46,26 +46,30 @@ export const councilRouter = router({
   /**
    * Create a new conversation.
    */
-  createConversation: protectedProcedure.mutation(async ({ ctx }) => {
-    const conversation = await dbService.createConversation(ctx.user.id);
+  createConversation: publicProcedure.mutation(async ({ ctx }) => {
+    // Use a default user ID for public access
+    const userId = ctx.user?.id || 0;
+    const conversation = await dbService.createConversation(userId);
     return conversation;
   }),
 
   /**
    * List conversations for the current user.
    */
-  listConversations: protectedProcedure.query(async ({ ctx }) => {
-    const conversations = await dbService.listConversations(ctx.user.id);
+  listConversations: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.user?.id || 0;
+    const conversations = await dbService.listConversations(userId);
     return conversations;
   }),
 
   /**
    * Get a specific conversation.
    */
-  getConversation: protectedProcedure
+  getConversation: publicProcedure
     .input(z.object({ conversationId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
+      const userId = ctx.user?.id || 0;
+      const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -78,7 +82,7 @@ export const councilRouter = router({
   /**
    * Send a message to the council.
    */
-  sendMessage: protectedProcedure
+  sendMessage: publicProcedure
     .input(
       z.object({
         conversationId: z.string(),
@@ -87,7 +91,8 @@ export const councilRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       // Verify conversation exists and belongs to user
-      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
+      const userId = ctx.user?.id || 0;
+      const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -124,7 +129,7 @@ export const councilRouter = router({
   /**
    * Upload a document for council evaluation.
    */
-  uploadDocument: protectedProcedure
+  uploadDocument: publicProcedure
     .input(
       z.object({
         conversationId: z.string(),
@@ -135,7 +140,8 @@ export const councilRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
+      const userId = ctx.user?.id || 0;
+      const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -156,7 +162,7 @@ export const councilRouter = router({
           data: fileBuffer,
         },
         input.conversationId,
-        ctx.user.id
+        userId
       );
 
       const doc = await dbService.addDocument(
@@ -184,10 +190,11 @@ export const councilRouter = router({
   /**
    * Get documents for a conversation.
    */
-  getDocuments: protectedProcedure
+  getDocuments: publicProcedure
     .input(z.object({ conversationId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
+      const userId = ctx.user?.id || 0;
+      const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -198,10 +205,11 @@ export const councilRouter = router({
       return dbService.getDocumentsByConversation(input.conversationId);
     }),
 
-  deleteConversation: protectedProcedure
+  deleteConversation: publicProcedure
     .input(z.object({ conversationId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const conversation = await dbService.getConversation(input.conversationId, ctx.user.id);
+      const userId = ctx.user?.id || 0;
+      const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",

@@ -116,6 +116,7 @@ export default function Council() {
           currentConversationId={currentConversationId}
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
+          onDeleteConversation={handleDeleteConversation}
           open={sidebarOpen}
           onOpenChange={setSidebarOpen}
         />

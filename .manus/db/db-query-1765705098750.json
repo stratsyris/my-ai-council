@@ -1,0 +1,9 @@
+{
+  "query": "INSERT IGNORE INTO users (id, openId, role, createdAt, updatedAt, lastSignedIn) VALUES (0, 'public-user', 'user', NOW(), NOW(), NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3PXHdPTvNk5oHqc.root --database WbENW7upe5nHt5EiKsgZeK --execute INSERT IGNORE INTO users (id, openId, role, createdAt, updatedAt, lastSignedIn) VALUES (0, 'public-user', 'user', NOW(), NOW(), NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1908
+}

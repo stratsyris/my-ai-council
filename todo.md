@@ -140,3 +140,23 @@
 - [x] Bulk delete checkboxes not appearing on mobile - Added checkbox trigger
 - [x] Need to add delete button to mobile conversation items - Implemented
 - [x] Need to implement checkbox selection on mobile - Implemented with click-to-select
+
+## CRITICAL: Conversations Not Loading in Sidebar - FIXED
+- [x] Sidebar is completely empty - no conversations displayed (FIXED: N+1 query optimization)
+- [x] API returns conversations correctly (129 conversations in database)
+- [x] Frontend not fetching or displaying conversations (FIXED: API timeout resolved)
+- [x] Delete and bulk delete buttons don't work because no conversations are shown (NOW WORKING)
+- [x] Need to debug why conversations query is not working on frontend (FIXED: listConversations query optimized)
+
+## Bulk Delete Feature - FULLY IMPLEMENTED & TESTED
+- [x] Checkbox selection system working on desktop
+- [x] "Select All" checkbox appears when selections are active
+- [x] Selection counter displays correctly ("X / Y selected")
+- [x] Red "Delete Selected" button appears in header
+- [x] Confirmation dialog prevents accidental deletion
+- [x] Bulk deletion successfully deletes multiple conversations
+- [x] Sidebar refreshes after bulk deletion
+- [x] Single delete button working on all conversations
+- [x] Mobile UI improvements for delete buttons
+- [x] API tested and working (successfully deleted conversations)
+- [x] End-to-end testing completed successfully

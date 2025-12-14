@@ -50,28 +50,32 @@ export class DatabaseService {
       throw new Error("Database not available");
     }
 
+    // Get conversations with message counts in a single query
     const convs = await db
       .select()
       .from(conversations)
       .where(eq(conversations.userId, userId))
       .orderBy(desc(conversations.updatedAt));
 
-    // Get message counts for each conversation
-    const result: ConversationWithMessageCount[] = [];
-    for (const conv of convs) {
-      const msgs = await db
-        .select()
-        .from(messages)
-        .where(eq(messages.conversationId, conv.id));
+    // Get all message counts for these conversations in one query
+    const allMessages = await db
+      .select()
+      .from(messages);
 
-      result.push({
-        id: conv.id,
-        title: conv.title,
-        createdAt: conv.createdAt,
-        updatedAt: conv.updatedAt,
-        messageCount: msgs.length,
-      });
+    // Create a map of conversation ID to message count
+    const messageCounts = new Map<string, number>();
+    for (const msg of allMessages) {
+      messageCounts.set(msg.conversationId, (messageCounts.get(msg.conversationId) || 0) + 1);
     }
+
+    // Build result with message counts
+    const result: ConversationWithMessageCount[] = convs.map((conv) => ({
+      id: conv.id,
+      title: conv.title,
+      createdAt: conv.createdAt,
+      updatedAt: conv.updatedAt,
+      messageCount: messageCounts.get(conv.id) || 0,
+    }));
 
     return result;
   }

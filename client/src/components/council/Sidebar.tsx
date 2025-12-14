@@ -91,6 +91,17 @@ export default function Sidebar({
     setSelectedIds(newSelected);
   };
 
+  const handleSelectButtonClick = (e: React.MouseEvent, conversationId: string) => {
+    e.stopPropagation();
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(conversationId)) {
+      newSelected.delete(conversationId);
+    } else {
+      newSelected.add(conversationId);
+    }
+    setSelectedIds(newSelected);
+  };
+
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       setSelectedIds(new Set(conversations.map(c => c.id)));
@@ -227,7 +238,35 @@ export default function Sidebar({
                         </div>
                       </button>
                       
-                      {hoveredConvId === conv.id && (
+                      {hoveredConvId === conv.id && selectedIds.size === 0 && (
+                        <div className="flex gap-1">
+                          <button
+                            onClick={(e) => handleSelectButtonClick(e, conv.id)}
+                            className="flex-1 flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted rounded transition-colors"
+                            title="Select conversation"
+                          >
+                            <input type="checkbox" className="w-4 h-4" readOnly />
+                            Select
+                          </button>
+                          <button
+                            onClick={(e) => handleEditClick(e, conv.id, conv.title)}
+                            className="flex-1 flex items-center gap-2 px-2 py-1.5 text-sm text-blue-600 hover:bg-blue-500/10 rounded transition-colors"
+                            title="Rename conversation"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                            Rename
+                          </button>
+                          <button
+                            onClick={(e) => handleDeleteClick(e, conv.id)}
+                            className="flex-1 flex items-center gap-2 px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 rounded transition-colors"
+                            title="Delete conversation"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                      {hoveredConvId === conv.id && selectedIds.size > 0 && (
                         <div className="flex gap-1">
                           <button
                             onClick={(e) => handleEditClick(e, conv.id, conv.title)}

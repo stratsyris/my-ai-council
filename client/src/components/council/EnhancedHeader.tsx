@@ -9,10 +9,10 @@ interface EnhancedHeaderProps {
 
 const COUNCIL_MEMBERS = [
   { 
-    name: "GPT-5.1", 
+    name: "GPT-5.2", 
     logo: "/gpt-logo.jpg",
     company: "OpenAI",
-    displayName: "GPT-5.1"
+    displayName: "GPT-5.2"
   },
   { 
     name: "Claude", 

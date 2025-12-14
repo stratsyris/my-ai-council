@@ -28,7 +28,7 @@ const getCouncilOrchestrator = () => {
   const councilModels = process.env.COUNCIL_MODELS
     ? process.env.COUNCIL_MODELS.split(",")
     : [
-        "openai/gpt-5.1",
+        "openai/gpt-5.2",
         "anthropic/claude-sonnet-4.5",
         "google/gemini-3-pro-preview",
         "x-ai/grok-4",

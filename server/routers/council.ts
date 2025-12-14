@@ -63,7 +63,7 @@ export const councilRouter = router({
    * List conversations for the current user.
    */
   listConversations: publicProcedure.query(async ({ ctx }) => {
-    const userId = ctx.user?.id || 0;
+    const userId = ctx.user?.id || 1;
     const conversations = await dbService.listConversations(userId);
     return conversations;
   }),
@@ -74,7 +74,7 @@ export const councilRouter = router({
   getConversation: publicProcedure
     .input(z.object({ conversationId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const userId = ctx.user?.id || 0;
+      const userId = ctx.user?.id || 1;
       const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
@@ -97,7 +97,7 @@ export const councilRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       // Verify conversation exists and belongs to user
-      const userId = ctx.user?.id || 0;
+      const userId = ctx.user?.id || 1;
       const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
@@ -146,7 +146,7 @@ export const councilRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.user?.id || 0;
+      const userId = ctx.user?.id || 1;
       const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
@@ -199,7 +199,7 @@ export const councilRouter = router({
   getDocuments: publicProcedure
     .input(z.object({ conversationId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const userId = ctx.user?.id || 0;
+      const userId = ctx.user?.id || 1;
       const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({
@@ -214,7 +214,7 @@ export const councilRouter = router({
   deleteConversation: publicProcedure
     .input(z.object({ conversationId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.user?.id || 0;
+      const userId = ctx.user?.id || 1;
       const conversation = await dbService.getConversation(input.conversationId, userId);
       if (!conversation) {
         throw new TRPCError({

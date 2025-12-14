@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Loader2, Menu, Paperclip } from "lucide-react";
+import { Send, Loader2, Menu, Paperclip, Image as ImageIcon, X } from "lucide-react";
 import MessageDisplay from "./MessageDisplay";
 import DocumentUpload from "./DocumentUpload";
 import EnhancedHeader from "./EnhancedHeader";
@@ -42,8 +42,34 @@ export default function ChatInterface({
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const [showDocumentUpload, setShowDocumentUpload] = useState(false);
+  const [attachedImages, setAttachedImages] = useState<Array<{id: string; file: File; preview: string}>>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.currentTarget.files;
+    if (!files) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const preview = event.target?.result as string;
+          setAttachedImages((prev) => [
+            ...prev,
+            { id: Math.random().toString(36), file, preview },
+          ]);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    e.currentTarget.value = "";
+  };
+
+  const removeImage = (id: string) => {
+    setAttachedImages((prev) => prev.filter((img) => img.id !== id));
+  };
 
   useEffect(() => {
     // Scroll to bottom when new messages arrive
@@ -61,8 +87,15 @@ export default function ChatInterface({
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const content = input.trim();
+    let content = input.trim();
+    
+    // If there are attached images, add them to the message
+    if (attachedImages.length > 0) {
+      content += `\n\n[Images attached: ${attachedImages.length}]`;
+    }
+
     setInput("");
+    setAttachedImages([]);
     await onSendMessage(content);
   };
 
@@ -122,6 +155,27 @@ export default function ChatInterface({
                 onDocumentUploaded={() => setShowDocumentUpload(false)}
               />
             )}
+            {/* Image Preview */}
+            {attachedImages.length > 0 && (
+              <div className="flex gap-2 flex-wrap max-w-5xl mx-auto">
+                {attachedImages.map((img) => (
+                  <div key={img.id} className="relative group">
+                    <img
+                      src={img.preview}
+                      alt="Attached"
+                      className="h-16 w-16 object-cover rounded border border-border"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(img.id)}
+                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="max-w-5xl mx-auto">
               <div className="flex gap-2 items-end">
                 <Textarea
@@ -134,6 +188,24 @@ export default function ChatInterface({
                   disabled={isLoading}
                   rows={isMobile ? 2 : 3}
                 />
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  size="icon"
+                  variant="outline"
+                  className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] flex-shrink-0"
+                  title="Attach photos"
+                >
+                  <ImageIcon className="w-4 h-4 md:w-5 md:h-5" />
+                </Button>
                 <Button
                   type="button"
                   onClick={() => setShowDocumentUpload(!showDocumentUpload)}

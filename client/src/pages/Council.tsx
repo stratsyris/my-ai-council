@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import Sidebar from "@/components/council/Sidebar";
 import ChatInterface from "@/components/council/ChatInterface";
@@ -12,6 +12,7 @@ export default function Council() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const hasInitialized = useRef(false);
 
   const { data: conversations = [], refetch: refetchConversations } =
     trpc.council.listConversations.useQuery();
@@ -87,14 +88,13 @@ export default function Council() {
     deleteConversation.mutate({ conversationId: id });
   };
 
-  // Auto-load last conversation on mount, or create one if none exist
+  // Auto-load last conversation on mount only
   useEffect(() => {
-    if (conversations.length > 0 && !currentConversationId) {
+    if (!hasInitialized.current && conversations.length > 0) {
       setCurrentConversationId(conversations[0].id);
-    } else if (conversations.length === 0 && !currentConversationId && !createConversation.isPending) {
-      createConversation.mutate();
+      hasInitialized.current = true;
     }
-  }, [conversations, currentConversationId, createConversation.isPending]);
+  }, [conversations]);
 
   // Show configuration guide if API key is missing
   if (configError === "OPENROUTER_API_KEY") {

@@ -56,14 +56,16 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
 
         {/* Stage 2: Chairman Final Answer (shown first - most important) */}
         {message.stage2 && (
-          <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg">
-            <h3 className="font-bold text-sm md:text-base text-primary mb-2">
+          <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg w-full overflow-x-hidden">
+            <h3 className="font-bold text-sm md:text-base text-primary mb-2 break-words">
               🎯 Chairman's Final Answer
             </h3>
-            <div className="prose prose-sm max-w-none text-sm md:text-base break-words">
-              <ReactMarkdown>
-                {message.stage2.finalAnswer || message.stage2.analysis || ""}
-              </ReactMarkdown>
+            <div className="prose prose-sm max-w-none text-sm md:text-base break-words w-full overflow-x-hidden">
+              <div className="w-full overflow-x-hidden">
+                <ReactMarkdown>
+                  {message.stage2.finalAnswer || message.stage2.analysis || ""}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
         )}

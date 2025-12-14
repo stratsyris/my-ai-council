@@ -169,13 +169,25 @@ export default function MobileSidebar({
                       : "bg-transparent hover:bg-muted/50"
                   )}
                 >
-                  {selectedIds.size > 0 && (
+                  {selectedIds.size > 0 ? (
                     <input
                       type="checkbox"
                       checked={selectedIds.has(conv.id)}
                       onChange={(e) => handleToggleSelect(e, conv.id)}
                       className="w-4 h-4 mt-0.5 flex-shrink-0 cursor-pointer"
                     />
+                  ) : (
+                    <button
+                      onClick={() => {
+                        const newSelected = new Set(selectedIds);
+                        newSelected.add(conv.id);
+                        setSelectedIds(newSelected);
+                      }}
+                      className="w-4 h-4 mt-0.5 flex-shrink-0 cursor-pointer p-0 hover:opacity-70"
+                      title="Start selecting"
+                    >
+                      <div className="w-4 h-4 border border-muted-foreground rounded" />
+                    </button>
                   )}
                   
                   <div className="flex-1 min-w-0">
@@ -233,24 +245,22 @@ export default function MobileSidebar({
                             </div>
                           </div>
                         </button>
-                        <div className="flex gap-1 flex-wrap">
+                        <div className="flex gap-1 w-full">
                           <button
                             onClick={(e) => handleEditClick(e, conv.id, conv.title)}
-                            className="flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 text-xs sm:text-sm text-blue-600 hover:bg-blue-500/10 rounded transition-colors"
+                            className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs text-blue-600 hover:bg-blue-500/10 rounded transition-colors"
                             title="Rename conversation"
                           >
-                            <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span className="hidden sm:inline">Rename</span>
-                            <span className="sm:hidden">Rename</span>
+                            <Edit2 className="w-3 h-3" />
+                            <span>Rename</span>
                           </button>
                           <button
                             onClick={(e) => handleDeleteClick(e, conv.id)}
-                            className="flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 text-xs sm:text-sm text-destructive hover:bg-destructive/10 rounded transition-colors"
+                            className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 text-xs text-destructive hover:bg-destructive/10 rounded transition-colors"
                             title="Delete conversation"
                           >
-                            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span className="hidden sm:inline">Delete</span>
-                            <span className="sm:hidden">Delete</span>
+                            <Trash2 className="w-3 h-3" />
+                            <span>Delete</span>
                           </button>
                         </div>
                       </>

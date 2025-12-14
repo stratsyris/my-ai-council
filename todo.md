@@ -134,3 +134,9 @@
 - [x] Verify conversation IDs are being passed correctly
 - [x] Add error handling for missing conversations
 - [x] Test bulk delete with valid conversation IDs (API test: successfully deleted 2 conversations)
+
+## Mobile Delete Button and Bulk Delete Issues
+- [x] Delete button not showing on mobile (only Rename visible) - Fixed layout
+- [x] Bulk delete checkboxes not appearing on mobile - Added checkbox trigger
+- [x] Need to add delete button to mobile conversation items - Implemented
+- [x] Need to implement checkbox selection on mobile - Implemented with click-to-select

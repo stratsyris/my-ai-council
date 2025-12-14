@@ -48,7 +48,7 @@ export const councilRouter = router({
    */
   createConversation: publicProcedure.mutation(async ({ ctx }) => {
     try {
-      const userId = ctx.user?.id || 0;
+      const userId = ctx.user?.id || 1;
       console.log("[createConversation] Creating with userId:", userId);
       const conversation = await dbService.createConversation(userId);
       console.log("[createConversation] Created:", conversation);

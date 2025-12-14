@@ -98,6 +98,17 @@ export default function Council() {
     renameConversation.mutate({ conversationId: id, title });
   };
 
+  const bulkDeleteConversations = trpc.council.bulkDeleteConversations.useMutation({
+    onSuccess: () => {
+      setCurrentConversationId(null);
+      refetchConversations();
+    },
+  });
+
+  const handleBulkDeleteConversations = (ids: string[]) => {
+    bulkDeleteConversations.mutate({ conversationIds: ids });
+  };
+
   // Auto-create first conversation on mount if none exist
   useEffect(() => {
     if (!hasAutoCreated.current && conversations.length === 0 && !createConversation.isPending) {
@@ -127,6 +138,7 @@ export default function Council() {
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation}
+          onBulkDeleteConversations={handleBulkDeleteConversations}
           onRenameConversation={handleRenameConversation}
           open={sidebarOpen}
           onOpenChange={setSidebarOpen}
@@ -138,6 +150,7 @@ export default function Council() {
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation}
+          onBulkDeleteConversations={handleBulkDeleteConversations}
           onRenameConversation={handleRenameConversation}
         />
       )}

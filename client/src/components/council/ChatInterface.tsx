@@ -120,8 +120,8 @@ export default function ChatInterface({
         </div>
       ) : (
         <>
-          <ScrollArea ref={scrollAreaRef} className="flex-1 overflow-hidden">
-            <div className="p-3 md:p-4">
+          <ScrollArea ref={scrollAreaRef} className="flex-1 overflow-hidden w-full">
+            <div className="p-3 md:p-4 w-full flex justify-center">
               {conversation.messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-muted-foreground py-12">
                   <div className="text-center">

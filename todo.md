@@ -110,3 +110,16 @@
 - [x] Auto-load last conversation on page load
 - [x] Show input section by default without clicking new conversation
 - [x] Reorganize mobile header logos to 2x2 grid for better spacing
+
+## Bulk Delete Feature
+- [x] Add checkbox selection to conversation list items
+- [x] Implement selection state management in Sidebar
+- [x] Implement selection state management in MobileSidebar
+- [x] Add "Select All" checkbox when selections are active
+- [x] Display selection counter (X / Y selected)
+- [x] Add red "Delete Selected" button in header
+- [x] Create bulk delete confirmation dialog
+- [x] Implement bulkDeleteConversations backend mutation
+- [x] Add bulkDeleteConversations handler in Council page
+- [x] Test bulk delete on desktop
+- [x] Test bulk delete on mobile

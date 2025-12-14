@@ -27,15 +27,15 @@ export function getSessionCookieOptions(
   const hostname = req.hostname;
   let domain: string | undefined = undefined;
 
-  // Set domain for non-localhost environments
+  // For manus.space dev subdomains, don't set domain - let browser handle it
+  // This ensures cookies work properly with OAuth redirects
   if (hostname && !LOCAL_HOSTS.has(hostname) && !isIpAddress(hostname)) {
-    // For manus.space subdomains, set domain to allow cookie sharing
-    if (hostname.includes("manus.space")) {
-      domain = ".manus.space";
-    } else if (!hostname.startsWith(".")) {
-      domain = `.${hostname}`;
-    } else {
-      domain = hostname;
+    if (!hostname.includes("manus.space")) {
+      if (!hostname.startsWith(".")) {
+        domain = `.${hostname}`;
+      } else {
+        domain = hostname;
+      }
     }
   }
 
@@ -43,7 +43,7 @@ export function getSessionCookieOptions(
     domain,
     httpOnly: true,
     path: "/",
-    sameSite: "lax",
+    sameSite: "none",
     secure: isSecureRequest(req),
   };
 }

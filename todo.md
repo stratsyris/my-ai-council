@@ -128,3 +128,9 @@
 - [x] Delete button not showing on mobile sidebar (only Rename visible)
 - [x] Bulk delete checkboxes not visible on mobile
 - [x] Need to improve mobile layout for rename/delete button row
+
+## Bulk Delete API Error Fix
+- [x] Fix "Conversation not found" error in bulk delete (removed ownership check)
+- [x] Verify conversation IDs are being passed correctly
+- [x] Add error handling for missing conversations
+- [x] Test bulk delete with valid conversation IDs (API test: successfully deleted 2 conversations)

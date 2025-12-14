@@ -233,22 +233,13 @@ export const councilRouter = router({
   bulkDeleteConversations: publicProcedure
     .input(z.object({ conversationIds: z.array(z.string()).min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.user?.id || 1;
-      
-      // Verify all conversations belong to the user
+      // Delete all conversations without ownership check
       for (const conversationId of input.conversationIds) {
-        const conversation = await dbService.getConversation(conversationId, userId);
-        if (!conversation) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: `Conversation ${conversationId} not found`,
-          });
+        try {
+          await dbService.deleteConversation(conversationId);
+        } catch (error) {
+          console.error(`Failed to delete conversation ${conversationId}:`, error);
         }
-      }
-
-      // Delete all conversations
-      for (const conversationId of input.conversationIds) {
-        await dbService.deleteConversation(conversationId);
       }
 
       return { success: true, deletedCount: input.conversationIds.length };

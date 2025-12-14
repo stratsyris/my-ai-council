@@ -123,3 +123,8 @@
 - [x] Add bulkDeleteConversations handler in Council page
 - [x] Test bulk delete on desktop
 - [x] Test bulk delete on mobile
+
+## Mobile UI Issues to Fix
+- [x] Delete button not showing on mobile sidebar (only Rename visible)
+- [x] Bulk delete checkboxes not visible on mobile
+- [x] Need to improve mobile layout for rename/delete button row

@@ -233,22 +233,24 @@ export default function MobileSidebar({
                             </div>
                           </div>
                         </button>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 flex-wrap">
                           <button
                             onClick={(e) => handleEditClick(e, conv.id, conv.title)}
-                            className="flex-1 flex items-center gap-2 px-2 py-1.5 text-sm text-blue-600 hover:bg-blue-500/10 rounded transition-colors"
+                            className="flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 text-xs sm:text-sm text-blue-600 hover:bg-blue-500/10 rounded transition-colors"
                             title="Rename conversation"
                           >
-                            <Edit2 className="w-4 h-4" />
-                            Rename
+                            <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">Rename</span>
+                            <span className="sm:hidden">Rename</span>
                           </button>
                           <button
                             onClick={(e) => handleDeleteClick(e, conv.id)}
-                            className="flex-1 flex items-center gap-2 px-2 py-1.5 text-sm text-destructive hover:bg-destructive/10 rounded transition-colors"
+                            className="flex-1 min-w-[80px] flex items-center justify-center gap-1 px-2 py-1.5 text-xs sm:text-sm text-destructive hover:bg-destructive/10 rounded transition-colors"
                             title="Delete conversation"
                           >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
+                            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <span className="hidden sm:inline">Delete</span>
+                            <span className="sm:hidden">Delete</span>
                           </button>
                         </div>
                       </>

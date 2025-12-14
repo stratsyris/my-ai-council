@@ -88,6 +88,16 @@ export default function Council() {
     deleteConversation.mutate({ conversationId: id });
   };
 
+  const renameConversation = trpc.council.renameConversation.useMutation({
+    onSuccess: () => {
+      refetchConversations();
+    },
+  });
+
+  const handleRenameConversation = (id: string, title: string) => {
+    renameConversation.mutate({ conversationId: id, title });
+  };
+
   // Auto-create first conversation on mount if none exist
   useEffect(() => {
     if (!hasAutoCreated.current && conversations.length === 0 && !createConversation.isPending) {
@@ -117,6 +127,7 @@ export default function Council() {
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation}
+          onRenameConversation={handleRenameConversation}
           open={sidebarOpen}
           onOpenChange={setSidebarOpen}
         />
@@ -127,6 +138,7 @@ export default function Council() {
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation}
+          onRenameConversation={handleRenameConversation}
         />
       )}
       <ChatInterface

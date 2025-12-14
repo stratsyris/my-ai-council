@@ -226,4 +226,25 @@ export const councilRouter = router({
       await dbService.deleteConversation(input.conversationId);
       return { success: true };
     }),
+
+  renameConversation: publicProcedure
+    .input(
+      z.object({
+        conversationId: z.string(),
+        title: z.string().min(1).max(255),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.user?.id || 1;
+      const conversation = await dbService.getConversation(input.conversationId, userId);
+      if (!conversation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found",
+        });
+      }
+
+      await dbService.updateConversationTitle(input.conversationId, input.title);
+      return { success: true, title: input.title };
+    }),
 });

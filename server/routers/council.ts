@@ -47,10 +47,16 @@ export const councilRouter = router({
    * Create a new conversation.
    */
   createConversation: publicProcedure.mutation(async ({ ctx }) => {
-    // Use a default user ID for public access
-    const userId = ctx.user?.id || 0;
-    const conversation = await dbService.createConversation(userId);
-    return conversation;
+    try {
+      const userId = ctx.user?.id || 0;
+      console.log("[createConversation] Creating with userId:", userId);
+      const conversation = await dbService.createConversation(userId);
+      console.log("[createConversation] Created:", conversation);
+      return conversation;
+    } catch (error) {
+      console.error("[createConversation] Error:", error);
+      throw error;
+    }
   }),
 
   /**

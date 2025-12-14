@@ -12,7 +12,7 @@ export default function Council() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const hasInitialized = useRef(false);
+  const hasAutoCreated = useRef(false);
 
   const { data: conversations = [], refetch: refetchConversations } =
     trpc.council.listConversations.useQuery();
@@ -88,13 +88,20 @@ export default function Council() {
     deleteConversation.mutate({ conversationId: id });
   };
 
-  // Auto-load last conversation on mount only
+  // Auto-create first conversation on mount if none exist
   useEffect(() => {
-    if (!hasInitialized.current && conversations.length > 0) {
-      setCurrentConversationId(conversations[0].id);
-      hasInitialized.current = true;
+    if (!hasAutoCreated.current && conversations.length === 0 && !createConversation.isPending) {
+      hasAutoCreated.current = true;
+      createConversation.mutate();
     }
-  }, [conversations]);
+  }, [conversations.length, createConversation.isPending]);
+
+  // Auto-load first conversation if one is available
+  useEffect(() => {
+    if (conversations.length > 0 && !currentConversationId) {
+      setCurrentConversationId(conversations[0].id);
+    }
+  }, [conversations, currentConversationId]);
 
   // Show configuration guide if API key is missing
   if (configError === "OPENROUTER_API_KEY") {

@@ -167,3 +167,10 @@
 - [x] Text getting cut off on right side on mobile (Fixed with proper text wrapping)
 - [x] Need to fix padding and overflow handling (Added overflow-x-hidden to container)
 - [x] Verify text wrapping works properly on narrow screens (Tested and working)
+
+
+## Console Errors - Conversation Not Found - FIXED
+- [x] Fix "[API Query Error] Conversation not found" appearing 13 times (Added error handling)
+- [x] All 13 errors are the same (Root cause: stale conversation IDs)
+- [x] Need to identify which API call is causing this (getConversation query)
+- [x] Verify conversation IDs are valid (Added validation and cleanup)

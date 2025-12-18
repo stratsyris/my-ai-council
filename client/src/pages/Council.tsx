@@ -20,8 +20,19 @@ export default function Council() {
   const { data: currentConversation, refetch: refetchConversation } =
     trpc.council.getConversation.useQuery(
       { conversationId: currentConversationId! },
-      { enabled: !!currentConversationId }
+      { 
+        enabled: !!currentConversationId,
+        retry: false
+      }
     );
+
+  // Handle conversation not found errors
+  useEffect(() => {
+    if (currentConversation === undefined && currentConversationId) {
+      // Query returned but no data - conversation not found
+      // This will be handled by the error effect below
+    }
+  }, [currentConversation, currentConversationId]);
 
   const createConversation = trpc.council.createConversation.useMutation({
     onSuccess: (data) => {
@@ -120,9 +131,31 @@ export default function Council() {
   // Auto-load first conversation if one is available
   useEffect(() => {
     if (conversations.length > 0 && !currentConversationId) {
-      setCurrentConversationId(conversations[0].id);
+      // Only set if the conversation exists in our list
+      const firstConversation = conversations[0];
+      if (firstConversation) {
+        setCurrentConversationId(firstConversation.id);
+      }
     }
   }, [conversations, currentConversationId]);
+
+  // Clear current conversation if it's no longer in the list
+  useEffect(() => {
+    if (currentConversationId && !conversations.find(c => c.id === currentConversationId)) {
+      setCurrentConversationId(null);
+    }
+  }, [conversations, currentConversationId]);
+
+  // Handle conversation not found errors
+  useEffect(() => {
+    if (currentConversationId && currentConversation === undefined && conversations.length > 0) {
+      // If we have conversations but the current one is not found, clear it
+      const conversationExists = conversations.some(c => c.id === currentConversationId);
+      if (!conversationExists) {
+        setCurrentConversationId(null);
+      }
+    }
+  }, [currentConversation, currentConversationId, conversations]);
 
   // Show configuration guide if API key is missing
   if (configError === "OPENROUTER_API_KEY") {

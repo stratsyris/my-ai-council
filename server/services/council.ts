@@ -143,8 +143,28 @@ Please provide:
   /**
    * Stage 1: Collect individual responses from all 4 council models.
    */
-  async stage1CollectResponses(userQuery: string): Promise<Stage1Result[]> {
-    const messages: Message[] = [{ role: "user", content: userQuery }];
+  async stage1CollectResponses(userQuery: string, imageUrls?: string[]): Promise<Stage1Result[]> {
+    const messages: Message[] = [{ role: "user", content: imageUrls?.length ? `${userQuery}\n\n[Images attached for analysis]` : userQuery }];
+    
+    // Add images to the message if provided
+    if (imageUrls?.length) {
+      const messageContent: any = [
+        { type: "text", text: userQuery }
+      ];
+      
+      // Add each image URL
+      for (const imageUrl of imageUrls) {
+        messageContent.push({
+          type: "image_url",
+          image_url: {
+            url: imageUrl,
+            detail: "auto"
+          }
+        });
+      }
+      
+      messages[0].content = messageContent;
+    }
 
     // Query all 4 models in parallel
     const responses = await this.client.queryModelsParallel(
@@ -210,9 +230,9 @@ Please provide:
   /**
    * Execute full council process: Stage 1 + Stage 2
    */
-  async executeCouncil(userQuery: string) {
+  async executeCouncil(userQuery: string, imageUrls?: string[]) {
     // Stage 1: Collect responses from all 4 models
-    const stage1Results = await this.stage1CollectResponses(userQuery);
+    const stage1Results = await this.stage1CollectResponses(userQuery, imageUrls);
 
     // Stage 2: Chairman analyzes and synthesizes
     const stage2Result = await this.stage2ChairmanAnalysis(

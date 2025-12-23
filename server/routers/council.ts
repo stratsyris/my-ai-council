@@ -87,7 +87,7 @@ export const councilRouter = router({
     }),
 
   /**
-   * Send a message to the council.
+   * Send a message to the council with optional images.
    */
   sendMessage: publicProcedure
     .input(
@@ -95,6 +95,7 @@ export const councilRouter = router({
         conversationId: z.string(),
         content: z.string(),
         chairmanModel: z.string().optional(),
+        imageUrls: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -111,9 +112,9 @@ export const councilRouter = router({
       // Add user message
       await dbService.addUserMessage(input.conversationId, input.content);
 
-      // Run council process with selected chairman
+      // Run council process with selected chairman and images
       const orchestrator = getCouncilOrchestrator(input.chairmanModel);
-      const result = await orchestrator.executeCouncil(input.content);
+      const result = await orchestrator.executeCouncil(input.content, input.imageUrls);
 
       // Add assistant message with chairman model info
       await dbService.addAssistantMessage(
@@ -125,8 +126,8 @@ export const councilRouter = router({
 
       // Generate title if this is the first message
       if (conversation.messages.length === 0) {
-        const title = `Council Discussion: ${input.content.substring(0, 50)}...`;
-        await dbService.updateConversationTitle(input.conversationId, title);
+        const titleContent = input.imageUrls?.length ? `Image Analysis: ${input.content.substring(0, 40)}...` : `Council Discussion: ${input.content.substring(0, 50)}...`;
+        await dbService.updateConversationTitle(input.conversationId, titleContent);
       }
 
       return {

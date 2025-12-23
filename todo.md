@@ -234,3 +234,15 @@
 - [x] Add error toast notification if request fails
 - [x] Improve error handling with detailed error messages
 - [ ] Test image upload flow end-to-end
+
+
+## Image Upload Feature Implementation
+- [x] Update sendMessage mutation to accept imageUrls parameter
+- [x] Implement S3 upload helper for image files
+- [x] Add image upload to ChatInterface before sending message
+- [x] Update council router to accept and process image URLs
+- [x] Modify CouncilOrchestrator to include images in LLM prompts
+- [x] Create upload endpoint for image files to S3
+- [x] Add image preview in message display (already existed)
+- [x] Add error handling for failed uploads
+- [ ] Test image upload with real images

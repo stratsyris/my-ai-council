@@ -28,7 +28,7 @@ interface Conversation {
 
 interface ChatInterfaceProps {
   conversation: Conversation | undefined;
-  onSendMessage: (content: string) => Promise<void>;
+  onSendMessage: (content: string, imageUrls?: string[]) => Promise<void>;
   isLoading: boolean;
   onOpenSidebar?: () => void;
   isMobile?: boolean;
@@ -92,16 +92,40 @@ export default function ChatInterface({
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    let content = input.trim();
+    const content = input.trim();
+    let imageUrls: string[] = [];
     
-    // If there are attached images, add them to the message
+    // Upload images to S3 if any are attached
     if (attachedImages.length > 0) {
-      content += `\n\n[Images attached: ${attachedImages.length}]`;
+      try {
+        const uploadPromises = attachedImages.map(async (img) => {
+          const formData = new FormData();
+          formData.append('file', img.file);
+          
+          // Upload to S3 via backend
+          const response = await fetch('/api/upload-image', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to upload image');
+          }
+          
+          const data = await response.json();
+          return data.url;
+        });
+        
+        imageUrls = await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        // Continue without images if upload fails
+      }
     }
 
     setInput("");
     setAttachedImages([]);
-    await onSendMessage(content);
+    await onSendMessage(content, imageUrls);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -151,7 +175,7 @@ export default function ChatInterface({
                       <Loader2 className="w-6 h-6 animate-spin" />
                       <div className="text-center">
                         <p className="text-sm font-medium">Council is deliberating...</p>
-                        <p className="text-xs mt-1">Analyzing your question with {selectedChairman?.includes('gpt-5') ? 'GPT-5.2' : selectedChairman?.includes('claude') ? 'Claude' : selectedChairman?.includes('gemini') ? 'Gemini 3' : 'Grok 4'} as Chairman</p>
+                        <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {selectedChairman?.includes('gpt-5') ? 'GPT-5.2' : selectedChairman?.includes('claude') ? 'Claude' : selectedChairman?.includes('gemini') ? 'Gemini 3' : 'Grok 4'} as Chairman</p>
                       </div>
                     </div>
                   )}
@@ -231,7 +255,7 @@ export default function ChatInterface({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={!input.trim() || isLoading}
+                  disabled={(!input.trim() && attachedImages.length === 0) || isLoading}
                   size="icon"
                   className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] flex-shrink-0"
                   title="Send message (Enter to send, Shift+Enter for new line)"

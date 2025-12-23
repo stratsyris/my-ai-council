@@ -101,7 +101,7 @@ export default function Council() {
     setSidebarOpen(false);
   };
 
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (content: string, imageUrls?: string[]) => {
     if (!currentConversationId) return;
 
     try {
@@ -109,6 +109,7 @@ export default function Council() {
         conversationId: currentConversationId,
         content,
         chairmanModel: selectedChairman,
+        imageUrls,
       });
     } catch (error) {
       console.error("Error sending message:", error);

@@ -90,7 +90,8 @@ export default function ChatInterface({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() && attachedImages.length === 0) return;
+    if (isLoading) return;
 
     const content = input.trim();
     let imageUrls: string[] = [];
@@ -102,6 +103,8 @@ export default function ChatInterface({
           const formData = new FormData();
           formData.append('file', img.file);
           
+          console.log(`[ChatInterface] Uploading image: ${img.file.name}`);
+          
           // Upload to S3 via backend
           const response = await fetch('/api/upload-image', {
             method: 'POST',
@@ -109,17 +112,21 @@ export default function ChatInterface({
           });
           
           if (!response.ok) {
-            throw new Error('Failed to upload image');
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            throw new Error(`Upload failed: ${errorData.message || errorData.error}`);
           }
           
           const data = await response.json();
+          console.log(`[ChatInterface] Image uploaded successfully: ${data.url}`);
           return data.url;
         });
         
         imageUrls = await Promise.all(uploadPromises);
+        console.log(`[ChatInterface] All images uploaded: ${imageUrls.length} URLs`);
       } catch (error) {
-        console.error('Error uploading images:', error);
-        // Continue without images if upload fails
+        console.error('[ChatInterface] Error uploading images:', error);
+        alert(`Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        return;
       }
     }
 
@@ -129,7 +136,8 @@ export default function ChatInterface({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    // Only allow Enter to send if we have text (not just images)
+    if (e.key === "Enter" && !e.shiftKey && input.trim()) {
       e.preventDefault();
       handleSubmit(e as any);
     }
@@ -176,6 +184,7 @@ export default function ChatInterface({
                       <div className="text-center">
                         <p className="text-sm font-medium">Council is deliberating...</p>
                         <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {selectedChairman?.includes('gpt-5') ? 'GPT-5.2' : selectedChairman?.includes('claude') ? 'Claude' : selectedChairman?.includes('gemini') ? 'Gemini 3' : 'Grok 4'} as Chairman</p>
+                        <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
                       </div>
                     </div>
                   )}
@@ -258,7 +267,7 @@ export default function ChatInterface({
                   disabled={(!input.trim() && attachedImages.length === 0) || isLoading}
                   size="icon"
                   className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] flex-shrink-0"
-                  title="Send message (Enter to send, Shift+Enter for new line)"
+                  title="Send message"
                 >
                   {isLoading ? (
                     <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />

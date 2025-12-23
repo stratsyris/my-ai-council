@@ -33,17 +33,27 @@ router.post('/upload-image', upload.single('file'), async (req: MulterRequest, r
     const mimeType = req.file.mimetype;
     const fileBuffer = req.file.buffer;
 
+    // Sanitize filename: remove spaces, special characters, keep only alphanumeric, dots, hyphens
+    const sanitizedFileName = fileName
+      .toLowerCase()
+      .replace(/[^a-z0-9.\-]/g, '-')
+      .replace(/--+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .replace(/-\./g, '.');
+
     // Generate a unique key for the file
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(7);
-    const fileKey = `images/${timestamp}-${randomStr}-${fileName}`;
+    const fileKey = `images/${timestamp}-${randomStr}-${sanitizedFileName}`;
 
     // Upload to S3
+    console.log(`[Upload] Uploading image: ${fileKey}`);
     const { url } = await storagePut(fileKey, fileBuffer, mimeType);
 
+    console.log(`[Upload] Image uploaded successfully: ${fileKey} -> ${url}`);
     res.json({ url });
   } catch (error) {
-    console.error('Image upload error:', error);
+    console.error('[Upload] Image upload error:', error);
     res.status(500).json({ 
       error: 'Failed to upload image',
       message: error instanceof Error ? error.message : 'Unknown error'

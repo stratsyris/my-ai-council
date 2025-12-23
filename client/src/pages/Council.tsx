@@ -11,6 +11,7 @@ export default function Council() {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
+  const [selectedChairman, setSelectedChairman] = useState<string>("google/gemini-3-pro-preview");
   const isMobile = useMediaQuery("(max-width: 768px)");
   const hasAutoCreated = useRef(false);
 
@@ -53,6 +54,10 @@ export default function Council() {
     },
   });
 
+  const handleChairmanChange = (chairmanModel: string) => {
+    setSelectedChairman(chairmanModel);
+  };
+
   const sendMessage = trpc.council.sendMessage.useMutation({
     onSuccess: () => {
       refetchConversation();
@@ -85,6 +90,7 @@ export default function Council() {
     await sendMessage.mutateAsync({
       conversationId: currentConversationId,
       content,
+      chairmanModel: selectedChairman,
     });
   };
 
@@ -193,6 +199,8 @@ export default function Council() {
         isLoading={sendMessage.isPending}
         onOpenSidebar={() => setSidebarOpen(true)}
         isMobile={isMobile}
+        selectedChairman={selectedChairman}
+        onChairmanChange={handleChairmanChange}
       />
     </div>
   );

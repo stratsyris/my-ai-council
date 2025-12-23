@@ -174,3 +174,14 @@
 - [x] All 13 errors are the same (Root cause: stale conversation IDs)
 - [x] Need to identify which API call is causing this (getConversation query)
 - [x] Verify conversation IDs are valid (Added validation and cleanup)
+
+
+## Chairman LLM Selector Feature
+- [x] Design Chairman selector dropdown UI for header
+- [x] Add available LLM models list (GPT-5.2, Sonnet 4.5, Gemini 3, Grok 4)
+- [x] Update message sending to use selected Chairman model
+- [x] Add visual indicator showing current Chairman in header
+- [x] Add backend support to accept selected Chairman in sendMessage mutation
+- [x] Implement chairman change handler in Council page
+- [x] Pass selected Chairman through ChatInterface to EnhancedHeader
+- [x] Test switching between different Chairman models in dropdown

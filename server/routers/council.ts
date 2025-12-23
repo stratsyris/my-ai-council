@@ -21,7 +21,7 @@ const getOpenRouterClient = () => {
   return new OpenRouterClient({ apiKey });
 };
 
-const getCouncilOrchestrator = () => {
+const getCouncilOrchestrator = (overrideChairmanModel?: string) => {
   const client = getOpenRouterClient();
   
   // Default council models - using latest top-performing models
@@ -34,10 +34,10 @@ const getCouncilOrchestrator = () => {
         "x-ai/grok-4",
       ];
 
-  // Chairman model - using latest Gemini 3 Preview
-  const chairmanModel = process.env.CHAIRMAN_MODEL || "google/gemini-3-pro-preview";
+  // Chairman model - use provided model or fall back to environment/default
+  const selectedChairman = overrideChairmanModel || process.env.CHAIRMAN_MODEL || "google/gemini-3-pro-preview";
 
-  return new CouncilOrchestrator(client, { councilModels, chairmanModel });
+  return new CouncilOrchestrator(client, { councilModels, chairmanModel: selectedChairman });
 };
 
 const dbService = new DatabaseService();
@@ -93,6 +93,7 @@ export const councilRouter = router({
       z.object({
         conversationId: z.string(),
         content: z.string(),
+        chairmanModel: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -109,8 +110,8 @@ export const councilRouter = router({
       // Add user message
       await dbService.addUserMessage(input.conversationId, input.content);
 
-      // Run council process
-      const orchestrator = getCouncilOrchestrator();
+      // Run council process with selected chairman
+      const orchestrator = getCouncilOrchestrator(input.chairmanModel);
       const result = await orchestrator.executeCouncil(input.content);
 
       // Add assistant message

@@ -31,6 +31,8 @@ interface ChatInterfaceProps {
   isLoading: boolean;
   onOpenSidebar?: () => void;
   isMobile?: boolean;
+  selectedChairman?: string;
+  onChairmanChange?: (chairmanModel: string) => void;
 }
 
 export default function ChatInterface({
@@ -39,6 +41,8 @@ export default function ChatInterface({
   isLoading,
   onOpenSidebar,
   isMobile = false,
+  selectedChairman = "google/gemini-3-pro-preview",
+  onChairmanChange,
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const [showDocumentUpload, setShowDocumentUpload] = useState(false);
@@ -108,7 +112,12 @@ export default function ChatInterface({
 
   return (
     <div className="flex-1 flex flex-col min-w-0 h-screen">
-      <EnhancedHeader onOpenSidebar={onOpenSidebar} isMobile={isMobile} />
+      <EnhancedHeader 
+        onOpenSidebar={onOpenSidebar} 
+        isMobile={isMobile}
+        selectedChairman={selectedChairman}
+        onChairmanChange={onChairmanChange}
+      />
 
       {/* Messages Area */}
       {!conversation ? (

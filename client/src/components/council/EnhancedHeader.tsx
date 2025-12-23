@@ -1,10 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Menu, Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun, ChevronDown } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface EnhancedHeaderProps {
   onOpenSidebar?: () => void;
   isMobile?: boolean;
+  selectedChairman?: string;
+  onChairmanChange?: (chairmanModel: string) => void;
 }
 
 const COUNCIL_MEMBERS = [
@@ -34,8 +42,22 @@ const COUNCIL_MEMBERS = [
   },
 ];
 
-export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHeaderProps) {
+export default function EnhancedHeader({ 
+  onOpenSidebar, 
+  isMobile,
+  selectedChairman = "google/gemini-3-pro-preview",
+  onChairmanChange
+}: EnhancedHeaderProps) {
   const { theme, toggleTheme } = useTheme();
+
+  const chairmanMap: Record<string, string> = {
+    "openai/gpt-5.2": "GPT-5.2",
+    "anthropic/claude-sonnet-4.5": "Sonnet 4.5",
+    "google/gemini-3-pro-preview": "Gemini 3",
+    "x-ai/grok-4": "Grok 4",
+  };
+
+  const currentChairmanName = chairmanMap[selectedChairman] || "Gemini 3";
 
   return (
     <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-4 md:p-6 shadow-lg">
@@ -60,6 +82,39 @@ export default function EnhancedHeader({ onOpenSidebar, isMobile }: EnhancedHead
               </p>
             </div>
           </div>
+
+          {/* Chairman Selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white/20 gap-2 flex-shrink-0"
+                title="Select Chairman LLM"
+              >
+                <span className="hidden sm:inline text-sm font-medium">Chairman:</span>
+                <span className="font-semibold">{currentChairmanName}</span>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {Object.entries(chairmanMap).map(([model, displayName]) => (
+                <DropdownMenuItem
+                  key={model}
+                  onClick={() => onChairmanChange?.(model)}
+                  className={selectedChairman === model ? "bg-accent" : ""}
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <div className="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
+                      {selectedChairman === model && (
+                        <div className="w-2 h-2 rounded-full bg-current" />
+                      )}
+                    </div>
+                    <span>{displayName}</span>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Theme Toggle */}
           <Button

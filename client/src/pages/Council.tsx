@@ -75,15 +75,19 @@ export default function Council() {
     onSuccess: () => {
       refetchConversation();
       refetchConversations();
+      setConfigError(null);
     },
     onError: (error) => {
+      console.error("Send message error:", error);
       if (error instanceof TRPCClientError) {
         const message = error.message;
         if (message.includes("OPENROUTER_API_KEY")) {
           setConfigError("OPENROUTER_API_KEY");
         } else {
-          setConfigError(message);
+          setConfigError(message || "Failed to send message. Please try again.");
         }
+      } else {
+        setConfigError("An unexpected error occurred. Please try again.");
       }
     },
   });
@@ -100,12 +104,19 @@ export default function Council() {
   const handleSendMessage = async (content: string) => {
     if (!currentConversationId) return;
 
-    await sendMessage.mutateAsync({
-      conversationId: currentConversationId,
-      content,
-      chairmanModel: selectedChairman,
-    });
+    try {
+      await sendMessage.mutateAsync({
+        conversationId: currentConversationId,
+        content,
+        chairmanModel: selectedChairman,
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      // Error is already handled in onError callback
+    }
   };
+
+  const isProcessing = sendMessage.isPending || createConversation.isPending;
 
   const deleteConversation = trpc.council.deleteConversation.useMutation({
     onSuccess: () => {
@@ -209,12 +220,18 @@ export default function Council() {
       <ChatInterface
         conversation={currentConversation}
         onSendMessage={handleSendMessage}
-        isLoading={sendMessage.isPending}
+        isLoading={isProcessing}
         onOpenSidebar={() => setSidebarOpen(true)}
         isMobile={isMobile}
         selectedChairman={selectedChairman}
         onChairmanChange={handleChairmanChange}
       />
+      {configError && configError !== "OPENROUTER_API_KEY" && (
+        <div className="fixed bottom-4 right-4 bg-destructive text-destructive-foreground px-4 py-3 rounded-lg shadow-lg max-w-sm z-50">
+          <p className="text-sm font-medium">Error</p>
+          <p className="text-xs mt-1 break-words">{configError}</p>
+        </div>
+      )}
     </div>
   );
 }

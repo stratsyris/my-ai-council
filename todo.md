@@ -216,3 +216,21 @@
 - [x] Fix database test to match updated schema
 - [x] Verify all 24 tests pass
 - [x] Save checkpoint with all three features complete
+
+## Phase 5: UI/UX Improvements for Loading States
+- [x] Add detailed loading message showing which Chairman is analyzing
+- [x] Add error notification toast at bottom right
+- [x] Improve error message clarity and formatting
+- [x] Show processing state with spinner and text
+- [ ] Test loading states with real API calls
+
+
+## Bug Fix: Frozen UI on Image Upload
+- [x] Check server logs for errors when image is uploaded with prompt
+- [x] Verify image upload endpoint is working
+- [x] Check if council orchestration is timing out
+- [x] Add loading spinner/skeleton to chat interface while processing
+- [x] Add progress indicator showing "Council is analyzing..."
+- [x] Add error toast notification if request fails
+- [x] Improve error handling with detailed error messages
+- [ ] Test image upload flow end-to-end

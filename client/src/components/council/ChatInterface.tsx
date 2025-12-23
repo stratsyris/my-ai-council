@@ -16,6 +16,7 @@ interface Message {
   stage2?: any;
   stage3?: any;
   metadata?: any;
+  chairmanModel?: string | null;
   createdAt: Date;
 }
 
@@ -146,9 +147,12 @@ export default function ChatInterface({
                     </AnimatedCard>
                   ))}
                   {isLoading && (
-                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Council is deliberating...</span>
+                    <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <div className="text-center">
+                        <p className="text-sm font-medium">Council is deliberating...</p>
+                        <p className="text-xs mt-1">Analyzing your question with {selectedChairman?.includes('gpt-5') ? 'GPT-5.2' : selectedChairman?.includes('claude') ? 'Claude' : selectedChairman?.includes('gemini') ? 'Gemini 3' : 'Grok 4'} as Chairman</p>
+                      </div>
                     </div>
                   )}
                 </div>

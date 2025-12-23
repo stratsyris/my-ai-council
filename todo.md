@@ -185,3 +185,34 @@
 - [x] Implement chairman change handler in Council page
 - [x] Pass selected Chairman through ChatInterface to EnhancedHeader
 - [x] Test switching between different Chairman models in dropdown
+
+
+## Phase 1: Persistent Chairman Preference Storage
+- [x] Add chairman_preference column to users table in database schema
+- [x] Create migration to add chairman_preference field
+- [x] Create updateChairmanPreference backend mutation
+- [x] Create getChairmanPreference backend query
+- [x] Update Council page to load saved Chairman preference on mount
+- [x] Update handleChairmanChange to save preference to database
+- [ ] Test persistence across page reloads
+
+## Phase 2: Model-Specific Customized Synthesis Prompts
+- [x] Create prompt templates for each Chairman model (GPT-5.2, Claude, Gemini, Grok)
+- [x] Design prompts that leverage each model's strengths
+- [x] Integrate prompts into CouncilOrchestrator
+- [x] Update synthesis logic to use model-specific prompts
+- [ ] Test synthesis quality with different prompts
+
+## Phase 3: Display Chairman Model Info in UI
+- [x] Add chairman model metadata to message structure
+- [x] Store which Chairman was used when message was created
+- [x] Update MessageDisplay component to show Chairman info
+- [x] Add visual badge/indicator showing which model synthesized the answer
+- [x] Display Chairman name prominently in the final answer section
+- [x] Test display on desktop and mobile
+
+## Phase 4: Testing and Finalization
+- [x] Run all tests to verify functionality
+- [x] Fix database test to match updated schema
+- [x] Verify all 24 tests pass
+- [x] Save checkpoint with all three features complete

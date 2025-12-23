@@ -22,6 +22,20 @@
       "when": 1765161282571,
       "tag": "0002_slow_night_thrasher",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1766456112610,
+      "tag": "0003_brave_zombie",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1766456274243,
+      "tag": "0004_soft_bullseye",
+      "breakpoints": true
     }
   ]
 }

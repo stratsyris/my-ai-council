@@ -17,6 +17,7 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  chairmanPreference: varchar("chairmanPreference", { length: 64 }).default("google/gemini-3-pro-preview").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -51,6 +52,7 @@ export const messages = mysqlTable("messages", {
   stage2: text("stage2"),
   stage3: text("stage3"),
   metadata: text("metadata"),
+  chairmanModel: varchar("chairmanModel", { length: 64 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `chairmanPreference` varchar(64) DEFAULT 'google/gemini-3-pro-preview' NOT NULL;

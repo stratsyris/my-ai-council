@@ -3,11 +3,12 @@
  */
 
 import { z } from "zod";
-import { publicProcedure, router } from "../_core/trpc";
+import { publicProcedure, router } from "../\_core/trpc";
 import { OpenRouterClient } from "../services/openrouter";
 import { CouncilOrchestrator } from "../services/council";
 import { DatabaseService } from "../services/database";
 import { TRPCError } from "@trpc/server";
+import { getChairmanPreference, updateChairmanPreference } from "../db";
 
 // Initialize services
 const getOpenRouterClient = () => {
@@ -114,11 +115,12 @@ export const councilRouter = router({
       const orchestrator = getCouncilOrchestrator(input.chairmanModel);
       const result = await orchestrator.executeCouncil(input.content);
 
-      // Add assistant message
+      // Add assistant message with chairman model info
       await dbService.addAssistantMessage(
         input.conversationId,
         result.stage1,
-        result.stage2
+        result.stage2,
+        input.chairmanModel
       );
 
       // Generate title if this is the first message
@@ -265,5 +267,29 @@ export const councilRouter = router({
 
       await dbService.updateConversationTitle(input.conversationId, input.title);
       return { success: true, title: input.title };
+    }),
+
+  /**
+   * Get user's saved Chairman preference
+   */
+  getChairmanPreference: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.user?.id || 1;
+    const chairmanModel = await getChairmanPreference(userId);
+    return { chairmanModel };
+  }),
+
+  /**
+   * Update user's Chairman preference
+   */
+  updateChairmanPreference: publicProcedure
+    .input(
+      z.object({
+        chairmanModel: z.string().min(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.user?.id || 1;
+      await updateChairmanPreference(userId, input.chairmanModel);
+      return { success: true, chairmanModel: input.chairmanModel };
     }),
 });

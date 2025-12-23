@@ -115,6 +115,7 @@ export class DatabaseService {
         stage2: msg.stage2 ? JSON.parse(msg.stage2) : null,
         stage3: msg.stage3 ? JSON.parse(msg.stage3) : null,
         metadata: msg.metadata ? JSON.parse(msg.metadata) : null,
+        chairmanModel: msg.chairmanModel,
         createdAt: msg.createdAt,
       })),
     };
@@ -157,7 +158,8 @@ export class DatabaseService {
   async addAssistantMessage(
     conversationId: string,
     stage1: any,
-    stage2: any
+    stage2: any,
+    chairmanModel?: string
   ): Promise<string> {
     const db = await getDb();
     if (!db) {
@@ -174,6 +176,7 @@ export class DatabaseService {
       content: null,
       stage1: JSON.stringify(stage1),
       stage2: JSON.stringify(stage2),
+      chairmanModel: chairmanModel || null,
       createdAt: now,
     };
 

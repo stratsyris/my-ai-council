@@ -91,9 +91,63 @@ export async function getUserByOpenId(openId: string) {
     return undefined;
   }
 
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.openId, openId))
+    .limit(1);
 
   return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Get user's Chairman preference
+ */
+export async function getChairmanPreference(userId: number): Promise<string> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get chairman preference: database not available");
+    return "google/gemini-3-pro-preview";
+  }
+
+  try {
+    const result = await db
+      .select({ chairmanPreference: users.chairmanPreference })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    return result.length > 0
+      ? result[0].chairmanPreference
+      : "google/gemini-3-pro-preview";
+  } catch (error) {
+    console.error("[Database] Failed to get chairman preference:", error);
+    return "google/gemini-3-pro-preview";
+  }
+}
+
+/**
+ * Update user's Chairman preference
+ */
+export async function updateChairmanPreference(
+  userId: number,
+  chairmanModel: string
+): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update chairman preference: database not available");
+    return;
+  }
+
+  try {
+    await db
+      .update(users)
+      .set({ chairmanPreference: chairmanModel })
+      .where(eq(users.id, userId));
+  } catch (error) {
+    console.error("[Database] Failed to update chairman preference:", error);
+    throw error;
+  }
 }
 
 // TODO: add feature queries here as your schema grows.

@@ -27,6 +27,15 @@ export default function Council() {
       }
     );
 
+  // Load saved Chairman preference on mount
+  const { data: savedPreference } = trpc.council.getChairmanPreference.useQuery();
+
+  useEffect(() => {
+    if (savedPreference?.chairmanModel) {
+      setSelectedChairman(savedPreference.chairmanModel);
+    }
+  }, [savedPreference]);
+
   // Handle conversation not found errors
   useEffect(() => {
     if (currentConversation === undefined && currentConversationId) {
@@ -54,8 +63,12 @@ export default function Council() {
     },
   });
 
+  const updateChairmanPref = trpc.council.updateChairmanPreference.useMutation();
+
   const handleChairmanChange = (chairmanModel: string) => {
     setSelectedChairman(chairmanModel);
+    // Save preference to database
+    updateChairmanPref.mutate({ chairmanModel });
   };
 
   const sendMessage = trpc.council.sendMessage.useMutation({

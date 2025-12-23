@@ -47,16 +47,14 @@ describe("DatabaseService", () => {
 
   it("should add an assistant message", async () => {
     const stage1 = [{ model: "test-model", response: "Test response" }];
-    const stage2 = [{ model: "test-model", ranking: "Test ranking", parsed_ranking: [] }];
-    const stage3 = { model: "test-chairman", response: "Final answer" };
-    const metadata = { label_to_model: {}, aggregate_rankings: [] };
+    const stage2 = { analysis: "Test analysis", finalAnswer: "Test final answer" };
+    const chairmanModel = "google/gemini-3-pro-preview";
 
     const messageId = await dbService.addAssistantMessage(
       testConversationId,
       stage1,
       stage2,
-      stage3,
-      metadata
+      chairmanModel
     );
     expect(typeof messageId).toBe("string");
     expect(messageId.length).toBeGreaterThan(0);

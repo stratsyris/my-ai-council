@@ -17,6 +17,7 @@ interface Message {
   stage2?: any;
   stage3?: any;
   metadata?: any;
+  chairmanModel?: string | null;
   createdAt: Date;
 }
 
@@ -57,9 +58,24 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
         {/* Stage 2: Chairman Final Answer (shown first - most important) */}
         {message.stage2 && (
           <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg w-full overflow-x-hidden">
-            <h3 className="font-bold text-sm md:text-base text-primary mb-2 break-words">
-              🎯 Chairman's Final Answer
-            </h3>
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+              <h3 className="font-bold text-sm md:text-base text-primary break-words">
+                🎯 Chairman's Final Answer
+              </h3>
+              {message.chairmanModel && (
+                <span className="text-xs md:text-sm bg-primary/20 text-primary px-2 py-1 rounded whitespace-nowrap">
+                  {message.chairmanModel.includes("gpt-5")
+                    ? "GPT-5.2"
+                    : message.chairmanModel.includes("claude")
+                    ? "Claude Sonnet"
+                    : message.chairmanModel.includes("gemini")
+                    ? "Gemini 3"
+                    : message.chairmanModel.includes("grok")
+                    ? "Grok 4"
+                    : message.chairmanModel}
+                </span>
+              )}
+            </div>
             <div className="prose prose-sm max-w-none text-sm md:text-base break-words w-full overflow-x-hidden">
               <div className="w-full overflow-x-hidden">
                 <ReactMarkdown>

@@ -268,3 +268,11 @@
 - [x] Make responsive for mobile and desktop
 - [x] Integrate hero section into Council page layout
 - [x] Test layout and visibility on all screen sizes
+
+
+## Hero Section Refinement
+- [x] Desktop: Remove white box, use text-only white overlay at top
+- [x] Desktop: Make image fill entire section with proper cropping
+- [x] Mobile: Move text to top instead of center
+- [x] Mobile: Improve text spacing and sizing
+- [x] Mobile: Ensure image fills section properly

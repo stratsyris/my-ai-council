@@ -38,6 +38,13 @@ interface ChatInterfaceProps {
 
 const MAX_IMAGES_PER_MESSAGE = 10;
 
+interface AttachedImage {
+  id: string;
+  file: File;
+  preview: string;
+  disabled?: boolean;
+}
+
 export default function ChatInterface({
   conversation,
   onSendMessage,
@@ -49,7 +56,7 @@ export default function ChatInterface({
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const [showDocumentUpload, setShowDocumentUpload] = useState(false);
-  const [attachedImages, setAttachedImages] = useState<Array<{id: string; file: File; preview: string}>>([]);
+  const [attachedImages, setAttachedImages] = useState<AttachedImage[]>([]);;
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -58,30 +65,25 @@ export default function ChatInterface({
     const files = e.currentTarget.files;
     if (!files) return;
 
-    const filesToAdd: Array<{id: string; file: File; preview: string}> = [];
-    let rejectedCount = 0;
+    const filesToAdd: AttachedImage[] = [];
 
     Array.from(files).forEach((file) => {
       if (file.type.startsWith("image/")) {
-        // Check if adding this file would exceed the limit
-        if (attachedImages && attachedImages.length + filesToAdd.length >= MAX_IMAGES_PER_MESSAGE) {
-          rejectedCount++;
-          return;
-        }
-
         const reader = new FileReader();
         reader.onload = (event) => {
           const preview = event.target?.result as string;
-          filesToAdd.push({ id: Math.random().toString(36), file, preview });
-          setAttachedImages((prev) => [...(prev || []), ...filesToAdd]);
+          const isDisabled = attachedImages.length + filesToAdd.length >= MAX_IMAGES_PER_MESSAGE;
+          filesToAdd.push({ 
+            id: Math.random().toString(36), 
+            file, 
+            preview,
+            disabled: isDisabled
+          });
+          setAttachedImages((prev) => [...prev, ...filesToAdd]);
         };
         reader.readAsDataURL(file);
       }
     });
-
-    if (rejectedCount > 0) {
-      alert(`You can only upload up to ${MAX_IMAGES_PER_MESSAGE} images per message. ${rejectedCount} image(s) were not added.`);
-    }
 
     e.currentTarget.value = "";
   };
@@ -110,10 +112,11 @@ export default function ChatInterface({
     const content = input.trim();
     let imageUrls: string[] = [];
     
-    // Upload images to S3 if any are attached
-    if (attachedImages.length > 0) {
+    // Upload only enabled images to S3
+    const enabledImages = attachedImages.filter(img => !img.disabled);
+    if (enabledImages.length > 0) {
       try {
-        const uploadPromises = attachedImages.map(async (img) => {
+        const uploadPromises = enabledImages.map(async (img) => {
           const formData = new FormData();
           formData.append('file', img.file);
           
@@ -219,19 +222,28 @@ export default function ChatInterface({
             {attachedImages && attachedImages.length > 0 && (
               <div className="px-3 md:px-4 space-y-2">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Images: {attachedImages.length}/{MAX_IMAGES_PER_MESSAGE}</span>
-                  {attachedImages.length === MAX_IMAGES_PER_MESSAGE && (
+                  <span>Images: {attachedImages.filter(img => !img.disabled).length}/{MAX_IMAGES_PER_MESSAGE}</span>
+                  {attachedImages.filter(img => !img.disabled).length === MAX_IMAGES_PER_MESSAGE && attachedImages.some(img => img.disabled) && (
                     <span className="text-yellow-600">Limit reached</span>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {attachedImages.map((img) => (
-                    <div key={img.id} className="relative group">
+                    <div key={img.id} className={`relative group ${img.disabled ? 'opacity-50' : ''}`}>
                       <img
                         src={img.preview}
                         alt="preview"
-                        className="h-16 w-16 object-cover rounded border border-border"
+                        className={`h-16 w-16 object-cover rounded border ${
+                          img.disabled 
+                            ? 'border-muted-foreground/30 grayscale' 
+                            : 'border-border'
+                        }`}
                       />
+                      {img.disabled && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded">
+                          <span className="text-xs text-white font-medium">Disabled</span>
+                        </div>
+                      )}
                       <button
                         onClick={() => removeImage(img.id)}
                         className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -271,8 +283,8 @@ export default function ChatInterface({
                   size="icon"
                   variant="outline"
                   className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] flex-shrink-0"
-                  disabled={attachedImages && attachedImages.length >= MAX_IMAGES_PER_MESSAGE}
-                  title={attachedImages && attachedImages.length >= MAX_IMAGES_PER_MESSAGE ? `Maximum ${MAX_IMAGES_PER_MESSAGE} images reached` : "Attach photos"}
+                  disabled={attachedImages && attachedImages.filter(img => !img.disabled).length >= MAX_IMAGES_PER_MESSAGE}
+                  title={attachedImages && attachedImages.filter(img => !img.disabled).length >= MAX_IMAGES_PER_MESSAGE ? `Maximum ${MAX_IMAGES_PER_MESSAGE} images reached` : "Attach photos"}
                 >
                   <ImageIcon className="w-4 h-4 md:w-5 md:h-5" />
                 </Button>

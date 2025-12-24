@@ -55,7 +55,7 @@ export class DatabaseService {
       .select()
       .from(conversations)
       .where(eq(conversations.userId, userId))
-      .orderBy(desc(conversations.updatedAt));
+      .orderBy(desc(conversations.createdAt));
 
     // Get all message counts for these conversations in one query
     const allMessages = await db

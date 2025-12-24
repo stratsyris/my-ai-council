@@ -276,3 +276,9 @@
 - [x] Mobile: Move text to top instead of center
 - [x] Mobile: Improve text spacing and sizing
 - [x] Mobile: Ensure image fills section properly
+
+
+## Conversation Sorting
+- [x] Sort conversations by creation date in descending order (newest first)
+- [x] Update listConversations query to order by createdAt DESC
+- [x] Test that new conversations appear at top of sidebar

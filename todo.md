@@ -351,3 +351,8 @@
 - [x] JSON parsing error - Added better error handling and logging to sendMessage router
 - [x] Conversation context loss - Fixed by passing full conversation history to council orchestrator
 - [x] Images not persisting in conversation context - Now included in conversation history
+
+
+## New Bugs Reported by User - FIXED
+- [x] Conversation list not sorted by newest first - Changed sorting from createdAt to updatedAt
+- [x] "Failed to fetch" error showing in bottom right corner - Added network error suppression in error handler

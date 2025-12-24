@@ -51,11 +51,12 @@ export class DatabaseService {
     }
 
     // Get conversations with message counts in a single query
+    // Sort by updatedAt (most recently updated first) so latest conversation appears at top
     const convs = await db
       .select()
       .from(conversations)
       .where(eq(conversations.userId, userId))
-      .orderBy(desc(conversations.createdAt));
+      .orderBy(desc(conversations.updatedAt));
 
     // Get all message counts for these conversations in one query
     const allMessages = await db

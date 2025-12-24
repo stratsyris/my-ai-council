@@ -10,6 +10,14 @@ import "./index.css";
 
 const queryClient = new QueryClient();
 
+const isNetworkError = (error: unknown): boolean => {
+  if (error instanceof TypeError) {
+    const msg = error.message;
+    return msg.includes('Failed to fetch') || msg.includes('NetworkError');
+  }
+  return false;
+};
+
 const redirectToLoginIfUnauthorized = (error: unknown) => {
   if (!(error instanceof TRPCClientError)) return;
   if (typeof window === "undefined") return;
@@ -25,7 +33,9 @@ queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.query.state.error;
     redirectToLoginIfUnauthorized(error);
-    console.error("[API Query Error]", error);
+    if (!isNetworkError(error)) {
+      console.error("[API Query Error]", error);
+    }
   }
 });
 
@@ -33,7 +43,9 @@ queryClient.getMutationCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.mutation.state.error;
     redirectToLoginIfUnauthorized(error);
-    console.error("[API Mutation Error]", error);
+    if (!isNetworkError(error)) {
+      console.error("[API Mutation Error]", error);
+    }
   }
 });
 

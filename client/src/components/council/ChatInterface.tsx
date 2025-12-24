@@ -58,7 +58,7 @@ export default function ChatInterface({
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const [showDocumentUpload, setShowDocumentUpload] = useState(false);
-  const [attachedImages, setAttachedImages] = useState<AttachedImage[]>([]);;
+  const [attachedImages, setAttachedImages] = useState<AttachedImage[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -67,21 +67,35 @@ export default function ChatInterface({
     const files = e.currentTarget.files;
     if (!files) return;
 
+    let loadedCount = 0;
     const filesToAdd: AttachedImage[] = [];
+    const totalFiles = Array.from(files).filter(f => f.type.startsWith("image/")).length;
+
+    if (totalFiles === 0) {
+      e.currentTarget.value = "";
+      return;
+    }
 
     Array.from(files).forEach((file) => {
       if (file.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = (event) => {
           const preview = event.target?.result as string;
-          const isDisabled = attachedImages.length + filesToAdd.length >= MAX_IMAGES_PER_MESSAGE;
+          const currentCount = attachedImages.length + filesToAdd.length;
+          const isDisabled = currentCount >= MAX_IMAGES_PER_MESSAGE;
+          
           filesToAdd.push({ 
-            id: Math.random().toString(36), 
+            id: `${Date.now()}-${Math.random()}`, 
             file, 
             preview,
             disabled: isDisabled
           });
-          setAttachedImages((prev) => [...prev, ...filesToAdd]);
+          
+          loadedCount++;
+          // Only update state once all files are loaded
+          if (loadedCount === totalFiles) {
+            setAttachedImages((prev) => [...prev, ...filesToAdd]);
+          }
         };
         reader.readAsDataURL(file);
       }
@@ -246,6 +260,7 @@ export default function ChatInterface({
                         </div>
                       )}
                       <button
+                        type="button"
                         onClick={() => removeImage(img.id)}
                         className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:shadow-xl"
                         title="Remove image"

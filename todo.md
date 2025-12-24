@@ -337,3 +337,10 @@
 - [x] Fix UI freezing when large content is loaded
 - [x] Ensure textarea auto-expands but remains scrollable for very long content
 - [x] Test with long prompts and image uploads
+
+
+## Remaining UX Bug Fixes (User Reported - Round 2)
+- [x] Reduce line-height spacing to be more compact (changed lineHeight from 1.4 to 1.2)
+- [x] Fix image duplication bug (fixed handleImageSelect to track loadedCount properly)
+- [x] Fix delete button not working when removing images (added type="button" and fixed ID generation)
+- [x] Verify image upload/delete workflow end-to-end

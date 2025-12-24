@@ -344,3 +344,10 @@
 - [x] Fix image duplication bug (fixed handleImageSelect to track loadedCount properly)
 - [x] Fix delete button not working when removing images (added type="button" and fixed ID generation)
 - [x] Verify image upload/delete workflow end-to-end
+
+
+## CRITICAL BUGS - FIXED
+- [x] Message duplication bug - Fixed React Query cache configuration (staleTime: 5000, gcTime: 10000)
+- [x] JSON parsing error - Added better error handling and logging to sendMessage router
+- [x] Conversation context loss - Fixed by passing full conversation history to council orchestrator
+- [x] Images not persisting in conversation context - Now included in conversation history

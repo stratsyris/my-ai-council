@@ -141,35 +141,54 @@ export const councilRouter = router({
         }
       }
 
-      const result = await orchestrator.executeCouncil(
-        input.content,
-        chairmanMemberId,
-        input.imageUrls
-      );
+      // Build conversation context with previous messages
+      const conversationHistory = conversation.messages
+        .filter(m => m.role === 'user')
+        .map(m => m.content)
+        .join('\n\n');
+      
+      // Combine conversation history with current message
+      const fullContext = conversationHistory 
+        ? `Previous context:\n${conversationHistory}\n\nNew question: ${input.content}`
+        : input.content;
 
-      // Add assistant message with chairman model info
-      await dbService.addAssistantMessage(
-        input.conversationId,
-        result.stage1,
-        result.stage2,
-        input.chairmanModel
-      );
-
-      // Generate title if this is the first message
-      if (conversation.messages.length === 0) {
-        const titleContent = input.imageUrls?.length
-          ? `Image Analysis: ${input.content.substring(0, 40)}...`
-          : `Council Discussion: ${input.content.substring(0, 50)}...`;
-        await dbService.updateConversationTitle(
-          input.conversationId,
-          titleContent
+      try {
+        const result = await orchestrator.executeCouncil(
+          fullContext,
+          chairmanMemberId,
+          input.imageUrls
         );
-      }
 
-      return {
-        stage1: result.stage1,
-        stage2: result.stage2,
-      };
+        // Add assistant message with chairman model info
+        await dbService.addAssistantMessage(
+          input.conversationId,
+          result.stage1,
+          result.stage2,
+          input.chairmanModel
+        );
+
+        // Generate title if this is the first message (before adding new message)
+        if (conversation.messages.filter(m => m.role === 'user').length === 0) {
+          const titleContent = input.imageUrls?.length
+            ? `Image Analysis: ${input.content.substring(0, 40)}...`
+            : `Council Discussion: ${input.content.substring(0, 50)}...`;
+          await dbService.updateConversationTitle(
+            input.conversationId,
+            titleContent
+          );
+        }
+
+        return {
+          stage1: result.stage1,
+          stage2: result.stage2,
+        };
+      } catch (error) {
+        console.error('[sendMessage] Council execution failed:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Council execution failed: ${error instanceof Error ? error.message : String(error)}`
+        });
+      }
     }),
 
   /**

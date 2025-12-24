@@ -23,7 +23,9 @@ export default function Council() {
       { conversationId: currentConversationId! },
       { 
         enabled: !!currentConversationId,
-        retry: false
+        retry: false,
+        staleTime: 5000,
+        gcTime: 10000
       }
     );
 
@@ -73,7 +75,9 @@ export default function Council() {
 
   const sendMessage = trpc.council.sendMessage.useMutation({
     onSuccess: () => {
-      refetchConversation();
+      setTimeout(() => {
+        refetchConversation();
+      }, 500);
       refetchConversations();
       setConfigError(null);
     },

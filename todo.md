@@ -246,3 +246,13 @@
 - [x] Add image preview in message display (already existed)
 - [x] Add error handling for failed uploads
 - [ ] Test image upload with real images
+
+
+## Image Upload Limit Feature (10 images max per message)
+- [x] Add MAX_IMAGES_PER_MESSAGE constant (10)
+- [x] Add validation in handleImageSelect to prevent adding more than 10 images
+- [x] Show alert when user tries to add more than 10 images
+- [x] Display image count indicator (e.g., "3/10 images")
+- [x] Disable image upload button when limit reached
+- [x] Test with exactly 10 images
+- [x] Test attempting to add 11th image (should be rejected)

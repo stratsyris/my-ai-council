@@ -257,3 +257,14 @@
 - [x] Disable image upload button when limit reached
 - [x] Only upload enabled images to S3 on submit
 - [x] Test with exactly 10 images and 11+ images
+
+
+## Hero Section with Council Chamber Image
+- [x] Upload council chamber image to S3
+- [x] Create HeroSection component with image background
+- [x] Add text overlay: "THE COUNCIL IS ASSEMBLED."
+- [x] Add subtitle: "Ask a question, review their debate, and let the Chairman synthesize the verdict."
+- [x] Style text with white background card/box
+- [x] Make responsive for mobile and desktop
+- [x] Integrate hero section into Council page layout
+- [x] Test layout and visibility on all screen sizes

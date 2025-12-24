@@ -7,6 +7,7 @@ import MessageDisplay from "./MessageDisplay";
 import DocumentUpload from "./DocumentUpload";
 import EnhancedHeader from "./EnhancedHeader";
 import AnimatedCard from "./AnimatedCard";
+import HeroSection from "./HeroSection";
 
 interface Message {
   id: string;
@@ -182,11 +183,8 @@ export default function ChatInterface({
           <ScrollArea ref={scrollAreaRef} className="flex-1 overflow-hidden w-full">
             <div className="p-3 md:p-4 w-full flex justify-center">
               {conversation.messages.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-muted-foreground py-12">
-                  <div className="text-center">
-                    <h2 className="text-lg md:text-xl font-semibold mb-2">Start a Conversation</h2>
-                    <p className="text-sm md:text-base">Ask a question and watch the council collaborate</p>
-                  </div>
+                <div className="flex flex-col items-center justify-center w-full">
+                  <HeroSection />
                 </div>
               ) : (
                 <div className="space-y-4 md:space-y-6 max-w-5xl mx-auto">

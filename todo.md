@@ -313,3 +313,18 @@
 - [x] Fix model ID mapping (full OpenRouter IDs)
 - [x] Verify all 33 tests pass
 - [x] Test UI displays correct archetype names
+
+
+## Sprint 2: Verdict Card - Visual Theater for Metacognition
+- [x] Update generateChairmanPrompt to instruct LLM to output JSON with verdict structure
+- [x] Define VerdictCard JSON schema (conflict_level, primary_conflict, evolution_logic, final_verdict_markdown)
+- [x] Create VerdictCard.tsx component with gold border and premium styling
+- [x] Implement ConflictMeter badge component (Green/Red indicator)
+- [x] Create EvolutionBox component to highlight the pivot moment
+- [x] Implement JSON parsing in VerdictCard with error handling
+- [x] Add fallback rendering for invalid JSON responses
+- [x] Update MessageDisplay to detect and render VerdictCard for Phase 2
+- [x] Test VerdictCard with real council responses
+- [x] Verify visual hierarchy and impact of evolution display
+- [x] Test error handling with malformed JSON
+- [x] Ensure responsive design on mobile and desktop

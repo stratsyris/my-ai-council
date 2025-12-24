@@ -9,7 +9,9 @@ import ReactMarkdown from "react-markdown";
 import { User, Bot, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import CopyButton from "./CopyButton";
+import VerdictCard from "./VerdictCard";
 import { getDisplayNameForModel } from "@/lib/council_utils";
+import { parseVerdictJSON } from "@/lib/verdict_parser";
 
 interface Message {
   id: string;
@@ -28,7 +30,10 @@ interface MessageDisplayProps {
   isMobile?: boolean;
 }
 
-export default function MessageDisplay({ message, isMobile = false }: MessageDisplayProps) {
+export default function MessageDisplay({
+  message,
+  isMobile = false,
+}: MessageDisplayProps) {
   const [stage1Open, setStage1Open] = useState(!isMobile);
   const [stage2Open, setStage2Open] = useState(true);
 
@@ -49,7 +54,13 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
   }
 
   // Assistant message with stages (Option A flow)
-  const chairmanAnswer = message.stage2?.finalAnswer || message.stage2?.analysis || "";
+  const chairmanAnswer =
+    message.stage2?.finalAnswer || message.stage2?.analysis || "";
+
+  // Try to parse as VerdictCard JSON
+  const verdictData = parseVerdictJSON(chairmanAnswer);
+  const shouldRenderVerdictCard =
+    verdictData && message.chairmanModel ? true : false;
 
   return (
     <div className="flex gap-2 md:gap-3">
@@ -57,38 +68,59 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
         <Bot className="w-4 h-4 md:w-5 md:h-5" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="font-semibold mb-2 md:mb-3 text-sm md:text-base">LLM Council</div>
+        <div className="font-semibold mb-2 md:mb-3 text-sm md:text-base">
+          LLM Council
+        </div>
 
         {/* Stage 2: Chairman Final Answer (shown first - most important) */}
         {message.stage2 && (
-          <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg w-full">
-            <div className="flex items-start justify-between mb-2 gap-2">
-              <h3 className="font-bold text-sm md:text-base text-primary break-words flex-1">
-                🎯 Chairman's Final Answer
-              </h3>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                {message.chairmanModel && (
-                  <span className="text-xs md:text-sm bg-primary/20 text-primary px-2 py-1 rounded whitespace-nowrap">
-                    {getDisplayNameForModel(message.chairmanModel)}
-                  </span>
-                )}
-                <CopyButton text={chairmanAnswer} />
+          <>
+            {shouldRenderVerdictCard && verdictData ? (
+              <VerdictCard
+                data={verdictData}
+                chairmanName={getDisplayNameForModel(message.chairmanModel!)}
+              />
+            ) : (
+              <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg w-full">
+                <div className="flex items-start justify-between mb-2 gap-2">
+                  <h3 className="font-bold text-sm md:text-base text-primary break-words flex-1">
+                    🎯 Chairman's Final Answer
+                  </h3>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {message.chairmanModel && (
+                      <span className="text-xs md:text-sm bg-primary/20 text-primary px-2 py-1 rounded whitespace-nowrap">
+                        {getDisplayNameForModel(message.chairmanModel)}
+                      </span>
+                    )}
+                    <CopyButton text={chairmanAnswer} />
+                  </div>
+                </div>
+                <div className="prose prose-sm max-w-none text-sm md:text-base break-words whitespace-pre-wrap overflow-hidden">
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => (
+                        <p className="break-words whitespace-pre-wrap">
+                          {children}
+                        </p>
+                      ),
+                      li: ({ children }) => (
+                        <li className="break-words whitespace-pre-wrap">
+                          {children}
+                        </li>
+                      ),
+                      blockquote: ({ children }) => (
+                        <blockquote className="break-words whitespace-pre-wrap">
+                          {children}
+                        </blockquote>
+                      ),
+                    }}
+                  >
+                    {chairmanAnswer}
+                  </ReactMarkdown>
+                </div>
               </div>
-            </div>
-            <div className="prose prose-sm max-w-none text-sm md:text-base break-words whitespace-pre-wrap overflow-hidden">
-              <ReactMarkdown
-                components={{
-                  p: ({ children }) => <p className="break-words whitespace-pre-wrap">{children}</p>,
-                  li: ({ children }) => <li className="break-words whitespace-pre-wrap">{children}</li>,
-                  blockquote: ({ children }) => (
-                    <blockquote className="break-words whitespace-pre-wrap">{children}</blockquote>
-                  ),
-                }}
-              >
-                {chairmanAnswer}
-              </ReactMarkdown>
-            </div>
-          </div>
+            )}
+          </>
         )}
 
         {/* Stage 1: Individual Responses from Council Members */}
@@ -121,7 +153,8 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
                           className="text-xs px-2 py-1 md:text-sm md:px-3 md:py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                         >
                           <span className="truncate max-w-[100px] md:max-w-none">
-                            {result.model.split("/").pop() || `Model ${index + 1}`}
+                            {result.model.split("/").pop() ||
+                              `Model ${index + 1}`}
                           </span>
                         </TabsTrigger>
                       ))}
@@ -134,7 +167,8 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
                       >
                         <div className="flex items-start justify-between mb-2 gap-2">
                           <span className="text-xs md:text-sm font-medium text-muted-foreground">
-                            {result.model.split("/").pop() || `Model ${index + 1}`}
+                            {result.model.split("/").pop() ||
+                              `Model ${index + 1}`}
                           </span>
                           <CopyButton text={result.response} />
                         </div>
@@ -142,10 +176,14 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
                           <ReactMarkdown
                             components={{
                               p: ({ children }) => (
-                                <p className="break-words whitespace-pre-wrap">{children}</p>
+                                <p className="break-words whitespace-pre-wrap">
+                                  {children}
+                                </p>
                               ),
                               li: ({ children }) => (
-                                <li className="break-words whitespace-pre-wrap">{children}</li>
+                                <li className="break-words whitespace-pre-wrap">
+                                  {children}
+                                </li>
                               ),
                               blockquote: ({ children }) => (
                                 <blockquote className="break-words whitespace-pre-wrap">

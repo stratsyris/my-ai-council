@@ -56,6 +56,8 @@ Remember: Be independent. Do NOT reference other council members or speculate wh
  * This prompt is sent to the selected chairman model.
  * The chairman receives all 4 council member responses and must synthesize them.
  * The chairman uses their chairman_lens to make the final decision.
+ * 
+ * OUTPUT: Structured JSON with the chairman's verdict and evolution logic.
  */
 export function generateChairmanPrompt(
   chairmanMemberId: string,
@@ -78,7 +80,7 @@ export function generateChairmanPrompt(
 
 ## YOUR IDENTITY (THE LENS)
 
-You are occupying the seat of: **${chairman.display_name}}**
+You are occupying the seat of: **${chairman.display_name}**
 
 **Your Adjudication Mandate:** ${chairman.chairman_lens}
 
@@ -128,15 +130,23 @@ You are not a summarizer; you are a JUDGE.
 
 ## OUTPUT FORMAT
 
-Provide your response in this exact structure:
+You MUST output ONLY a valid JSON object with this exact structure. No markdown, no extra text before or after the JSON.
 
-1. **The Conflict:** (1-2 sentences identifying the friction points between the Council members).
+{
+  "conflict_level": "Low or High",
+  "primary_conflict": "Brief description of the main tension between council members",
+  "evolution_logic": "Explicitly state your evolution: Initially I favored X. However, after reviewing [Role Name]'s argument regarding Y, I have updated my decision to Z. If you didn't change your mind, explain why the evidence confirmed your initial stance.",
+  "final_verdict_markdown": "The final, unified answer in markdown format. This should be actionable and synthesize the best insights from all four members. Include 2-3 bullets explaining why this verdict balances the Council's competing priorities."
+}
 
-2. **The Evolution:** (Explicitly state: "Initially, I argued X. However, after reviewing [Role Name]'s argument regarding Y, I have updated the final decision to Z." If you didn't change your mind, explain why the evidence confirmed your initial stance.)
+**CRITICAL REQUIREMENTS:**
 
-3. **The Verdict:** (The final, unified answer. This should be actionable and synthesize the best insights from all four members.)
-
-4. **The Rationale:** (2-3 bullets explaining why this verdict balances the Council's competing priorities.)
+1. Output ONLY valid JSON. No markdown, no extra text before or after.
+2. The conflict_level must be either "Low" or "High" based on how much the council disagreed.
+3. The evolution_logic field MUST explicitly show your thinking evolution—this is the magic moment where you show metacognition.
+4. The final_verdict_markdown should be formatted markdown that will be rendered as HTML.
+5. If you changed your mind, make it CLEAR in the evolution_logic field.
+6. Escape any quotes inside JSON strings with backslashes.
 
 ---
 
@@ -158,4 +168,47 @@ export function validateCouncilResponses(responses: {
     responses.visionary &&
     responses.realist
   );
+}
+
+/**
+ * Verdict Card JSON Schema
+ */
+export interface VerdictCardData {
+  conflict_level: "Low" | "High";
+  primary_conflict: string;
+  evolution_logic: string;
+  final_verdict_markdown: string;
+}
+
+/**
+ * Helper function to parse and validate verdict JSON
+ */
+export function parseVerdictJSON(text: string): VerdictCardData | null {
+  try {
+    // Try to extract JSON from the text (in case there's extra text)
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    // Validate required fields
+    if (
+      !parsed.conflict_level ||
+      !parsed.primary_conflict ||
+      !parsed.evolution_logic ||
+      !parsed.final_verdict_markdown
+    ) {
+      return null;
+    }
+
+    // Validate conflict_level is one of the allowed values
+    if (!["Low", "High"].includes(parsed.conflict_level)) {
+      return null;
+    }
+
+    return parsed as VerdictCardData;
+  } catch (error) {
+    console.error("Failed to parse verdict JSON:", error);
+    return null;
+  }
 }

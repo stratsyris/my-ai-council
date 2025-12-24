@@ -282,3 +282,14 @@
 - [x] Sort conversations by creation date in descending order (newest first)
 - [x] Update listConversations query to order by createdAt DESC
 - [x] Test that new conversations appear at top of sidebar
+
+
+## Copy Button & Text Wrapping Fix
+- [x] Create CopyButton component with copy icon
+- [x] Add copy button to Chairman's Final Answer section
+- [x] Add copy buttons to individual council member responses
+- [x] Show toast notification when text is copied
+- [x] Fix text overflow in answer boxes with proper word-wrap
+- [x] Ensure text wraps to next line instead of being cut off
+- [x] Test copy functionality on all answer types
+- [x] Test text display on mobile and desktop

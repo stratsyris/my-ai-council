@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { User, Bot, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import CopyButton from "./CopyButton";
 
 interface Message {
   id: string;
@@ -38,7 +39,7 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-semibold mb-1 text-sm md:text-base">You</div>
-          <div className="prose prose-sm max-w-none text-sm md:text-base break-words">
+          <div className="prose prose-sm max-w-none text-sm md:text-base break-words whitespace-pre-wrap">
             {message.content}
           </div>
         </div>
@@ -47,6 +48,8 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
   }
 
   // Assistant message with stages (Option A flow)
+  const chairmanAnswer = message.stage2?.finalAnswer || message.stage2?.analysis || "";
+
   return (
     <div className="flex gap-2 md:gap-3">
       <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
@@ -57,31 +60,40 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
 
         {/* Stage 2: Chairman Final Answer (shown first - most important) */}
         {message.stage2 && (
-          <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg w-full overflow-x-hidden">
-            <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-              <h3 className="font-bold text-sm md:text-base text-primary break-words">
+          <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg w-full">
+            <div className="flex items-start justify-between mb-2 gap-2">
+              <h3 className="font-bold text-sm md:text-base text-primary break-words flex-1">
                 🎯 Chairman's Final Answer
               </h3>
-              {message.chairmanModel && (
-                <span className="text-xs md:text-sm bg-primary/20 text-primary px-2 py-1 rounded whitespace-nowrap">
-                  {message.chairmanModel.includes("gpt-5")
-                    ? "GPT-5.2"
-                    : message.chairmanModel.includes("claude")
-                    ? "Claude Sonnet"
-                    : message.chairmanModel.includes("gemini")
-                    ? "Gemini 3"
-                    : message.chairmanModel.includes("grok")
-                    ? "Grok 4"
-                    : message.chairmanModel}
-                </span>
-              )}
-            </div>
-            <div className="prose prose-sm max-w-none text-sm md:text-base break-words w-full overflow-x-hidden">
-              <div className="w-full overflow-x-hidden">
-                <ReactMarkdown>
-                  {message.stage2.finalAnswer || message.stage2.analysis || ""}
-                </ReactMarkdown>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {message.chairmanModel && (
+                  <span className="text-xs md:text-sm bg-primary/20 text-primary px-2 py-1 rounded whitespace-nowrap">
+                    {message.chairmanModel.includes("gpt-5")
+                      ? "GPT-5.2"
+                      : message.chairmanModel.includes("claude")
+                      ? "Claude Sonnet"
+                      : message.chairmanModel.includes("gemini")
+                      ? "Gemini 3"
+                      : message.chairmanModel.includes("grok")
+                      ? "Grok 4"
+                      : message.chairmanModel}
+                  </span>
+                )}
+                <CopyButton text={chairmanAnswer} />
               </div>
+            </div>
+            <div className="prose prose-sm max-w-none text-sm md:text-base break-words whitespace-pre-wrap overflow-hidden">
+              <ReactMarkdown
+                components={{
+                  p: ({ children }) => <p className="break-words whitespace-pre-wrap">{children}</p>,
+                  li: ({ children }) => <li className="break-words whitespace-pre-wrap">{children}</li>,
+                  blockquote: ({ children }) => (
+                    <blockquote className="break-words whitespace-pre-wrap">{children}</blockquote>
+                  ),
+                }}
+              >
+                {chairmanAnswer}
+              </ReactMarkdown>
             </div>
           </div>
         )}
@@ -127,8 +139,30 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
                         value={index.toString()}
                         className="mt-3 md:mt-4"
                       >
-                        <div className="prose prose-sm max-w-none text-sm md:text-base break-words">
-                          <ReactMarkdown>{result.response}</ReactMarkdown>
+                        <div className="flex items-start justify-between mb-2 gap-2">
+                          <span className="text-xs md:text-sm font-medium text-muted-foreground">
+                            {result.model.split("/").pop() || `Model ${index + 1}`}
+                          </span>
+                          <CopyButton text={result.response} />
+                        </div>
+                        <div className="prose prose-sm max-w-none text-sm md:text-base break-words whitespace-pre-wrap overflow-hidden">
+                          <ReactMarkdown
+                            components={{
+                              p: ({ children }) => (
+                                <p className="break-words whitespace-pre-wrap">{children}</p>
+                              ),
+                              li: ({ children }) => (
+                                <li className="break-words whitespace-pre-wrap">{children}</li>
+                              ),
+                              blockquote: ({ children }) => (
+                                <blockquote className="break-words whitespace-pre-wrap">
+                                  {children}
+                                </blockquote>
+                              ),
+                            }}
+                          >
+                            {result.response}
+                          </ReactMarkdown>
                         </div>
                       </TabsContent>
                     ))}

@@ -210,45 +210,47 @@ export default function ChatInterface({
           </ScrollArea>
 
           {/* Input Area - Always visible when conversation exists */}
-          <div className="border-t p-3 md:p-4 bg-background flex-shrink-0 space-y-3">
+          <div className="border-t p-3 md:p-4 bg-background flex-shrink-0 space-y-3 max-h-96 overflow-y-auto">
             {showDocumentUpload && conversation && (
               <DocumentUpload
                 conversationId={conversation.id}
                 onDocumentUploaded={() => setShowDocumentUpload(false)}
               />
             )}
-            {/* Image Previews */}
+            {/* Image Previews - Enhanced visibility */}
             {attachedImages && attachedImages.length > 0 && (
-              <div className="px-3 md:px-4 space-y-2">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Images: {attachedImages.filter(img => !img.disabled).length}/{MAX_IMAGES_PER_MESSAGE}</span>
+              <div className="bg-muted/40 rounded-lg p-3 border border-border/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground">
+                    Attached Images: {attachedImages.filter(img => !img.disabled).length}/{MAX_IMAGES_PER_MESSAGE}
+                  </span>
                   {attachedImages.filter(img => !img.disabled).length === MAX_IMAGES_PER_MESSAGE && attachedImages.some(img => img.disabled) && (
-                    <span className="text-yellow-600">Limit reached</span>
+                    <span className="text-xs text-yellow-600 font-medium">Limit reached</span>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {attachedImages.map((img) => (
-                    <div key={img.id} className={`relative group ${img.disabled ? 'opacity-50' : ''}`}>
+                    <div key={img.id} className={`relative group flex-shrink-0 ${img.disabled ? 'opacity-60' : ''}`}>
                       <img
                         src={img.preview}
                         alt="preview"
-                        className={`h-16 w-16 object-cover rounded border ${
+                        className={`h-20 w-20 object-cover rounded-lg border-2 shadow-sm transition-all ${
                           img.disabled 
                             ? 'border-muted-foreground/30 grayscale' 
-                            : 'border-border'
+                            : 'border-primary/40 hover:border-primary/80'
                         }`}
                       />
                       {img.disabled && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded">
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
                           <span className="text-xs text-white font-medium">Disabled</span>
                         </div>
                       )}
                       <button
                         onClick={() => removeImage(img.id)}
-                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:shadow-xl"
                         title="Remove image"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}
@@ -264,7 +266,7 @@ export default function ChatInterface({
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Ask your question..."
-                  className="flex-1 min-h-[44px] md:min-h-[50px] resize-none text-sm md:text-base"
+                  className="flex-1 min-h-[44px] md:min-h-[50px] text-sm md:text-base"
                   disabled={isLoading}
                   rows={isMobile ? 2 : 3}
                 />

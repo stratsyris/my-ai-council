@@ -328,3 +328,12 @@
 - [x] Verify visual hierarchy and impact of evolution display
 - [x] Test error handling with malformed JSON
 - [x] Ensure responsive design on mobile and desktop
+
+
+## Critical UX Bug Fixes (Reported by User)
+- [x] Fix textarea not scrollable when long text is pasted
+- [x] Fix excessive line-height spacing in text input
+- [x] Fix uploaded image not visible in chat preview
+- [x] Fix UI freezing when large content is loaded
+- [x] Ensure textarea auto-expands but remains scrollable for very long content
+- [x] Test with long prompts and image uploads

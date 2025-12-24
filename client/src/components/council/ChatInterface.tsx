@@ -8,6 +8,7 @@ import DocumentUpload from "./DocumentUpload";
 import EnhancedHeader from "./EnhancedHeader";
 import AnimatedCard from "./AnimatedCard";
 import HeroSection from "./HeroSection";
+import { getDisplayNameForModel } from "@/lib/council_utils";
 
 interface Message {
   id: string;
@@ -198,7 +199,7 @@ export default function ChatInterface({
                       <Loader2 className="w-6 h-6 animate-spin" />
                       <div className="text-center">
                         <p className="text-sm font-medium">Council is deliberating...</p>
-                        <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {selectedChairman?.includes('gpt-5') ? 'GPT-5.2' : selectedChairman?.includes('claude') ? 'Claude' : selectedChairman?.includes('gemini') ? 'Gemini 3' : 'Grok 4'} as Chairman</p>
+                        <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman)} as Chairman</p>
                         <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
                       </div>
                     </div>

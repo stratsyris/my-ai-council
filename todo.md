@@ -293,3 +293,23 @@
 - [x] Ensure text wraps to next line instead of being cut off
 - [x] Test copy functionality on all answer types
 - [x] Test text display on mobile and desktop
+
+
+## Configuration-Driven Architecture (Gold Standard Prompt)
+- [x] Create council_config.ts with Brain configuration
+- [x] Define CouncilMember interface with all metadata
+- [x] Create COUNCIL_CONFIG with 4 archetypes (Logician, Humanist, Visionary, Realist)
+- [x] Add archetype_bias and chairman_lens for each member
+- [x] Create prompt_generators.ts with Phase 1 and Phase 2 prompt generation
+- [x] Implement generateCouncilMemberPrompt for Stage 1 responses
+- [x] Implement generateChairmanPrompt for Stage 2 synthesis
+- [x] Move config and generators to shared/ directory for server and client access
+- [x] Refactor CouncilOrchestrator to use config-driven prompts
+- [x] Update council router to map model IDs to member IDs
+- [x] Create council_utils.ts for frontend utilities
+- [x] Update EnhancedHeader to use configuration
+- [x] Update ChatInterface to use configuration
+- [x] Update MessageDisplay to use configuration
+- [x] Fix model ID mapping (full OpenRouter IDs)
+- [x] Verify all 33 tests pass
+- [x] Test UI displays correct archetype names

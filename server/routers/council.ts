@@ -1,5 +1,6 @@
 /**
  * Council API router with streaming support.
+ * Uses configuration-driven architecture for prompts and models.
  */
 
 import { z } from "zod";
@@ -9,6 +10,11 @@ import { CouncilOrchestrator } from "../services/council";
 import { DatabaseService } from "../services/database";
 import { TRPCError } from "@trpc/server";
 import { getChairmanPreference, updateChairmanPreference } from "../db";
+import {
+  getAllCouncilMemberIds,
+  getMemberIdFromModelId,
+  getCouncilMember,
+} from "../../shared/council_config";
 
 // Initialize services
 const getOpenRouterClient = () => {
@@ -24,21 +30,26 @@ const getOpenRouterClient = () => {
 
 const getCouncilOrchestrator = (overrideChairmanModel?: string) => {
   const client = getOpenRouterClient();
-  
-  // Default council models - using latest top-performing models
-  const councilModels = process.env.COUNCIL_MODELS
-    ? process.env.COUNCIL_MODELS.split(",")
-    : [
-        "openai/gpt-5.2",
-        "anthropic/claude-sonnet-4.5",
-        "google/gemini-3-pro-preview",
-        "x-ai/grok-4",
-      ];
+
+  // Get all council models from config
+  const allMembers = getAllCouncilMemberIds();
+  const councilModels = allMembers
+    .map((memberId) => {
+      const member = getCouncilMember(memberId);
+      return member ? member.model_id : "";
+    })
+    .filter(Boolean);
 
   // Chairman model - use provided model or fall back to environment/default
-  const selectedChairman = overrideChairmanModel || process.env.CHAIRMAN_MODEL || "google/gemini-3-pro-preview";
+  const selectedChairman =
+    overrideChairmanModel ||
+    process.env.CHAIRMAN_MODEL ||
+    "google/gemini-3-pro-preview";
 
-  return new CouncilOrchestrator(client, { councilModels, chairmanModel: selectedChairman });
+  return new CouncilOrchestrator(client, {
+    councilModels,
+    chairmanModel: selectedChairman,
+  });
 };
 
 const dbService = new DatabaseService();
@@ -76,7 +87,10 @@ export const councilRouter = router({
     .input(z.object({ conversationId: z.string() }))
     .query(async ({ ctx, input }) => {
       const userId = ctx.user?.id || 1;
-      const conversation = await dbService.getConversation(input.conversationId, userId);
+      const conversation = await dbService.getConversation(
+        input.conversationId,
+        userId
+      );
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -101,7 +115,10 @@ export const councilRouter = router({
     .mutation(async ({ ctx, input }) => {
       // Verify conversation exists and belongs to user
       const userId = ctx.user?.id || 1;
-      const conversation = await dbService.getConversation(input.conversationId, userId);
+      const conversation = await dbService.getConversation(
+        input.conversationId,
+        userId
+      );
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -114,7 +131,21 @@ export const councilRouter = router({
 
       // Run council process with selected chairman and images
       const orchestrator = getCouncilOrchestrator(input.chairmanModel);
-      const result = await orchestrator.executeCouncil(input.content, input.imageUrls);
+
+      // Map model ID to member ID for the chairman
+      let chairmanMemberId = "visionary"; // default
+      if (input.chairmanModel) {
+        const mappedId = getMemberIdFromModelId(input.chairmanModel);
+        if (mappedId) {
+          chairmanMemberId = mappedId;
+        }
+      }
+
+      const result = await orchestrator.executeCouncil(
+        input.content,
+        chairmanMemberId,
+        input.imageUrls
+      );
 
       // Add assistant message with chairman model info
       await dbService.addAssistantMessage(
@@ -126,8 +157,13 @@ export const councilRouter = router({
 
       // Generate title if this is the first message
       if (conversation.messages.length === 0) {
-        const titleContent = input.imageUrls?.length ? `Image Analysis: ${input.content.substring(0, 40)}...` : `Council Discussion: ${input.content.substring(0, 50)}...`;
-        await dbService.updateConversationTitle(input.conversationId, titleContent);
+        const titleContent = input.imageUrls?.length
+          ? `Image Analysis: ${input.content.substring(0, 40)}...`
+          : `Council Discussion: ${input.content.substring(0, 50)}...`;
+        await dbService.updateConversationTitle(
+          input.conversationId,
+          titleContent
+        );
       }
 
       return {
@@ -151,7 +187,10 @@ export const councilRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user?.id || 1;
-      const conversation = await dbService.getConversation(input.conversationId, userId);
+      const conversation = await dbService.getConversation(
+        input.conversationId,
+        userId
+      );
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -204,7 +243,10 @@ export const councilRouter = router({
     .input(z.object({ conversationId: z.string() }))
     .query(async ({ ctx, input }) => {
       const userId = ctx.user?.id || 1;
-      const conversation = await dbService.getConversation(input.conversationId, userId);
+      const conversation = await dbService.getConversation(
+        input.conversationId,
+        userId
+      );
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -219,7 +261,10 @@ export const councilRouter = router({
     .input(z.object({ conversationId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user?.id || 1;
-      const conversation = await dbService.getConversation(input.conversationId, userId);
+      const conversation = await dbService.getConversation(
+        input.conversationId,
+        userId
+      );
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -242,7 +287,10 @@ export const councilRouter = router({
         try {
           await dbService.deleteConversation(conversationId);
         } catch (error) {
-          console.error(`Failed to delete conversation ${conversationId}:`, error);
+          console.error(
+            `Failed to delete conversation ${conversationId}:`,
+            error
+          );
         }
       }
 
@@ -258,7 +306,10 @@ export const councilRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user?.id || 1;
-      const conversation = await dbService.getConversation(input.conversationId, userId);
+      const conversation = await dbService.getConversation(
+        input.conversationId,
+        userId
+      );
       if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",

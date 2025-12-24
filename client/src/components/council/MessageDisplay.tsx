@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import { User, Bot, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import CopyButton from "./CopyButton";
+import { getDisplayNameForModel } from "@/lib/council_utils";
 
 interface Message {
   id: string;
@@ -68,15 +69,7 @@ export default function MessageDisplay({ message, isMobile = false }: MessageDis
               <div className="flex items-center gap-1 flex-shrink-0">
                 {message.chairmanModel && (
                   <span className="text-xs md:text-sm bg-primary/20 text-primary px-2 py-1 rounded whitespace-nowrap">
-                    {message.chairmanModel.includes("gpt-5")
-                      ? "GPT-5.2"
-                      : message.chairmanModel.includes("claude")
-                      ? "Claude Sonnet"
-                      : message.chairmanModel.includes("gemini")
-                      ? "Gemini 3"
-                      : message.chairmanModel.includes("grok")
-                      ? "Grok 4"
-                      : message.chairmanModel}
+                    {getDisplayNameForModel(message.chairmanModel)}
                   </span>
                 )}
                 <CopyButton text={chairmanAnswer} />

@@ -187,37 +187,54 @@ export default function ChatInterface({
 
       {/* Messages Area */}
       {!conversation ? (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground p-4">
-          <div className="text-center">
-            <h2 className="text-lg md:text-xl font-semibold mb-2">Welcome to LLM Council</h2>
-            <p className="text-sm md:text-base">Create a new conversation to get started</p>
-          </div>
+        <div className="flex-1 flex flex-col overflow-hidden w-full">
+          <ScrollArea className="flex-1 overflow-hidden w-full">
+            <HeroSection />
+          </ScrollArea>
         </div>
       ) : (
         <>
           <ScrollArea ref={scrollAreaRef} className="flex-1 overflow-hidden w-full">
-            <div className="p-3 md:p-4 w-full flex justify-center">
-              {conversation.messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center w-full">
-                  <HeroSection />
-                </div>
-              ) : (
-                <div className="space-y-4 md:space-y-6 max-w-5xl mx-auto">
-                  {conversation.messages.map((message, idx) => (
-                    <AnimatedCard key={message.id} delay={idx}>
-                      <MessageDisplay message={message} isMobile={isMobile} />
-                    </AnimatedCard>
-                  ))}
-                  {isLoading && (
-                    <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
-                      <Loader2 className="w-6 h-6 animate-spin" />
-                      <div className="text-center">
-                        <p className="text-sm font-medium">Council is deliberating...</p>
-                        <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman)} as Chairman</p>
-                        <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
+            <div className="w-full flex flex-col">
+              {/* Hero Section - Always shown at top */}
+              <div className="w-full flex-shrink-0">
+                <HeroSection />
+              </div>
+              
+              {/* Messages - Shown below hero section */}
+              {conversation.messages.length > 0 && (
+                <div className="p-3 md:p-4 w-full flex justify-center">
+                  <div className="space-y-4 md:space-y-6 max-w-5xl mx-auto">
+                    {conversation.messages.map((message, idx) => (
+                      <AnimatedCard key={message.id} delay={idx}>
+                        <MessageDisplay message={message} isMobile={isMobile} />
+                      </AnimatedCard>
+                    ))}
+                    {isLoading && (
+                      <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                        <div className="text-center">
+                          <p className="text-sm font-medium">Council is deliberating...</p>
+                          <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman)} as Chairman</p>
+                          <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
+                        </div>
                       </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Loading indicator when no messages yet */}
+              {conversation.messages.length === 0 && isLoading && (
+                <div className="p-3 md:p-4 w-full flex justify-center">
+                  <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <div className="text-center">
+                      <p className="text-sm font-medium">Council is deliberating...</p>
+                      <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman)} as Chairman</p>
+                      <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </div>

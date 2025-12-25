@@ -384,3 +384,10 @@
 - [x] Step 5: Test responsive design on mobile and desktop (verified desktop layout)
 - [x] Step 6: Replace placeholder icons with branded SVG icons (OpenAI, Anthropic, Google, X)
 - [x] Step 7: Final testing and save checkpoint (33/33 tests passing)
+
+
+## Sprint 5: Default Hero Section View - COMPLETED
+- [x] Update ChatInterface to always show hero section by default
+- [x] Adjust layout so hero section takes full viewport height (HeroSection now shows on initial load)
+- [x] Test responsive design on mobile and desktop (verified desktop layout)
+- [x] Save checkpoint with new default view

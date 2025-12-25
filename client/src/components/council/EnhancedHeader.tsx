@@ -122,50 +122,33 @@ export default function EnhancedHeader({
         </div>
 
         {/* Council Member Avatars with Responsive Labels */}
-        {/* MOBILE: 2x2 Grid Layout (<768px) */}
-        <div className="md:hidden">
-          <div className="grid grid-cols-2 gap-3">
-            {AGENTS.map((agent) => (
-              <div
-                key={agent.id}
-                className="flex flex-col items-center gap-1"
-                title={`${agent.role} (${agent.model})`}
-              >
-                {/* Mobile Icon: w-10 h-10 */}
-                <div className="rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg w-10 h-10">
-                  <agent.icon className="w-5 h-5 text-white" />
-                </div>
-
-                {/* Mobile Text: Role only, text-[10px] */}
-                <span className="text-white text-[10px] font-medium leading-tight text-center">
-                  {agent.role}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* DESKTOP: Horizontal Layout (≥768px) */}
-        <div className="hidden md:flex gap-8 items-end justify-center">
+        <div className="flex gap-3 md:gap-8 items-end justify-center">
           {AGENTS.map((agent) => (
-            <div
-              key={agent.id}
-              className="flex flex-col items-center gap-2"
-              title={`${agent.role} (${agent.model})`}
-            >
-              {/* Desktop Icon: w-16 h-16 */}
-              <div className="rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors w-16 h-16">
-                <agent.icon className="w-10 h-10 text-white" />
+            <div key={agent.id} className="flex flex-col items-center flex-1 group cursor-pointer hover:opacity-80 transition-opacity">
+              {/* Icon Container: Smaller on mobile (w-10) to prevent cramping */}
+              <div className="mb-1 md:mb-2 p-2 md:p-3 bg-white/20 rounded-full text-white backdrop-blur-sm shadow-sm">
+                <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                  {/* Render the icon as a component */}
+                  <agent.icon className="w-full h-full" />
+                </div>
               </div>
 
-              {/* Desktop Text: Role (Bold) + Model (Small) */}
+              {/* Text Labels */}
               <div className="text-center">
-                <span className="text-white text-sm font-bold leading-tight block uppercase">
-                  {agent.role}
-                </span>
-                <span className="text-white/80 text-xs leading-tight block">
-                  {agent.model}
-                </span>
+                {/* MOBILE: Role Only. Tiny text, tight spacing. NO Model name. */}
+                <p className="text-[10px] sm:text-xs font-medium text-white md:hidden leading-tight tracking-tight">
+                  {agent.role.replace("The ", "")}
+                </p>
+
+                {/* DESKTOP: Full Character Card */}
+                <div className="hidden md:block">
+                  <p className="text-sm font-bold uppercase tracking-wide text-white">
+                    {agent.role}
+                  </p>
+                  <p className="text-xs text-white/80 mt-0.5">
+                    {agent.model}
+                  </p>
+                </div>
               </div>
             </div>
           ))}

@@ -398,3 +398,11 @@
 - [x] Fix mobile layout constraints and sizing (increased min-h to 400px, added h-auto)
 - [x] Test on mobile and desktop viewports (verified desktop, mobile layout fixed)
 - [x] Save checkpoint with mobile hero fix
+
+
+## Sprint 7: CouncilHeader Responsive Refactor - COMPLETED
+- [x] Update rendering loop with exact responsive structure (unified flex layout)
+- [x] Fix icon rendering to use component syntax (<agent.icon />)
+- [x] Test mobile layout (w-6 h-6 icons, role-only text, no "The" prefix)
+- [x] Test desktop layout (w-8 h-8 icons, role + model text, uppercase)
+- [x] Save checkpoint with CouncilHeader refactor (31/33 tests passing)

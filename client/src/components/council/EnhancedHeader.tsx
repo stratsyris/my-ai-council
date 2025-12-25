@@ -1,4 +1,4 @@
-import { Menu, ChevronDown, Sun, Moon } from "lucide-react";
+import React from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,15 +15,30 @@ const AGENTS = [
     id: "openai",
     role: "The Logician",
     model: "GPT-5.2",
-    icon: (p: any) => <svg viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M22.28 9.82a5.98 5.98 0 0 0-.51-4.91 6.05 6.05 0 0 0-6.51-2.9A6.06 6.06 0 0 0 4.98 4.18a5.98 5.98 0 0 0-4 2.9 6.05 6.05 0 0 0 .74 7.1 5.98 5.98 0 0 0 .51 4.91 6.05 6.05 0 0 0 6.51 2.9 6.06 6.06 0 0 0 10.28-2.18 5.98 5.98 0 0 0 4-2.9 6.05 6.05 0 0 0-.74-7.1ZM13.26 21a4.48 4.48 0 0 1-2.88-1.04l.14-.08 4.78-2.76a.8.8 0 0 0 .39-.68v-6.74l2 1.17a1.56 1.56 0 0 1 .7 1.37V18.3A4.46 4.46 0 0 1 13.26 21ZM2.25 10.42a4.46 4.46 0 0 1 2.86-2.93l.13.08 4.78 2.75a.8.8 0 0 0 .79 0l5.84-3.37v2.33a1.56 1.56 0 0 1-.8 1.37l-5.26 3.04a4.46 4.46 0 0 1-8.34-3.27Zm15.65 4.15a4.45 4.45 0 0 1-2.87 2.93l-.13-.08-4.78-2.76a.8.8 0 0 0-.79 0l-5.83 3.37v-2.33a1.55 1.55 0 0 1 .8-1.37l5.26-3.04a4.46 4.46 0 0 1 8.34 3.28ZM19.42 10.3a1.56 1.56 0 0 1-.7-1.37V2.85a4.46 4.46 0 0 1 5.16-2.69l-2.02 1.17-4.78 2.76a.8.8 0 0 0-.39.68v4.36ZM11.49 2.5a1.56 1.56 0 0 1 .7 1.37v2.85a4.48 4.48 0 0 1-2.88 1.05l-.14.08-4.78 2.76a.8.8 0 0 0-.39.68V4.36a4.46 4.46 0 0 1 5.15-2.68L11.49 2.5ZM11.49 18.3v-6.07a4.46 4.46 0 0 1 2.87-1.05l.14-.08 4.78-2.76a.8.8 0 0 0 .39-.68V2.85a1.56 1.56 0 0 1-.7-1.36L13.51 2.66a4.46 4.46 0 0 1 1.53 2.64v7.7l-3.55 2.05Z"/></svg>
+    icon: (p: any) => (
+      <svg viewBox="0 0 512 509.641" fill="currentColor" {...p}>
+        <path d="M115.612 0h280.776C459.975 0 512 52.026 512 115.612v278.416c0 63.587-52.025 115.613-115.612 115.613H115.612C52.026 509.641 0 457.615 0 394.028V115.612C0 52.026 52.026 0 115.612 0z"/>
+        <path fill="#fff" d="M213.235 306.019l178.976-180.002v.169l51.695-51.763c-.924 1.32-1.86 2.605-2.785 3.89-39.281 54.164-58.46 80.649-43.07 146.922l-.09-.101c10.61 45.11-.744 95.137-37.398 131.836-46.216 46.306-120.167 56.611-181.063 14.928l42.462-19.675c38.863 15.278 81.392 8.57 111.947-22.03 30.566-30.6 37.432-75.159 22.065-112.252-2.92-7.025-11.67-8.795-17.792-4.263l-124.947 92.341zm-25.786 22.437l-.033.034L68.094 435.217c7.565-10.429 16.957-20.294 26.327-30.149 26.428-27.803 52.653-55.359 36.654-94.302-21.422-52.112-8.952-113.177 30.724-152.898 41.243-41.254 101.98-51.661 152.706-30.758 11.23 4.172 21.016 10.114 28.638 15.639l-42.359 19.584c-39.44-16.563-84.629-5.299-112.207 22.313-37.298 37.308-44.84 102.003-1.128 143.81z"/>
+      </svg>
+    ),
   },
   {
     id: "anthropic",
     role: "The Humanist",
     model: "Claude Sonnet 4.5",
     icon: (p: any) => (
-      <svg viewBox="0 0 24 24" fill="currentColor" {...p}>
-        <path fillRule="evenodd" clipRule="evenodd" d="M17.41 6.59L15 4.18L12.59 6.59L15 9H9V15H15L12.59 17.41L15 19.82L17.41 17.41L19.82 15L17.41 12.59L19.82 10.18L17.41 7.77V6.59ZM5 9V15H7V9H5ZM17 9V15H19V9H17Z"/>
+      <svg viewBox="0 0 512 512" fill="currentColor" {...p}>
+        <rect width="512" height="512" rx="111" fill="#D97757"/>
+        <g fill="#fff">
+          <path d="M256 80c9.9 0 18 8.1 18 18v0c0 9.9-8.1 18-18 18s-18-8.1-18-18v0c0-9.9 8.1-18 18-18zm0 0"/>
+          <path d="M256 416c-9.9 0-18-8.1-18-18v0c0-9.9 8.1-18 18-18s18 8.1 18 18v0c0 9.9-8.1 18-18 18zm0 0"/>
+          <path d="M80 256c0 9.9-8.1 18-18 18s-18-8.1-18-18 8.1-18 18-18 18 8.1 18 18zm0 0"/>
+          <path d="M432 256c0-9.9 8.1-18 18-18s18 8.1 18 18-8.1 18-18 18-18-8.1-18-18zm0 0"/>
+          <path d="M134.627 134.627c7 7 7 18.36 0 25.36l0 0c-7 7-18.36 7-25.36 0s-7-18.36 0-25.36l0 0c7-7 18.36-7 25.36 0zm0 0"/>
+          <path d="M377.373 377.373c-7-7-7-18.36 0-25.36l0 0c7-7 18.36-7 25.36 0s7 18.36 0 25.36l0 0c-7 7-18.36 7-25.36 0zm0 0"/>
+          <path d="M377.373 134.627c7 7 18.36 7 25.36 0s7-18.36 0-25.36l0 0c-7-7-18.36-7-25.36 0s-7 18.36 0 25.36l0 0zm0 0"/>
+          <path d="M134.627 377.373c-7 7-18.36 7-25.36 0s-7-18.36 0-25.36l0 0c7-7 18.36-7 25.36 0s7 18.36 0 25.36l0 0zm0 0"/>
+        </g>
       </svg>
     ),
   },
@@ -31,13 +46,26 @@ const AGENTS = [
     id: "google",
     role: "The Visionary",
     model: "Gemini 3 Pro",
-    icon: (p: any) => <svg viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M13.8 2.2c-.3 4.4 3.6 8 8 8-4.4 0-8.3 3.6-8.6 8 0 0 0 0 0 0 0 4.4-3.6 8.3-8 8.7 0-4.4-3.6-8.3-8-8.7.3-4.4 3.9-8 8.3-8 0 0 0 0 0 0 0-4.4 3.6-8.3 8-8.7 0 4.4 3.6 8.3 8.3 8.7z" transform="translate(1.4 10.5) scale(0.65)"/></svg>
+    icon: (p: any) => (
+      <svg viewBox="0 0 100 100" fill="currentColor" {...p}>
+        <path d="M50 10 L70 30 L50 50 L30 30 Z" fill="#4285F4"/>
+        <path d="M70 30 L90 50 L70 70 L50 50 Z" fill="#EA4335"/>
+        <path d="M50 50 L70 70 L50 90 L30 70 Z" fill="#FBBC04"/>
+        <path d="M30 30 L50 50 L30 70 L10 50 Z" fill="#34A853"/>
+      </svg>
+    ),
   },
   {
     id: "xai",
     role: "The Realist",
     model: "Grok 4",
-    icon: (p: any) => <svg viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.59-6.64 7.59H.47l8.6-9.83L0 1.15h7.6l5.24 6.93ZM17.61 20.64h2.04L6.49 3.24H4.3Z"/></svg>
+    icon: (p: any) => (
+      <svg viewBox="0 0 512 512" fill="currentColor" {...p}>
+        <rect width="512" height="512" rx="111" fill="#000"/>
+        <circle cx="256" cy="256" r="80" fill="none" stroke="#fff" strokeWidth="32"/>
+        <line x1="180" y1="180" x2="332" y2="332" stroke="#fff" strokeWidth="32" strokeLinecap="round"/>
+      </svg>
+    ),
   }
 ];
 
@@ -48,138 +76,106 @@ interface EnhancedHeaderProps {
   onChairmanChange?: (chairmanId: string) => void;
 }
 
-export default function EnhancedHeader({
+const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   onOpenSidebar,
-  isMobile,
+  isMobile = false,
   selectedChairman = "google",
   onChairmanChange,
-}: EnhancedHeaderProps) {
+}) => {
   const { theme, toggleTheme } = useTheme();
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-
-  // Get current chairman agent
-  const currentChairman = AGENTS.find((a) => a.id === selectedChairman) || AGENTS[2];
-  const chairmanRole = currentChairman?.role || "The Visionary";
-  const chairmanModel = currentChairman?.model || "Gemini 3 Pro";
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
+  const currentAgent = AGENTS.find((a) => a.id === selectedChairman) || AGENTS[2];
 
   return (
-    <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-4 md:p-6 shadow-lg">
-      <div className="flex flex-col gap-5">
-        {/* Title and Menu Row */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            {isMobile && onOpenSidebar && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onOpenSidebar}
-                className="text-white hover:bg-white/20 flex-shrink-0"
-              >
-                <Menu className="w-5 h-5" />
-              </Button>
-            )}
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl md:text-3xl font-bold truncate">My AI Council</h1>
-              <p className="text-sm md:text-base text-white/90 line-clamp-1">
-                Multiple LLMs collaborate to answer your questions
-              </p>
-            </div>
-          </div>
+    <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-4 md:px-6 py-4 md:py-6 shadow-lg">
+      <div className="flex items-center justify-between gap-4">
+        {/* Left: Sidebar Toggle (Mobile) */}
+        {isMobile && (
+          <button
+            onClick={onOpenSidebar}
+            className="flex-shrink-0 text-white hover:opacity-80 transition-opacity"
+            aria-label="Open sidebar"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        )}
 
-          {/* Chairman Selector - Responsive Text */}
+        {/* Center: Title & Council Members */}
+        <div className="flex-1 min-w-0">
+          <h1 className="text-white font-bold text-xl md:text-2xl mb-1 md:mb-2">My AI Council</h1>
+          <p className="text-white/90 text-xs md:text-sm mb-3 md:mb-4">Multiple LLMs collaborate to answer your questions</p>
+
+          {/* Council Members Grid */}
+          <div className="flex gap-2 md:gap-4 justify-center md:justify-start flex-wrap">
+            {AGENTS.map((agent) => (
+              <div key={agent.id} className="flex flex-col items-center flex-1 group cursor-pointer hover:opacity-80 transition-opacity min-w-max">
+                <div className="mb-1 md:mb-2 p-2 md:p-3 bg-white/20 rounded-full text-white backdrop-blur-sm shadow-sm transition-all">
+                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                    <agent.icon className="w-full h-full" />
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] sm:text-xs font-medium text-white md:hidden leading-tight tracking-tight">
+                    {agent.role.replace("The ", "")}
+                  </p>
+                  <div className="hidden md:block">
+                    <p className="text-sm font-bold uppercase tracking-wide text-white">{agent.role}</p>
+                    <p className="text-xs text-white/80 mt-0.5">{agent.model}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Chairman Dropdown & Theme Toggle */}
+        <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="ghost"
-                className="text-white hover:bg-white/20 gap-2 flex-shrink-0 whitespace-nowrap text-xs md:text-sm"
-                title="Select Chairman LLM"
+                variant="outline"
+                className="text-white border-white/30 hover:bg-white/10 text-xs md:text-sm whitespace-nowrap"
               >
-                <span className="font-medium">
-                  {/* Mobile: Show role only */}
-                  <span className="md:hidden">
-                    {chairmanRole}
-                  </span>
-                  {/* Desktop: Show role + model */}
-                  <span className="hidden md:inline">
-                    Chairman: {chairmanRole} ({chairmanModel})
-                  </span>
-                </span>
-                <ChevronDown className="w-4 h-4 flex-shrink-0" />
+                Chairman: {currentAgent.role.replace("The ", "")} ({currentAgent.model})
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72">
+            <DropdownMenuContent align="end" className="w-48">
               {AGENTS.map((agent) => (
                 <DropdownMenuItem
                   key={agent.id}
                   onClick={() => onChairmanChange?.(agent.id)}
                   className={selectedChairman === agent.id ? "bg-accent" : ""}
                 >
-                  <div className="flex items-center gap-3 w-full">
-                    <div className="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center flex-shrink-0">
-                      {selectedChairman === agent.id && (
-                        <div className="w-2 h-2 rounded-full bg-current" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm">
-                        {agent.role} ({agent.model})
-                      </div>
-                    </div>
-                  </div>
+                  {agent.role} - {agent.model}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={toggleTheme}
-            className="text-white hover:bg-white/20 flex-shrink-0"
-            title="Toggle dark mode"
+            className="flex-shrink-0 text-white hover:opacity-80 transition-opacity"
+            aria-label="Toggle theme"
           >
             {theme === "dark" ? (
-              <Sun className="w-5 h-5" />
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+              </svg>
             ) : (
-              <Moon className="w-5 h-5" />
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.536l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.828-2.828a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm.707 5.657a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707zM9 17a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zm-4.536-.464a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707zm2.828 2.828a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+              </svg>
             )}
-          </Button>
-        </div>
-
-        {/* Council Member Avatars with Responsive Labels */}
-        <div className="flex gap-3 md:gap-8 items-end justify-center">
-          {AGENTS.map((agent) => (
-            <div key={agent.id} className="flex flex-col items-center flex-1 group cursor-pointer hover:opacity-80 transition-opacity">
-              {/* Icon Container: Smaller on mobile (w-10) to prevent cramping */}
-              <div className="mb-1 md:mb-2 p-2 md:p-3 bg-white/20 rounded-full text-white backdrop-blur-sm shadow-sm">
-                <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
-                  {/* Render the icon as a component */}
-                  <agent.icon className="w-full h-full" />
-                </div>
-              </div>
-
-              {/* Text Labels */}
-              <div className="text-center">
-                {/* MOBILE: Role Only. Tiny text, tight spacing. NO Model name. */}
-                <p className="text-[10px] sm:text-xs font-medium text-white md:hidden leading-tight tracking-tight">
-                  {agent.role.replace("The ", "")}
-                </p>
-
-                {/* DESKTOP: Full Character Card */}
-                <div className="hidden md:block">
-                  <p className="text-sm font-bold uppercase tracking-wide text-white">
-                    {agent.role}
-                  </p>
-                  <p className="text-xs text-white/80 mt-0.5">
-                    {agent.model}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
+          </button>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default EnhancedHeaderComponent;

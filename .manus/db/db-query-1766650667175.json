@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM conversations WHERE id NOT IN (SELECT DISTINCT conversationId FROM messages);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3PXHdPTvNk5oHqc.root --database WbENW7upe5nHt5EiKsgZeK --execute DELETE FROM conversations WHERE id NOT IN (SELECT DISTINCT conversationId FROM messages);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1861
+}

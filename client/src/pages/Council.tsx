@@ -13,7 +13,6 @@ export default function Council() {
   const [configError, setConfigError] = useState<string | null>(null);
   const [selectedChairman, setSelectedChairman] = useState<string>("google/gemini-3-pro-preview");
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const hasAutoCreated = useRef(false);
 
   const { data: conversations = [], refetch: refetchConversations } =
     trpc.council.listConversations.useQuery();
@@ -155,13 +154,7 @@ export default function Council() {
     bulkDeleteConversations.mutate({ conversationIds: ids });
   };
 
-  // Auto-create first conversation on mount if none exist
-  useEffect(() => {
-    if (!hasAutoCreated.current && conversations.length === 0 && !createConversation.isPending) {
-      hasAutoCreated.current = true;
-      createConversation.mutate();
-    }
-  }, [conversations.length, createConversation.isPending]);
+  // Removed auto-creation logic - users should explicitly click "New Conversation"
 
   // Auto-load first conversation if one is available
   useEffect(() => {

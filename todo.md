@@ -356,3 +356,12 @@
 ## New Bugs Reported by User - FIXED
 - [x] Conversation list not sorted by newest first - Changed sorting from createdAt to updatedAt
 - [x] "Failed to fetch" error showing in bottom right corner - Added network error suppression in error handler
+
+- [ ] Preview mode not working in Manus Management UI
+
+
+## CRITICAL BUG - Auto-Creating Conversations - FIXED
+- [x] App auto-creates conversations on every page load (153+ created so far)
+- [x] Removed the auto-creation useEffect from Council.tsx
+- [x] Deleted all 153 auto-created conversations from database (empty conversations)
+- [x] Verified conversations only created when user clicks "New Conversation"

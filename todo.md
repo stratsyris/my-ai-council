@@ -365,3 +365,12 @@
 - [x] Removed the auto-creation useEffect from Council.tsx
 - [x] Deleted all 153 auto-created conversations from database (empty conversations)
 - [x] Verified conversations only created when user clicks "New Conversation"
+
+
+## Sprint 3: Brand vs. Tech Refactoring - COMPLETED
+- [x] Create new AGENTS data structure with inline SVG icons (OpenAI, Anthropic, Google, X)
+- [x] Refactor CouncilHeader with responsive labeling (role only on mobile, role + model on desktop)
+- [x] Refactor ChairmanDropdown with responsive text (role on mobile, role + model + hint on desktop)
+- [x] Update icon styling with circular containers and semi-transparent backgrounds (bg-white/20)
+- [x] Test responsive design on mobile (<768px) and desktop (≥768px)
+- [x] Verify dropdown menu readability with black text on white background

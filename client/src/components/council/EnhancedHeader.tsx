@@ -1,4 +1,4 @@
-import { Menu, Moon, Sun, ChevronDown } from "lucide-react";
+import { Menu, ChevronDown, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,11 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  getCouncilMembersForUI,
-  getChairmanModelMap,
-  getDisplayNameForModel,
-} from "@/lib/council_utils";
+import { AGENTS, getAgentByModelId } from "@/lib/agents";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface EnhancedHeaderProps {
   onOpenSidebar?: () => void;
@@ -27,20 +24,12 @@ export default function EnhancedHeader({
   onChairmanChange,
 }: EnhancedHeaderProps) {
   const { theme, toggleTheme } = useTheme();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  // Get council members from config
-  const councilMembers = getCouncilMembersForUI();
-  const chairmanMap = getChairmanModelMap();
-
-  // Map member ID to model ID for display
-  const memberToModelMap: Record<string, string> = {
-    logician: "openai/gpt-5.2",
-    humanist: "anthropic/claude-sonnet-4.5",
-    visionary: "google/gemini-3-pro-preview",
-    realist: "x-ai/grok-4",
-  };
-
-  const currentChairmanName = getDisplayNameForModel(selectedChairman) || "Gemini 3";
+  // Get current chairman agent
+  const currentChairman = getAgentByModelId(selectedChairman);
+  const chairmanRole = currentChairman?.role || "The Visionary";
+  const chairmanModel = currentChairman?.model || "Gemini 3 Pro";
 
   return (
     <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-4 md:p-6 shadow-lg">
@@ -66,35 +55,43 @@ export default function EnhancedHeader({
             </div>
           </div>
 
-          {/* Chairman Selector */}
+          {/* Chairman Selector - Responsive Text */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-white hover:bg-white/20 gap-2 flex-shrink-0"
+                className="text-white hover:bg-white/20 gap-2 flex-shrink-0 whitespace-nowrap"
                 title="Select Chairman LLM"
               >
-                <span className="hidden sm:inline text-sm font-medium">
-                  Chairman:
+                <span className="text-sm font-medium">
+                  {isDesktop ? `Chairman: ${chairmanRole} (${chairmanModel})` : `Chairman: ${chairmanRole}`}
                 </span>
-                <span className="font-semibold">{currentChairmanName}</span>
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {Object.entries(chairmanMap).map(([model, displayName]) => (
+            <DropdownMenuContent align="end" className="w-72">
+              {AGENTS.map((agent) => (
                 <DropdownMenuItem
-                  key={model}
-                  onClick={() => onChairmanChange?.(model)}
-                  className={selectedChairman === model ? "bg-accent" : ""}
+                  key={agent.id}
+                  onClick={() => onChairmanChange?.(agent.id)}
+                  className={selectedChairman === agent.id ? "bg-accent" : ""}
                 >
-                  <div className="flex items-center gap-2 w-full">
-                    <div className="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center">
-                      {selectedChairman === model && (
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center flex-shrink-0">
+                      {selectedChairman === agent.id && (
                         <div className="w-2 h-2 rounded-full bg-current" />
                       )}
                     </div>
-                    <span>{displayName}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm">
+                        {agent.role} ({agent.model})
+                      </div>
+                      {isDesktop && (
+                        <div className="text-xs text-muted-foreground">
+                          {agent.hint}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </DropdownMenuItem>
               ))}
@@ -117,43 +114,40 @@ export default function EnhancedHeader({
           </Button>
         </div>
 
-        {/* Council Member Avatars with Labels - 2x2 grid on mobile, row on desktop */}
-        <div
-          className={
-            isMobile
-              ? "grid grid-cols-4 gap-3"
-              : "flex gap-12 items-end justify-center"
-          }
-        >
-          {councilMembers.map((member) => {
-            const modelId = memberToModelMap[member.id];
-            return (
-              <div
-                key={member.id}
-                className="flex flex-col items-center gap-2"
-                title={`${member.display_name} (${member.ui_badge})`}
-              >
-                <div
-                  className={`rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors ${
-                    isMobile ? "w-12 h-12" : "w-14 h-14 md:w-14 md:h-14"
-                  }`}
-                >
-                  <img
-                    src={`/${member.icon_provider}-logo.jpg`}
-                    alt={member.display_name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span
-                  className={`text-white/80 font-medium text-center leading-tight ${
-                    isMobile ? "text-xs" : "text-sm"
-                  }`}
-                >
-                  {member.display_name}
-                </span>
+        {/* Council Member Avatars with Responsive Labels */}
+        <div className="flex gap-4 md:gap-8 items-end justify-center">
+          {AGENTS.map((agent) => (
+            <div
+              key={agent.id}
+              className="flex flex-col items-center gap-2"
+              title={`${agent.role} (${agent.model})`}
+            >
+              {/* Circular Icon Container */}
+              <div className="rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors w-14 h-14 md:w-16 md:h-16">
+                <agent.icon className="w-8 h-8 md:w-10 md:h-10" />
               </div>
-            );
-          })}
+
+              {/* Responsive Labels */}
+              <div className="text-center">
+                {/* Mobile: Show role only */}
+                <div className="md:hidden">
+                  <span className="text-white text-xs font-medium leading-tight block">
+                    {agent.role}
+                  </span>
+                </div>
+
+                {/* Desktop: Show role + model */}
+                <div className="hidden md:block">
+                  <span className="text-white text-sm font-bold leading-tight block">
+                    {agent.role}
+                  </span>
+                  <span className="text-white/80 text-xs leading-tight block">
+                    {agent.model}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

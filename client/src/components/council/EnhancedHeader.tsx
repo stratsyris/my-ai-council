@@ -36,7 +36,7 @@ export default function EnhancedHeader({
       <div className="flex flex-col gap-5">
         {/* Title and Menu Row */}
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-1">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
             {isMobile && onOpenSidebar && (
               <Button
                 variant="ghost"
@@ -47,9 +47,9 @@ export default function EnhancedHeader({
                 <Menu className="w-5 h-5" />
               </Button>
             )}
-            <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold">My AI Council</h1>
-              <p className="text-sm md:text-base text-white/90">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl md:text-3xl font-bold truncate">My AI Council</h1>
+              <p className="text-sm md:text-base text-white/90 line-clamp-1">
                 Multiple LLMs collaborate to answer your questions
               </p>
             </div>
@@ -60,13 +60,20 @@ export default function EnhancedHeader({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-white hover:bg-white/20 gap-2 flex-shrink-0 whitespace-nowrap"
+                className="text-white hover:bg-white/20 gap-2 flex-shrink-0 whitespace-nowrap text-xs md:text-sm"
                 title="Select Chairman LLM"
               >
-                <span className="text-sm font-medium">
-                  {isDesktop ? `Chairman: ${chairmanRole} (${chairmanModel})` : `Chairman: ${chairmanRole}`}
+                <span className="font-medium">
+                  {/* Mobile: Show role only */}
+                  <span className="md:hidden">
+                    {chairmanRole}
+                  </span>
+                  {/* Desktop: Show role + model + hint */}
+                  <span className="hidden md:inline">
+                    Chairman: {chairmanRole} ({chairmanModel})
+                  </span>
                 </span>
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-4 h-4 flex-shrink-0" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-72">
@@ -115,36 +122,50 @@ export default function EnhancedHeader({
         </div>
 
         {/* Council Member Avatars with Responsive Labels */}
-        <div className="flex gap-4 md:gap-8 items-end justify-center">
+        {/* MOBILE: 2x2 Grid Layout (<768px) */}
+        <div className="md:hidden">
+          <div className="grid grid-cols-2 gap-3">
+            {AGENTS.map((agent) => (
+              <div
+                key={agent.id}
+                className="flex flex-col items-center gap-1"
+                title={`${agent.role} (${agent.model})`}
+              >
+                {/* Mobile Icon: w-10 h-10 */}
+                <div className="rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg w-10 h-10">
+                  <agent.icon className="w-5 h-5 text-white" />
+                </div>
+
+                {/* Mobile Text: Role only, text-[10px] */}
+                <span className="text-white text-[10px] font-medium leading-tight text-center">
+                  {agent.role}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* DESKTOP: Horizontal Layout (≥768px) */}
+        <div className="hidden md:flex gap-8 items-end justify-center">
           {AGENTS.map((agent) => (
             <div
               key={agent.id}
               className="flex flex-col items-center gap-2"
               title={`${agent.role} (${agent.model})`}
             >
-              {/* Circular Icon Container */}
-              <div className="rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors w-14 h-14 md:w-16 md:h-16">
-                <agent.icon className="w-8 h-8 md:w-10 md:h-10" />
+              {/* Desktop Icon: w-16 h-16 */}
+              <div className="rounded-full flex items-center justify-center overflow-hidden bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg hover:bg-white/30 transition-colors w-16 h-16">
+                <agent.icon className="w-10 h-10 text-white" />
               </div>
 
-              {/* Responsive Labels */}
+              {/* Desktop Text: Role (Bold) + Model (Small) */}
               <div className="text-center">
-                {/* Mobile: Show role only */}
-                <div className="md:hidden">
-                  <span className="text-white text-xs font-medium leading-tight block">
-                    {agent.role}
-                  </span>
-                </div>
-
-                {/* Desktop: Show role + model */}
-                <div className="hidden md:block">
-                  <span className="text-white text-sm font-bold leading-tight block">
-                    {agent.role}
-                  </span>
-                  <span className="text-white/80 text-xs leading-tight block">
-                    {agent.model}
-                  </span>
-                </div>
+                <span className="text-white text-sm font-bold leading-tight block uppercase">
+                  {agent.role}
+                </span>
+                <span className="text-white/80 text-xs leading-tight block">
+                  {agent.model}
+                </span>
               </div>
             </div>
           ))}

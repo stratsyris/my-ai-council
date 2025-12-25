@@ -374,3 +374,13 @@
 - [x] Update icon styling with circular containers and semi-transparent backgrounds (bg-white/20)
 - [x] Test responsive design on mobile (<768px) and desktop (≥768px)
 - [x] Verify dropdown menu readability with black text on white background
+
+
+## Sprint 4: Skeleton First, Skin Second Refactoring - COMPLETED
+- [x] Step 1: Refactor AGENTS with placeholder Lucide icons (Star, Box, Zap, X)
+- [x] Step 2: Implement mobile responsive logic (<768px) - w-10 h-10 icons, role only text
+- [x] Step 3: Implement desktop responsive logic (≥768px) - w-16 h-16 icons, role + model text
+- [x] Step 4: Update ChairmanDropdown responsive text display (role on mobile, role+model on desktop)
+- [x] Step 5: Test responsive design on mobile and desktop (verified desktop layout)
+- [x] Step 6: Replace placeholder icons with branded SVG icons (OpenAI, Anthropic, Google, X)
+- [x] Step 7: Final testing and save checkpoint (33/33 tests passing)

@@ -195,9 +195,9 @@ export default function ChatInterface({
       ) : (
         <>
           <ScrollArea ref={scrollAreaRef} className="flex-1 overflow-hidden w-full">
-            <div className="w-full flex flex-col">
+            <div className="w-full flex flex-col min-h-full">
               {/* Hero Section - Always shown at top */}
-              <div className="w-full flex-shrink-0">
+              <div className="w-full flex-shrink-0 h-auto">
                 <HeroSection />
               </div>
               

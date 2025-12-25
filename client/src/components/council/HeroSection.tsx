@@ -4,7 +4,7 @@ export default function HeroSection() {
   return (
     <div className="relative w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden">
       {/* Mobile: min-height for mobile, Desktop: taller for full section */}
-      <div className="relative w-full min-h-[280px] md:min-h-[600px]">
+      <div className="relative w-full h-auto min-h-[400px] md:min-h-[600px] flex flex-col">
         {/* Background Image - Cover entire section */}
         <div 
           className="absolute inset-0 bg-cover bg-center"

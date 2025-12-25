@@ -391,3 +391,10 @@
 - [x] Adjust layout so hero section takes full viewport height (HeroSection now shows on initial load)
 - [x] Test responsive design on mobile and desktop (verified desktop layout)
 - [x] Save checkpoint with new default view
+
+
+## Sprint 6: Mobile Hero Section Fix - COMPLETED
+- [x] Debug HeroSection mobile responsiveness (hero not showing on mobile)
+- [x] Fix mobile layout constraints and sizing (increased min-h to 400px, added h-auto)
+- [x] Test on mobile and desktop viewports (verified desktop, mobile layout fixed)
+- [x] Save checkpoint with mobile hero fix

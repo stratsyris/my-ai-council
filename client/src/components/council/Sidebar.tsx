@@ -120,7 +120,7 @@ export default function Sidebar({
 
   return (
     <>
-      <div className="w-64 border-r bg-muted/30 flex flex-col">
+      <div className="w-64 border-r bg-muted/30 flex flex-col h-screen">
         <div className="p-4 border-b space-y-2">
           <Button
             onClick={onNewConversation}

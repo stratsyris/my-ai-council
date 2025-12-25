@@ -32,7 +32,7 @@ export const AGENTS: Agent[] = [
     role: "The Humanist",
     model: "Claude 3.5 Sonnet",
     hint: "Safety & Ethics",
-    // LOGO: Official Anthropic "Ae" Abstract Shape
+    // LOGO: Official Anthropic Ae Abstract Shape
     icon: (props) => (
       <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
         <path fillRule="evenodd" clipRule="evenodd" d="M17.41 6.59L15 4.18L12.59 6.59L15 9H9V15H15L12.59 17.41L15 19.82L17.41 17.41L19.82 15L17.41 12.59L19.82 10.18L17.41 7.77V6.59ZM5 9V15H7V9H5ZM17 9V15H19V9H17Z" />
@@ -44,10 +44,10 @@ export const AGENTS: Agent[] = [
     role: "The Visionary",
     model: "Gemini 3 Pro",
     hint: "Innovation & Scale",
-    // LOGO: Official Gemini "Liquid" Sparkle
+    // LOGO: Official Gemini Liquid Sparkle
     icon: (props) => (
       <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-        <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+        <path d="M13.8,2.2C13.5,6.6 17.4,10.2 21.8,10.2C17.4,10.2 13.5,13.8 13.8,18.2C13.8,18.2 13.8,18.2 13.8,18.2C13.8,22.6 10.2,26.5 10.2,30.9C10.2,26.5 6.6,22.6 6.6,18.2C6.9,13.8 3,10.2 -1.4,10.2C3,10.2 6.9,6.6 6.6,2.2C6.6,2.2 6.6,2.2 6.6,2.2C6.6,-2.2 10.2,-6.1 10.2,-10.5C10.2,-6.1 13.8,-2.2 13.8,2.2Z" transform="translate(1.4 10.5) scale(0.65)" />
       </svg>
     ),
   },

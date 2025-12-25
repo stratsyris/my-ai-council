@@ -406,3 +406,11 @@
 - [x] Test mobile layout (w-6 h-6 icons, role-only text, no "The" prefix)
 - [x] Test desktop layout (w-8 h-8 icons, role + model text, uppercase)
 - [x] Save checkpoint with CouncilHeader refactor (31/33 tests passing)
+
+
+## Sprint 8: Icon Corrections (Anthropic & Google) - COMPLETED
+- [x] Update Anthropic icon with correct abstract Ae shape
+- [x] Update Google icon with correct liquid sparkle
+- [x] Verify render loop uses exact responsive logic (unified flex layout)
+- [x] Test icon rendering on mobile and desktop (verified desktop)
+- [x] Save checkpoint with corrected icons (all 33 tests passing)

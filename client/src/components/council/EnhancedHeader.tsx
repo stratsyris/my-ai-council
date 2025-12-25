@@ -20,7 +20,7 @@ const AGENTS = [
   {
     id: "anthropic",
     role: "The Humanist",
-    model: "Claude 3.5 Sonnet",
+    model: "Claude Sonnet 4.5",
     icon: (p: any) => <svg viewBox="0 0 24 24" fill="currentColor" {...p}><path fillRule="evenodd" clipRule="evenodd" d="M17.41 6.59L15 4.18L12.59 6.59L15 9H9V15H15L12.59 17.41L15 19.82L17.41 17.41L19.82 15L17.41 12.59L19.82 10.18L17.41 7.77V6.59ZM5 9V15H7V9H5ZM17 9V15H19V9H17Z"/></svg>
   },
   {

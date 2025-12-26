@@ -129,6 +129,18 @@ export const councilRouter = router({
       // Add user message with images
       await dbService.addUserMessage(input.conversationId, input.content, input.imageUrls);
 
+      // IMPORTANT: Fetch conversation again to get the newly added message with images
+      const updatedConversation = await dbService.getConversation(
+        input.conversationId,
+        userId
+      );
+      if (!updatedConversation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found after adding message",
+        });
+      }
+
       // Run council process with selected chairman and images
       const orchestrator = getCouncilOrchestrator(input.chairmanModel);
 
@@ -142,7 +154,7 @@ export const councilRouter = router({
       }
 
       // Build conversation context with previous messages
-      const conversationHistory = conversation.messages
+      const conversationHistory = updatedConversation.messages
         .filter(m => m.role === 'user')
         .map(m => m.content)
         .join('\n\n');
@@ -152,16 +164,12 @@ export const councilRouter = router({
         ? `Previous context:\n${conversationHistory}\n\nNew question: ${input.content}`
         : input.content;
 
-      // Collect ALL images from conversation history + current batch
+      // Collect ALL images from conversation history (now includes current batch)
       const allImages: string[] = [];
-      for (const msg of conversation.messages) {
+      for (const msg of updatedConversation.messages) {
         if (msg.imageUrls && msg.imageUrls.length > 0) {
           allImages.push(...msg.imageUrls);
         }
-      }
-      // Add current batch images
-      if (input.imageUrls && input.imageUrls.length > 0) {
-        allImages.push(...input.imageUrls);
       }
       console.log(`[sendMessage] Total images for council: ${allImages.length}`);
 

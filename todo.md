@@ -432,3 +432,11 @@
 - [x] Update orchestrator to include all images in LLM context (stage2 now receives imageUrls)
 - [x] Test multi-batch upload with full image context for verdict (verified - council acknowledges all 33 images)
 - [x] Save checkpoint
+
+
+## Sprint 11: Fix Critical Bugs - Unknown Chairman & Image Persistence - COMPLETED
+- [x] Fix "Unknown Chairman" loading message - should display selected chairman from header (fixed EnhancedHeader to use modelId)
+- [x] Verify image collection from ALL prior messages in thread works correctly (fixed sendMessage to fetch updated conversation)
+- [x] Ensure images bypass 10-image UI limit when passed to LLM for analysis (all images collected and passed to orchestrator)
+- [x] Test multi-batch upload workflow with chairman name display (verified working - shows correct chairman name)
+- [x] Save checkpoint

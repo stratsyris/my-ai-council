@@ -13,6 +13,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 const AGENTS = [
   {
     id: "openai",
+    modelId: "openai/gpt-5.2",
     role: "The Logician",
     model: "GPT-5.2",
     icon: (p: any) => (
@@ -24,6 +25,7 @@ const AGENTS = [
   },
   {
     id: "anthropic",
+    modelId: "anthropic/claude-sonnet-4.5",
     role: "The Humanist",
     model: "Claude Sonnet 4.5",
     icon: (p: any) => (
@@ -44,6 +46,7 @@ const AGENTS = [
   },
   {
     id: "google",
+    modelId: "google/gemini-3-pro-preview",
     role: "The Visionary",
     model: "Gemini 3 Pro",
     icon: (p: any) => (
@@ -57,6 +60,7 @@ const AGENTS = [
   },
   {
     id: "xai",
+    modelId: "x-ai/grok-4",
     role: "The Realist",
     model: "Grok 4",
     icon: (p: any) => (
@@ -155,8 +159,8 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
             {AGENTS.map((agent) => (
               <DropdownMenuItem
                 key={agent.id}
-                onClick={() => onChairmanChange?.(agent.id)}
-                className={selectedChairman === agent.id ? "bg-accent" : ""}
+                onClick={() => onChairmanChange?.(agent.modelId)}
+                className={selectedChairman === agent.modelId ? "bg-accent" : ""}
               >
                 {agent.role} - {agent.model}
               </DropdownMenuItem>
@@ -208,8 +212,8 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               {AGENTS.map((agent) => (
                 <DropdownMenuItem
                   key={agent.id}
-                  onClick={() => onChairmanChange?.(agent.id)}
-                  className={selectedChairman === agent.id ? "bg-accent" : ""}
+                  onClick={() => onChairmanChange?.(agent.modelId)}
+                  className={selectedChairman === agent.modelId ? "bg-accent" : ""}
                 >
                   {agent.role} - {agent.model}
                 </DropdownMenuItem>

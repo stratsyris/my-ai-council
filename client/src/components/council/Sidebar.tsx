@@ -144,8 +144,8 @@ export default function Sidebar({
           )}
         </div>
 
-        <ScrollArea className="flex-1">
-          <div className="p-2 space-y-2">
+        <ScrollArea className="flex-1 overflow-hidden">
+          <div className="p-2 space-y-2 pr-4">
             {selectedIds.size > 0 && (
               <div className="p-2 bg-muted rounded flex items-center gap-2">
                 <input

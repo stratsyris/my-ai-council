@@ -110,7 +110,8 @@ export class CouncilOrchestrator {
   async stage2ChairmanAnalysis(
     userQuery: string,
     stage1Results: Stage1Result[],
-    chairmanMemberId: string
+    chairmanMemberId: string,
+    imageUrls?: string[]
   ): Promise<Stage2Result> {
     const chairman = getCouncilMember(chairmanMemberId);
     if (!chairman) {
@@ -147,6 +148,24 @@ export class CouncilOrchestrator {
     );
 
     const messages: Message[] = [{ role: "user", content: chairmanPrompt }];
+
+    // Add images to chairman message if provided
+    if (imageUrls?.length) {
+      const messageContent: any = [{ type: "text", text: chairmanPrompt }];
+
+      for (const imageUrl of imageUrls) {
+        messageContent.push({
+          type: "image_url",
+          image_url: {
+            url: imageUrl,
+            detail: "auto",
+          },
+        });
+      }
+
+      messages[0].content = messageContent;
+      console.log(`[stage2ChairmanAnalysis] Added ${imageUrls.length} images to chairman context`);
+    }
 
     try {
       const chairmanResponse = await this.client.queryModel(
@@ -193,7 +212,8 @@ export class CouncilOrchestrator {
     const stage2Result = await this.stage2ChairmanAnalysis(
       userQuery,
       stage1Results,
-      chairmanMemberId
+      chairmanMemberId,
+      imageUrls
     );
 
     return {

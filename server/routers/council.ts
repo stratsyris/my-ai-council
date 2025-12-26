@@ -126,8 +126,8 @@ export const councilRouter = router({
         });
       }
 
-      // Add user message
-      await dbService.addUserMessage(input.conversationId, input.content);
+      // Add user message with images
+      await dbService.addUserMessage(input.conversationId, input.content, input.imageUrls);
 
       // Run council process with selected chairman and images
       const orchestrator = getCouncilOrchestrator(input.chairmanModel);
@@ -152,11 +152,24 @@ export const councilRouter = router({
         ? `Previous context:\n${conversationHistory}\n\nNew question: ${input.content}`
         : input.content;
 
+      // Collect ALL images from conversation history + current batch
+      const allImages: string[] = [];
+      for (const msg of conversation.messages) {
+        if (msg.imageUrls && msg.imageUrls.length > 0) {
+          allImages.push(...msg.imageUrls);
+        }
+      }
+      // Add current batch images
+      if (input.imageUrls && input.imageUrls.length > 0) {
+        allImages.push(...input.imageUrls);
+      }
+      console.log(`[sendMessage] Total images for council: ${allImages.length}`);
+
       try {
         const result = await orchestrator.executeCouncil(
           fullContext,
           chairmanMemberId,
-          input.imageUrls
+          allImages.length > 0 ? allImages : undefined
         );
 
         // Add assistant message with chairman model info

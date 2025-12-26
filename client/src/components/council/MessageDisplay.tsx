@@ -17,6 +17,7 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content?: string | null;
+  imageUrls?: string[];
   stage1?: any;
   stage2?: any;
   stage3?: any;
@@ -48,6 +49,15 @@ export default function MessageDisplay({
           <div className="prose prose-sm max-w-none text-sm md:text-base break-words whitespace-pre-wrap">
             {message.content}
           </div>
+          {message.imageUrls && message.imageUrls.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-3">
+              {message.imageUrls.map((url, idx) => (
+                <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-border">
+                  <img src={url} alt={`Uploaded ${idx + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );

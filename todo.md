@@ -414,3 +414,21 @@
 - [x] Verify render loop uses exact responsive logic (unified flex layout)
 - [x] Test icon rendering on mobile and desktop (verified desktop)
 - [x] Save checkpoint with corrected icons (all 33 tests passing)
+
+
+## Sprint 9: Multi-Image Batch Upload with Persistent Thread Context
+- [ ] Update database schema to store image URLs in messages
+- [ ] Create multi-file upload UI component with drag-drop support (max 10 files)
+- [ ] Implement backend image upload and storage to S3
+- [ ] Update message sending to include all images in LLM context
+- [ ] Update message display to show uploaded images in thread
+- [ ] Test multi-batch upload workflow with verdict generation
+- [ ] Save checkpoint
+
+
+## Sprint 10: Fix Council Orchestrator to Use All Images from Thread - COMPLETED
+- [x] Collect all images from conversation history in sendMessage (loops through all messages)
+- [x] Pass full image array to council orchestrator (allImages array passed to executeCouncil)
+- [x] Update orchestrator to include all images in LLM context (stage2 now receives imageUrls)
+- [x] Test multi-batch upload with full image context for verdict (verified - council acknowledges all 33 images)
+- [x] Save checkpoint

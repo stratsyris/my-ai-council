@@ -112,6 +112,7 @@ export class DatabaseService {
         id: msg.id,
         role: msg.role,
         content: msg.content,
+        imageUrls: msg.imageUrls ? JSON.parse(msg.imageUrls) : [],
         stage1: msg.stage1 ? JSON.parse(msg.stage1) : null,
         stage2: msg.stage2 ? JSON.parse(msg.stage2) : null,
         stage3: msg.stage3 ? JSON.parse(msg.stage3) : null,
@@ -125,7 +126,7 @@ export class DatabaseService {
   /**
    * Add a user message to a conversation.
    */
-  async addUserMessage(conversationId: string, content: string): Promise<string> {
+  async addUserMessage(conversationId: string, content: string, imageUrls?: string[]): Promise<string> {
     const db = await getDb();
     if (!db) {
       throw new Error("Database not available");
@@ -139,6 +140,7 @@ export class DatabaseService {
       conversationId,
       role: "user",
       content,
+      imageUrls: imageUrls && imageUrls.length > 0 ? JSON.stringify(imageUrls) : null,
       createdAt: now,
     };
 

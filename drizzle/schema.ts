@@ -48,6 +48,7 @@ export const messages = mysqlTable("messages", {
   conversationId: varchar("conversationId", { length: 64 }).notNull().references(() => conversations.id),
   role: mysqlEnum("role", ["user", "assistant"]).notNull(),
   content: text("content"),
+  imageUrls: text("imageUrls"), // JSON array of image URLs
   stage1: text("stage1"),
   stage2: text("stage2"),
   stage3: text("stage3"),

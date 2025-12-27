@@ -542,3 +542,9 @@
 - [x] TaskAnalysisCard displays task category and strategy
 - [x] Expandable section shows each member's custom assignment
 - [x] All 58 tests passing
+
+## CRITICAL BUG: New Conversations Auto-Loading Old Test Data
+- [x] Remove auto-load of first conversation on page load
+- [x] New conversations should show blank state with only input box
+- [x] Only auto-load if user explicitly selects a conversation from sidebar
+- [x] Fix useEffect that loads first conversation automatically

@@ -111,6 +111,10 @@ export default function ChatInterface({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() && attachedImages.length === 0) return;
+    
+    // If no conversation exists, we need to create one first
+    // This will be handled by the parent component (Council.tsx)
+    // For now, just return if no conversation
     if (!conversation) return;
 
     const enabledImages = attachedImages.filter((img) => !img.disabled);
@@ -271,7 +275,7 @@ export default function ChatInterface({
               onKeyDown={handleKeyDown}
               placeholder="Ask your question..."
               className="flex-1 min-h-[44px] md:min-h-[50px] text-sm md:text-base"
-              disabled={!conversation || isLoading}
+              disabled={isLoading}
               rows={isMobile ? 2 : 3}
             />
             <input
@@ -288,7 +292,7 @@ export default function ChatInterface({
               size="icon"
               variant="outline"
               className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] flex-shrink-0"
-              disabled={!conversation || (attachedImages && attachedImages.filter(img => !img.disabled).length >= MAX_IMAGES_PER_MESSAGE)}
+              disabled={attachedImages && attachedImages.filter(img => !img.disabled).length >= MAX_IMAGES_PER_MESSAGE}
               title={attachedImages && attachedImages.filter(img => !img.disabled).length >= MAX_IMAGES_PER_MESSAGE ? `Maximum ${MAX_IMAGES_PER_MESSAGE} images reached` : "Attach photos"}
             >
               <ImageIcon className="w-4 h-4 md:w-5 md:h-5" />
@@ -299,14 +303,14 @@ export default function ChatInterface({
               size="icon"
               variant="outline"
               className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] flex-shrink-0"
-              disabled={!conversation}
+              disabled={false}
               title="Upload document"
             >
               <Paperclip className="w-4 h-4 md:w-5 md:h-5" />
             </Button>
             <Button
               type="submit"
-              disabled={!conversation || (!input.trim() && attachedImages.length === 0) || isLoading}
+              disabled={(!input.trim() && attachedImages.length === 0) || isLoading}
               size="icon"
               className="h-[44px] w-[44px] md:h-[50px] md:w-[50px] flex-shrink-0"
               title="Send message"

@@ -548,3 +548,9 @@
 - [x] Input box now always visible at bottom
 - [x] Input is disabled until a conversation is selected
 - [x] All 58 tests passing
+
+## Sprint 25: Auto-Create Conversation on First Message
+- [x] Enable input box by default (not disabled when no conversation)
+- [x] Auto-create conversation when user sends first message
+- [x] Set conversation as current after creation
+- [x] Send message to newly created conversation

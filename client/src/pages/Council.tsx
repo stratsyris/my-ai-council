@@ -117,7 +117,22 @@ export default function Council() {
   };
 
   const handleSendMessage = async (content: string, imageUrls?: string[]) => {
-    if (!currentConversationId) return;
+    // If no conversation exists, create one first
+    if (!currentConversationId) {
+      try {
+        const newConversation = await createConversation.mutateAsync();
+        // Send message to the newly created conversation
+        await sendMessage.mutateAsync({
+          conversationId: newConversation.id,
+          content,
+          chairmanModel: selectedChairman || 'google/gemini-3-pro-preview',
+          imageUrls,
+        });
+      } catch (error) {
+        console.error("Error creating conversation or sending message:", error);
+      }
+      return;
+    }
 
     console.log('[handleSendMessage] selectedChairman:', selectedChairman);
     try {

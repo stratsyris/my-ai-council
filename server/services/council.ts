@@ -15,6 +15,7 @@ import {
   getAllCouncilMemberIds,
   getCouncilMember,
 } from "../../shared/council_config";
+import { getGlobalRequestQueue } from "./request-queue";
 
 export interface Stage1Result {
   memberId: string;

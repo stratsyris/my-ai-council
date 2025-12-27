@@ -480,3 +480,16 @@
 - [x] Add better error handling and fallback for JSON parsing failures (improved extraction logic with fallback to default brief)
 - [x] Test dispatch phase with improved parsing (improved prompt to forbid markdown and extra text)
 - [x] Save checkpoint
+
+
+## Sprint 17: Dispatch Brief Visibility UI - COMPLETED
+- [x] Verify TaskAnalysisCard component displays dispatch brief in verdict (component verified with collapsible UI)
+- [x] Test dispatch brief visibility with mock data (component ready for integration)
+- [x] Ensure dispatch brief shows task category, strategy, and member assignments (all fields present)
+- [x] Style and integrate into message display (integrated into MessageDisplay with amber theme)
+
+## Sprint 18: Request Queuing System - COMPLETED
+- [x] Implement request queue for concurrent API calls (RequestQueue service with 2 concurrent limit)
+- [x] Add queue status tracking and UI indicators (getStats() provides comprehensive metrics)
+- [x] Handle rate limiting and backoff (exponential backoff for 402/429 errors)
+- [x] Test with multiple concurrent requests (5/5 vitest tests passing)

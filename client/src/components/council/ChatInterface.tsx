@@ -215,7 +215,7 @@ export default function ChatInterface({
                         <Loader2 className="w-6 h-6 animate-spin" />
                         <div className="text-center">
                           <p className="text-sm font-medium">Chairman is briefing the Council...</p>
-                          <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman)} as Chairman</p>
+                          <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman || 'google/gemini-3-pro-preview')} as Chairman</p>
                           <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
                         </div>
                       </div>
@@ -231,7 +231,7 @@ export default function ChatInterface({
                     <Loader2 className="w-6 h-6 animate-spin" />
                     <div className="text-center">
                       <p className="text-sm font-medium">Chairman is briefing the Council...</p>
-                      <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman)} as Chairman</p>
+                      <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman || 'google/gemini-3-pro-preview')} as Chairman</p>
                       <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
                     </div>
                   </div>

@@ -107,11 +107,12 @@ export default function Council() {
   const handleSendMessage = async (content: string, imageUrls?: string[]) => {
     if (!currentConversationId) return;
 
+    console.log('[handleSendMessage] selectedChairman:', selectedChairman);
     try {
       await sendMessage.mutateAsync({
         conversationId: currentConversationId,
         content,
-        chairmanModel: selectedChairman,
+        chairmanModel: selectedChairman || 'google/gemini-3-pro-preview',
         imageUrls,
       });
     } catch (error) {

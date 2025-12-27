@@ -466,3 +466,10 @@
 - [x] Integrate TaskAnalysisCard into MessageDisplay component (added with safe metadata parsing)
 - [x] Style and test the collapsible UI (styled with amber/orange theme, 4/4 storage tests passing)
 - [x] Save checkpoint
+
+
+## Sprint 15: Fix "Unknown as Chairman" Bug - COMPLETED
+- [x] Debug selectedChairman flow from UI to backend (added logging, confirmed flow)
+- [x] Verify chairman model ID is passed to dispatch phase (confirmed chairmanModel passed in sendMessage)
+- [x] Fix getDisplayNameForModel to handle chairman correctly (added safeguard defaults)
+- [x] Test fix and save checkpoint

@@ -542,3 +542,9 @@
 - [x] TaskAnalysisCard displays task category and strategy
 - [x] Expandable section shows each member's custom assignment
 - [x] All 58 tests passing
+
+## Sprint 24: Fix Missing Input Box
+- [x] Removed conditional rendering that hid input box when no conversation selected
+- [x] Input box now always visible at bottom
+- [x] Input is disabled until a conversation is selected
+- [x] All 58 tests passing

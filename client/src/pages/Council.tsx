@@ -74,10 +74,22 @@ export default function Council() {
 
   const sendMessage = trpc.council.sendMessage.useMutation({
     onSuccess: () => {
-      setTimeout(() => {
-        refetchConversation();
-      }, 500);
+      // Refetch conversation immediately and then poll for updates
+      // since council orchestration can take 10-30+ seconds
+      refetchConversation();
       refetchConversations();
+      
+      // Poll for updates every 2 seconds for up to 60 seconds
+      // to ensure we catch the response when it's ready
+      let pollCount = 0;
+      const pollInterval = setInterval(() => {
+        pollCount++;
+        refetchConversation();
+        if (pollCount >= 30) {
+          clearInterval(pollInterval);
+        }
+      }, 2000);
+      
       setConfigError(null);
     },
     onError: (error) => {

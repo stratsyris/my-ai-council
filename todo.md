@@ -510,3 +510,10 @@
 - [x] Fixed isVerdictResponse to return proper boolean instead of string value
 - [x] All 58 tests passing (100% success rate)
 - [x] Handles real-world LLM response issues: truncated JSON, unterminated strings, extra text
+
+## Sprint 21: Fix Critical Response Bugs - IN PROGRESS
+- [x] Implement polling for conversation refetch (every 2 seconds for 60 seconds)
+- [x] Fix race condition where response not fetched before UI update
+- [x] Improve dispatch JSON parsing with better error handling
+- [x] All 58 tests passing after fixes
+- [ ] Test with real user questions to verify responses appear correctly

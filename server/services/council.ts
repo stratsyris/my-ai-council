@@ -107,7 +107,6 @@ Do not include any text before or after the JSON object.
         }
         
         // Try to extract JSON object if there's extra text
-        // Find the first { and last } to extract just the JSON
         const jsonStart = jsonContent.indexOf('{');
         const jsonEnd = jsonContent.lastIndexOf('}');
         
@@ -115,30 +114,33 @@ Do not include any text before or after the JSON object.
           jsonContent = jsonContent.substring(jsonStart, jsonEnd + 1);
         }
         
-        // Clean up common issues with escaped quotes and newlines
-        jsonContent = jsonContent
-          .replace(/\\n/g, ' ')
-          .replace(/\\r/g, ' ')
-          .replace(/\n/g, ' ')
-          .replace(/\r/g, ' ');
+        // Clean up whitespace
+        jsonContent = jsonContent.replace(/\n/g, ' ').replace(/\r/g, ' ');
         
-        // Handle truncated JSON - if it ends with incomplete string, try to close it
-        if (!jsonContent.endsWith('}')) {
-          const lastCommaIndex = jsonContent.lastIndexOf(',');
-          if (lastCommaIndex !== -1) {
-            jsonContent = jsonContent.substring(0, lastCommaIndex) + '}';
+        // Try parsing first
+        let brief;
+        try {
+          brief = JSON.parse(jsonContent) as DispatchBrief;
+        } catch (e) {
+          // If parsing fails and JSON doesn't end with }, try to repair
+          if (!jsonContent.endsWith('}')) {
+            const lastCommaIndex = jsonContent.lastIndexOf(',');
+            if (lastCommaIndex !== -1) {
+              jsonContent = jsonContent.substring(0, lastCommaIndex) + '}';
+            } else {
+              jsonContent = jsonContent + '}';
+            }
+            brief = JSON.parse(jsonContent) as DispatchBrief;
           } else {
-            jsonContent = jsonContent + '}';
+            throw e;
           }
         }
         
-        const brief = JSON.parse(jsonContent) as DispatchBrief;
         console.log(`[dispatchPhase] Generated brief for task: ${brief.task_category}`);
         return brief;
       } catch (parseError) {
         console.error("[dispatchPhase] Failed to parse dispatch JSON:", parseError);
         console.error("[dispatchPhase] Raw response:", response.content.substring(0, 500));
-        // Return default brief if parsing fails
         return this.getDefaultBrief();
       }
     } catch (error) {

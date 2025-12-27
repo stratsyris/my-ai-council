@@ -1,0 +1,26 @@
+{
+  "query": "SELECT id, title FROM conversations WHERE title LIKE '%Test%' ORDER BY id DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3PXHdPTvNk5oHqc.root --database WbENW7upe5nHt5EiKsgZeK --execute SELECT id, title FROM conversations WHERE title LIKE '%Test%' ORDER BY id DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "i4DlK24UMbqtXwWEhe9mk",
+      "title": "Test Title"
+    },
+    {
+      "id": "Ufmr5zioIv-v_wirvqhX7",
+      "title": "Test Title"
+    },
+    {
+      "id": "U_3kupEKc1LoKiyS5bV-n",
+      "title": "Test Title"
+    },
+    {
+      "id": "S7KmO8jKTJGUInxvOSIzQ",
+      "title": "Test Title"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\ni4DlK24UMbqtXwWEhe9mk\tTest Title\nUfmr5zioIv-v_wirvqhX7\tTest Title\nU_3kupEKc1LoKiyS5bV-n\tTest Title\nS7KmO8jKTJGUInxvOSIzQ\tTest Title\n",
+  "stderr": "",
+  "execution_time_ms": 1477
+}

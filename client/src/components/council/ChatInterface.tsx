@@ -214,7 +214,7 @@ export default function ChatInterface({
                       <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
                         <Loader2 className="w-6 h-6 animate-spin" />
                         <div className="text-center">
-                          <p className="text-sm font-medium">Council is deliberating...</p>
+                          <p className="text-sm font-medium">Chairman is briefing the Council...</p>
                           <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman)} as Chairman</p>
                           <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
                         </div>
@@ -230,7 +230,7 @@ export default function ChatInterface({
                   <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
                     <Loader2 className="w-6 h-6 animate-spin" />
                     <div className="text-center">
-                      <p className="text-sm font-medium">Council is deliberating...</p>
+                      <p className="text-sm font-medium">Chairman is briefing the Council...</p>
                       <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman)} as Chairman</p>
                       <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
                     </div>

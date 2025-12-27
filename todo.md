@@ -440,3 +440,12 @@
 - [x] Ensure images bypass 10-image UI limit when passed to LLM for analysis (all images collected and passed to orchestrator)
 - [x] Test multi-batch upload workflow with chairman name display (verified working - shows correct chairman name)
 - [x] Save checkpoint
+
+
+## Sprint 12: Chairman-Led Dispatch System - Dynamic Mission Briefs - COMPLETED
+- [x] Create dispatch phase - Chairman analyzes prompt and generates JSON mission briefs (implemented dispatchPhase method)
+- [x] Implement dynamic system prompt injection for council members based on briefs (injected into stage1CollectResponses)
+- [x] Update UI loading state to show "Chairman is briefing the Council..." (updated ChatInterface loading message)
+- [x] Add fallback mechanism for JSON parsing failures (getDefaultBrief fallback implemented)
+- [x] Test dispatch system with Code, Creative, and Emotional task types (all 6 vitest tests passing)
+- [x] Save checkpoint

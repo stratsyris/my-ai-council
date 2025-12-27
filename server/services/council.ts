@@ -1,6 +1,7 @@
 /**
- * 2-stage LLM Council orchestration - Configuration-Driven Architecture
- * Stage 1: All 4 council models provide responses using config-driven prompts
+ * 3-stage LLM Council orchestration - Chairman-Led Dispatch Architecture
+ * Dispatch: Chairman analyzes prompt and generates dynamic mission briefs
+ * Stage 1: All 4 council models provide responses with injected briefs
  * Stage 2: Chairman analyzes all responses and creates consensus-based final answer
  */
 
@@ -26,6 +27,17 @@ export interface Stage2Result {
   finalAnswer: string;
 }
 
+export interface DispatchBrief {
+  task_category: string;
+  dispatch_strategy: string;
+  assignments: {
+    Logician: string;
+    Humanist: string;
+    Visionary: string;
+    Realist: string;
+  };
+}
+
 export interface CouncilConfig {
   councilModels: string[];
   chairmanModel: string;
@@ -41,21 +53,127 @@ export class CouncilOrchestrator {
   }
 
   /**
+   * Dispatch Phase: Chairman analyzes the prompt and generates dynamic mission briefs
+   * for each council member based on task type (Code, Creative, Emotional, etc.)
+   */
+  async dispatchPhase(
+    userQuery: string,
+    chairmanMemberId: string
+  ): Promise<DispatchBrief> {
+    const chairman = getCouncilMember(chairmanMemberId);
+    if (!chairman) {
+      throw new Error(`Chairman "${chairmanMemberId}" not found in config`);
+    }
+
+    const dispatchPrompt = `You are a Chief Strategy Officer analyzing a user request to dynamically brief your council members.
+
+User Request: "${userQuery}"
+
+Analyze this request and determine:
+1. What type of task is this? (e.g., Technical/Code, Creative/Writing, Strategic/Planning, Emotional/Support, etc.)
+2. What specific focus should each council member have?
+
+For each member, provide a specific instruction that customizes their expertise:
+- The Logician (Logic & Truth): Focus on technical accuracy, edge cases, or logical consistency
+- The Humanist (Safety & Ethics): Focus on user experience, safety implications, or ethical concerns
+- The Visionary (Innovation & Context): Focus on creative solutions, novel approaches, or synthesis
+- The Realist (Speed & Efficiency): Focus on practical implementation, efficiency, or immediate action
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "task_category": "string describing the type of task",
+  "dispatch_strategy": "one sentence explaining your overall approach",
+  "assignments": {
+    "Logician": "specific instruction for the Logician",
+    "Humanist": "specific instruction for the Humanist",
+    "Visionary": "specific instruction for the Visionary",
+    "Realist": "specific instruction for the Realist"
+  }
+}`;
+
+    const messages: Message[] = [{ role: "user", content: dispatchPrompt }];
+
+    try {
+      const response = await this.client.queryModel(chairman.model_id, messages);
+
+      if (!response) {
+        throw new Error("Chairman failed to generate dispatch brief");
+      }
+
+      // Parse the JSON response
+      try {
+        const brief = JSON.parse(response.content) as DispatchBrief;
+        console.log(`[dispatchPhase] Generated brief for task: ${brief.task_category}`);
+        return brief;
+      } catch (parseError) {
+        console.error("[dispatchPhase] Failed to parse dispatch JSON:", parseError);
+        console.error("[dispatchPhase] Raw response:", response.content);
+        // Return default brief if parsing fails
+        return this.getDefaultBrief();
+      }
+    } catch (error) {
+      console.error(`[dispatchPhase] Dispatch failed:`, error);
+      // Return default brief on error
+      return this.getDefaultBrief();
+    }
+  }
+
+  /**
+   * Get default brief when dispatch fails - fallback to standard personas
+   */
+  private getDefaultBrief(): DispatchBrief {
+    return {
+      task_category: "General",
+      dispatch_strategy: "Using standard council personas without specialization",
+      assignments: {
+        Logician: "Provide logical analysis and identify potential issues",
+        Humanist: "Consider user impact and safety implications",
+        Visionary: "Suggest creative alternatives and novel approaches",
+        Realist: "Focus on practical implementation and efficiency",
+      },
+    };
+  }
+
+  /**
+   * Map member ID to display name for brief assignments
+   */
+  private getMemberDisplayName(memberId: string): string {
+    const displayNames: Record<string, string> = {
+      logician: "Logician",
+      humanist: "Humanist",
+      visionary: "Visionary",
+      realist: "Realist",
+    };
+    return displayNames[memberId] || "Logician";
+  }
+
+  /**
    * Stage 1: Collect individual responses from all 4 council models.
-   * Uses config-driven prompts to ensure consistency and flexibility.
+   * Uses config-driven prompts + dynamic briefs from dispatch phase.
    */
   async stage1CollectResponses(
     userQuery: string,
-    imageUrls?: string[]
+    imageUrls?: string[],
+    dispatchBrief?: DispatchBrief
   ): Promise<Stage1Result[]> {
     const councilMemberIds = getAllCouncilMemberIds();
     const stage1Results: Stage1Result[] = [];
 
     // Generate prompts for each council member using the config
-    const prompts = councilMemberIds.map((memberId) => ({
-      memberId,
-      prompt: generateCouncilMemberPrompt(memberId, userQuery),
-    }));
+    const prompts = councilMemberIds.map((memberId) => {
+      let prompt = generateCouncilMemberPrompt(memberId, userQuery);
+
+      // Inject dynamic brief if available
+      if (dispatchBrief) {
+        const displayName = this.getMemberDisplayName(memberId);
+        const dynamicBrief = dispatchBrief.assignments[displayName as keyof typeof dispatchBrief.assignments];
+        if (dynamicBrief) {
+          prompt = `${prompt}\n\nSpecial Brief for this task: ${dynamicBrief}`;
+        }
+      }
+
+      return { memberId, prompt };
+    });
 
     // Query all 4 models in parallel
     for (const { memberId, prompt } of prompts) {
@@ -195,17 +313,22 @@ export class CouncilOrchestrator {
   }
 
   /**
-   * Execute full council process: Stage 1 + Stage 2
+   * Execute full council process: Dispatch -> Stage 1 + Stage 2
    */
   async executeCouncil(
     userQuery: string,
     chairmanMemberId: string,
     imageUrls?: string[]
   ) {
-    // Stage 1: Collect responses from all 4 models using config-driven prompts
+    // Dispatch Phase: Chairman generates dynamic mission briefs
+    const dispatchBrief = await this.dispatchPhase(userQuery, chairmanMemberId);
+    console.log(`[executeCouncil] Dispatch brief generated for task: ${dispatchBrief.task_category}`);
+
+    // Stage 1: Collect responses from all 4 models with dynamic briefs injected
     const stage1Results = await this.stage1CollectResponses(
       userQuery,
-      imageUrls
+      imageUrls,
+      dispatchBrief
     );
 
     // Stage 2: Chairman analyzes and synthesizes using config-driven prompt

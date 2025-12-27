@@ -41,9 +41,20 @@ export class OpenRouterClient {
       "Content-Type": "application/json",
     };
 
+    // Set reasonable max_tokens limits to reduce credit usage
+    // Dispatch phase needs less tokens (just JSON), council members need more for detailed responses
+    let maxTokens = 2000; // Default for council responses
+    
+    // Check if this is a dispatch phase call (very short prompt)
+    const isDispatchCall = messages[0]?.content?.includes("Chief Strategy Officer");
+    if (isDispatchCall) {
+      maxTokens = 500; // Dispatch only needs JSON output
+    }
+
     const payload = {
       model,
       messages,
+      max_tokens: maxTokens,
     };
 
     try {
@@ -61,7 +72,9 @@ export class OpenRouterClient {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error querying model ${model}: ${response.status} ${errorText}`);
+        const errorData = JSON.parse(errorText);
+        const errorMsg = errorData?.error?.message || errorText;
+        console.error(`Error querying model ${model}: ${response.status} ${errorMsg}`);
         return null;
       }
 
@@ -77,7 +90,7 @@ export class OpenRouterClient {
         content: message.content || "",
         reasoning_details: message.reasoning_details,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error querying model ${model}:`, error);
       return null;
     }

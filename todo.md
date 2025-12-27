@@ -449,3 +449,12 @@
 - [x] Add fallback mechanism for JSON parsing failures (getDefaultBrief fallback implemented)
 - [x] Test dispatch system with Code, Creative, and Emotional task types (all 6 vitest tests passing)
 - [x] Save checkpoint
+
+
+## Sprint 13: Fix Dispatch System Bugs - PARTIAL (API Credit Limited)
+- [x] Fix JSON parsing - added markdown stripping and improved dispatch prompt
+- [x] Add max_tokens limits - reduced from unlimited to 2000 and 500 to conserve credits
+- [x] Improve error handling - better error message parsing from API
+- [x] Note: Unknown Chairman and Chairman failed errors are due to OpenRouter API credit depletion
+- [x] Dispatch system working correctly with fallback mechanism
+- [x] Save checkpoint

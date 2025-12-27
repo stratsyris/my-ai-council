@@ -569,3 +569,12 @@
 - [x] Debug why Chairman shows as "Unknown"
 - [x] Fix Chairman name display
 - [x] Verify selected model name displays correctly
+
+## Sprint 26: Implement Dynamic Chairman Dispatch
+
+- [x] Expand council config with 10 archetypes (Logician, Humanist, Visionary, Realist, Skeptic, Pragmatist, Financier, Ethicist, Architect, Orator)
+- [x] Add model affinity matrix (Claude for Humanist/Ethicist, GPT for Logician/Financier, Gemini for Realist/Visionary, Grok for Skeptic/Pragmatist)
+- [x] Implement Chairman dispatch logic to analyze user query and select 4 archetypes
+- [x] Assign secret instructions to each selected archetype
+- [ ] Update UI to show dynamically selected council members instead of fixed 4
+- [ ] Test dynamic dispatch with various query types

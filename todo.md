@@ -473,3 +473,10 @@
 - [x] Verify chairman model ID is passed to dispatch phase (confirmed chairmanModel passed in sendMessage)
 - [x] Fix getDisplayNameForModel to handle chairman correctly (added safeguard defaults)
 - [x] Test fix and save checkpoint
+
+
+## Sprint 16: Fix JSON Parsing Errors in Dispatch Phase - COMPLETED
+- [x] Improve JSON extraction from LLM response - handle markdown and malformed JSON (extract JSON object boundaries, clean newlines)
+- [x] Add better error handling and fallback for JSON parsing failures (improved extraction logic with fallback to default brief)
+- [x] Test dispatch phase with improved parsing (improved prompt to forbid markdown and extra text)
+- [x] Save checkpoint

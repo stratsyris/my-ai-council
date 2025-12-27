@@ -79,8 +79,9 @@ For each member, provide a specific instruction that customizes their expertise:
 - The Visionary (Innovation & Context): Focus on creative solutions, novel approaches, or synthesis
 - The Realist (Speed & Efficiency): Focus on practical implementation, efficiency, or immediate action
 
-IMPORTANT: Respond with ONLY the JSON object, NO markdown formatting, NO code blocks, NO explanation.
-Start directly with { and end with }
+RESPOND WITH ONLY VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO EXPLANATION. NO EXTRA TEXT.
+Ensure all strings use double quotes and are properly escaped.
+Do not include any text before or after the JSON object.
 
 {"task_category": "string describing the type of task", "dispatch_strategy": "one sentence explaining your overall approach", "assignments": {"Logician": "specific instruction for the Logician", "Humanist": "specific instruction for the Humanist", "Visionary": "specific instruction for the Visionary", "Realist": "specific instruction for the Realist"}}`;
 
@@ -93,7 +94,7 @@ Start directly with { and end with }
         throw new Error("Chairman failed to generate dispatch brief");
       }
 
-      // Parse the JSON response - handle markdown-wrapped JSON
+      // Parse the JSON response - handle markdown-wrapped JSON and malformed responses
       try {
         let jsonContent = response.content.trim();
         
@@ -104,12 +105,28 @@ Start directly with { and end with }
           jsonContent = jsonContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
         }
         
+        // Try to extract JSON object if there's extra text
+        // Find the first { and last } to extract just the JSON
+        const jsonStart = jsonContent.indexOf('{');
+        const jsonEnd = jsonContent.lastIndexOf('}');
+        
+        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+          jsonContent = jsonContent.substring(jsonStart, jsonEnd + 1);
+        }
+        
+        // Clean up common issues with escaped quotes and newlines
+        jsonContent = jsonContent
+          .replace(/\\n/g, ' ')
+          .replace(/\\r/g, ' ')
+          .replace(/\n/g, ' ')
+          .replace(/\r/g, ' ');
+        
         const brief = JSON.parse(jsonContent) as DispatchBrief;
         console.log(`[dispatchPhase] Generated brief for task: ${brief.task_category}`);
         return brief;
       } catch (parseError) {
         console.error("[dispatchPhase] Failed to parse dispatch JSON:", parseError);
-        console.error("[dispatchPhase] Raw response:", response.content.substring(0, 200));
+        console.error("[dispatchPhase] Raw response:", response.content.substring(0, 500));
         // Return default brief if parsing fails
         return this.getDefaultBrief();
       }

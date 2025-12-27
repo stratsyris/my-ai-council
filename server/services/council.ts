@@ -201,7 +201,12 @@ Do not include any text before or after the JSON object.
         const dynamicBrief = dispatchBrief.assignments[displayName as keyof typeof dispatchBrief.assignments];
         if (dynamicBrief) {
           prompt = `${prompt}\n\nSpecial Brief for this task: ${dynamicBrief}`;
+          console.log(`[stage1] Injected brief for ${displayName}: ${dynamicBrief}`);
+        } else {
+          console.log(`[stage1] No brief found for ${displayName} in assignments`);
         }
+      } else {
+        console.log(`[stage1] No dispatch brief available for ${memberId}`);
       }
 
       return { memberId, prompt };

@@ -517,3 +517,28 @@
 - [x] Improve dispatch JSON parsing with better error handling
 - [x] All 58 tests passing after fixes
 - [ ] Test with real user questions to verify responses appear correctly
+
+## Sprint 22: Investigate Dispatch Architecture Issues
+- [ ] Verify dispatch brief is being injected into council member prompts
+- [ ] Check if display name mapping is correct (Logician/Humanist/Visionary/Realist)
+- [ ] Verify each council member receives customized prompt with their brief
+- [ ] Test that responses show different perspectives based on dispatch brief
+- [ ] Investigate auto-conversation creation (likely old test data, not auto-creation)
+
+## Sprint 23: Add Dispatch Brief Visibility (CRITICAL FEATURE)
+- [ ] Create DispatchBrief display component showing task analysis
+- [ ] Show dispatch brief in collapsible "Task Analysis" card
+- [ ] Display each council member's custom brief/assignment
+- [ ] Show task category and overall dispatch strategy
+- [ ] Make dispatch brief visible in message display
+- [ ] Add toggle to expand/collapse dispatch brief details
+- [ ] Test that users can see exactly what Chairman told each member
+
+## Sprint 23 COMPLETE: Dispatch Brief Visibility Already Implemented
+- [x] TaskAnalysisCard component shows task analysis with dispatch brief
+- [x] Dispatch brief is generated in dispatchPhase
+- [x] Dispatch brief is passed to stage1CollectResponses
+- [x] Dispatch brief is saved in message metadata
+- [x] TaskAnalysisCard displays task category and strategy
+- [x] Expandable section shows each member's custom assignment
+- [x] All 58 tests passing

@@ -458,3 +458,11 @@
 - [x] Note: Unknown Chairman and Chairman failed errors are due to OpenRouter API credit depletion
 - [x] Dispatch system working correctly with fallback mechanism
 - [x] Save checkpoint
+
+
+## Sprint 14: Dispatch Brief Visibility UI - COMPLETED
+- [x] Store dispatch brief in message metadata when council executes (updated executeCouncil and addAssistantMessage)
+- [x] Create TaskAnalysisCard component to display dispatch brief (created with collapsible UI)
+- [x] Integrate TaskAnalysisCard into MessageDisplay component (added with safe metadata parsing)
+- [x] Style and test the collapsible UI (styled with amber/orange theme, 4/4 storage tests passing)
+- [x] Save checkpoint

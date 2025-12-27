@@ -10,6 +10,7 @@ import { User, Bot, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import CopyButton from "./CopyButton";
 import VerdictCard from "./VerdictCard";
+import TaskAnalysisCard from "./TaskAnalysisCard";
 import { getDisplayNameForModel } from "@/lib/council_utils";
 import { parseVerdictJSON } from "@/lib/verdict_parser";
 
@@ -81,6 +82,19 @@ export default function MessageDisplay({
         <div className="font-semibold mb-2 md:mb-3 text-sm md:text-base">
           LLM Council
         </div>
+
+        {/* Task Analysis: Dispatch Brief (shown before chairman answer) */}
+        {message.metadata && (() => {
+          try {
+            const metadata = typeof message.metadata === 'string' ? JSON.parse(message.metadata) : message.metadata;
+            if (metadata?.dispatchBrief) {
+              return <TaskAnalysisCard dispatchBrief={metadata.dispatchBrief} />;
+            }
+          } catch (e) {
+            // Silently fail if metadata parsing fails
+          }
+          return null;
+        })()}
 
         {/* Stage 2: Chairman Final Answer (shown first - most important) */}
         {message.stage2 && (

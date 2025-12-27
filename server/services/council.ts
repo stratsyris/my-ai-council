@@ -344,6 +344,7 @@ Start directly with { and end with }
     return {
       stage1: stage1Results,
       stage2: stage2Result,
+      dispatchBrief: dispatchBrief,
     };
   }
 }

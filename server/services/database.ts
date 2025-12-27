@@ -162,7 +162,8 @@ export class DatabaseService {
     conversationId: string,
     stage1: any,
     stage2: any,
-    chairmanModel?: string
+    chairmanModel?: string,
+    dispatchBrief?: any
   ): Promise<string> {
     const db = await getDb();
     if (!db) {
@@ -172,6 +173,8 @@ export class DatabaseService {
     const id = nanoid();
     const now = new Date();
 
+    const metadata = dispatchBrief ? { dispatchBrief } : null;
+
     const insertData: InsertMessage = {
       id,
       conversationId,
@@ -179,6 +182,7 @@ export class DatabaseService {
       content: null,
       stage1: JSON.stringify(stage1),
       stage2: JSON.stringify(stage2),
+      metadata: metadata ? JSON.stringify(metadata) : null,
       chairmanModel: chairmanModel || null,
       createdAt: now,
     };

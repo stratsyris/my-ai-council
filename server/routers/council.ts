@@ -180,12 +180,13 @@ export const councilRouter = router({
           allImages.length > 0 ? allImages : undefined
         );
 
-        // Add assistant message with chairman model info
+        // Add assistant message with chairman model info and dispatch brief
         await dbService.addAssistantMessage(
           input.conversationId,
           result.stage1,
           result.stage2,
-          input.chairmanModel
+          input.chairmanModel,
+          result.dispatchBrief
         );
 
         // Generate title if this is the first message (before adding new message)

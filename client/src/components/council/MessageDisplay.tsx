@@ -177,7 +177,7 @@ export default function MessageDisplay({
                           className="text-xs px-2 py-1 md:text-sm md:px-3 md:py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                         >
                           <span className="truncate max-w-[100px] md:max-w-none">
-                            {result.model.split("/").pop() ||
+                            {result.archetypeName || result.model.split("/").pop() ||
                               `Model ${index + 1}`}
                           </span>
                         </TabsTrigger>
@@ -190,10 +190,17 @@ export default function MessageDisplay({
                         className="mt-3 md:mt-4"
                       >
                         <div className="flex items-start justify-between mb-2 gap-2">
-                          <span className="text-xs md:text-sm font-medium text-muted-foreground">
-                            {result.model.split("/").pop() ||
-                              `Model ${index + 1}`}
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs md:text-sm font-medium text-muted-foreground">
+                              {result.archetypeName || result.model.split("/").pop() ||
+                                `Model ${index + 1}`}
+                            </span>
+                            {result.secretInstruction && (
+                              <span className="text-xs text-muted-foreground italic bg-muted/50 p-1 rounded">
+                                {result.secretInstruction}
+                              </span>
+                            )}
+                          </div>
                           <CopyButton text={result.response} />
                         </div>
                         <div className="prose prose-sm max-w-none text-sm md:text-base break-words whitespace-pre-wrap overflow-hidden">

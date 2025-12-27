@@ -19,8 +19,10 @@ import { getGlobalRequestQueue } from "./request-queue";
 
 export interface Stage1Result {
   memberId: string;
+  archetypeName: string;  // Display name like "The Logician"
   model: string;
   response: string;
+  secretInstruction?: string;  // The custom brief for this member
 }
 
 export interface Stage2Result {
@@ -240,10 +242,16 @@ Do not include any text before or after the JSON object.
         const response = await this.client.queryModel(member.model_id, messages);
 
         if (response) {
+          // Get the secret instruction for this member from dispatch brief
+          const displayName = this.getMemberDisplayName(memberId);
+          const secretInstruction = dispatchBrief?.assignments[displayName as keyof typeof dispatchBrief.assignments];
+          
           stage1Results.push({
             memberId,
+            archetypeName: member.display_name,  // e.g., "The Logician"
             model: member.model_id,
             response: response.content,
+            secretInstruction: secretInstruction,
           });
         }
       } catch (error) {

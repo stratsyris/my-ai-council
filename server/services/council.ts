@@ -116,26 +116,26 @@ Do not include any text before or after the JSON object.
           jsonContent = jsonContent.substring(jsonStart, jsonEnd + 1);
         }
         
-        // Clean up whitespace
+        // Clean up whitespace and fix common JSON issues
         jsonContent = jsonContent.replace(/\n/g, ' ').replace(/\r/g, ' ');
+        jsonContent = jsonContent.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
         
         // Try parsing first
         let brief;
         try {
           brief = JSON.parse(jsonContent) as DispatchBrief;
         } catch (e) {
-          // If parsing fails and JSON doesn't end with }, try to repair
-          if (!jsonContent.endsWith('}')) {
-            const lastCommaIndex = jsonContent.lastIndexOf(',');
-            if (lastCommaIndex !== -1) {
-              jsonContent = jsonContent.substring(0, lastCommaIndex) + '}';
-            } else {
-              jsonContent = jsonContent + '}';
-            }
-            brief = JSON.parse(jsonContent) as DispatchBrief;
-          } else {
-            throw e;
+          // If parsing fails, remove any trailing content after the last }
+          console.log('[dispatchPhase] Initial parse failed, attempting repairs...');
+          if (jsonContent.includes('}')) {
+            jsonContent = jsonContent.substring(0, jsonContent.lastIndexOf('}') + 1);
           }
+          brief = JSON.parse(jsonContent) as DispatchBrief;
+        }
+        
+        // Validate the brief has required fields
+        if (!brief.task_category || !brief.assignments) {
+          throw new Error('Invalid dispatch brief structure');
         }
         
         console.log(`[dispatchPhase] Generated brief for task: ${brief.task_category}`);
@@ -177,8 +177,14 @@ Do not include any text before or after the JSON object.
       humanist: "Humanist",
       visionary: "Visionary",
       realist: "Realist",
+      skeptic: "Skeptic",
+      pragmatist: "Pragmatist",
+      financier: "Financier",
+      ethicist: "Ethicist",
+      architect: "Architect",
+      orator: "Orator",
     };
-    return displayNames[memberId] || "Logician";
+    return displayNames[memberId] || memberId;
   }
 
   /**
@@ -190,8 +196,18 @@ Do not include any text before or after the JSON object.
     imageUrls?: string[],
     dispatchBrief?: DispatchBrief
   ): Promise<Stage1Result[]> {
-    const councilMemberIds = getAllCouncilMemberIds();
+    let councilMemberIds = getAllCouncilMemberIds();
     const stage1Results: Stage1Result[] = [];
+
+    // Filter to only selected archetypes if dispatch brief is available
+    if (dispatchBrief && Object.keys(dispatchBrief.assignments).length > 0) {
+      const selectedArchetypes = Object.keys(dispatchBrief.assignments);
+      councilMemberIds = councilMemberIds.filter((memberId) => {
+        const displayName = this.getMemberDisplayName(memberId);
+        return selectedArchetypes.includes(displayName);
+      });
+      console.log(`[stage1] Filtered to ${councilMemberIds.length} selected archetypes: ${councilMemberIds.join(", ")}`);
+    }
 
     // Generate prompts for each council member using the config
     const prompts = councilMemberIds.map((memberId) => {

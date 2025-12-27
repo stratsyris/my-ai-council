@@ -592,3 +592,19 @@
 - [x] Check image file path and public directory configuration (File exists and is accessible)
 - [x] Fix image loading and verify display (Changed from background-image to img tag with object-cover)
 - [x] Test and verify fix works (Hero image now displays correctly)
+
+
+## Sprint 26: Fix Dynamic 4-Archetype Selection (CRITICAL)
+- [ ] Fix Stage 1 to show only 4 dynamically selected archetypes instead of all 10
+- [ ] Implement Stage 2 Chairman verdict display in UI (currently missing/empty)
+- [ ] Display Stage 0 dispatch analysis showing question type and archetype selection
+- [ ] Show secret instructions given to each of the 4 selected archetypes
+- [ ] Test end-to-end flow with new messages and verify all 3 stages display correctly
+
+
+## Sprint 27: Fix Dynamic Dispatch Flow (CRITICAL - IN PROGRESS)
+- [ ] Fix Stage 1 to filter to only 4 selected archetypes from dispatch brief (not all 10)
+- [ ] Ensure Stage 2 chairman verdict is being generated and stored correctly
+- [ ] Display Stage 0 dispatch analysis in UI (task category + which 4 archetypes selected)
+- [ ] Display Stage 2 chairman verdict prominently in UI
+- [ ] Test end-to-end with new message to verify all 3 stages work

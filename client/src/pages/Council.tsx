@@ -169,16 +169,9 @@ export default function Council() {
 
   // Removed auto-creation logic - users should explicitly click "New Conversation"
 
-  // Auto-load first conversation if one is available
-  useEffect(() => {
-    if (conversations.length > 0 && !currentConversationId) {
-      // Only set if the conversation exists in our list
-      const firstConversation = conversations[0];
-      if (firstConversation) {
-        setCurrentConversationId(firstConversation.id);
-      }
-    }
-  }, [conversations, currentConversationId]);
+  // DO NOT auto-load conversations
+  // Users should explicitly click "New Conversation" or select from sidebar
+  // This prevents new conversations from loading old test data
 
   // Clear current conversation if it's no longer in the list
   useEffect(() => {

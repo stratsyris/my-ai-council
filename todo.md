@@ -559,3 +559,13 @@
 - [x] Center text horizontally and vertically on desktop
 - [x] Center text horizontally and vertically on mobile
 - [x] Ensure text is readable over hero image
+
+## Sprint 27: Fix Send Button
+- [ ] Debug why send button is not working
+- [ ] Fix the send functionality
+- [ ] Test send button works
+
+## Sprint 28: Fix Chairman Unknown Bug
+- [x] Debug why Chairman shows as "Unknown"
+- [x] Fix Chairman name display
+- [x] Verify selected model name displays correctly

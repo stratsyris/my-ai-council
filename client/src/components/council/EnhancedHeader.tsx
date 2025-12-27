@@ -83,12 +83,12 @@ interface EnhancedHeaderProps {
 const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   onOpenSidebar,
   isMobile = false,
-  selectedChairman = "google",
+  selectedChairman = "google/gemini-3-pro-preview",
   onChairmanChange,
 }) => {
   const { theme, toggleTheme } = useTheme();
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
-  const currentAgent = AGENTS.find((a) => a.id === selectedChairman) || AGENTS[2];
+  const currentAgent = AGENTS.find((a) => a.modelId === selectedChairman) || AGENTS[2];
 
   return (
     <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-4 md:px-6 py-3 md:py-6 shadow-lg">

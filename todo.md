@@ -585,3 +585,10 @@
 - [x] Fix UI to display archetype names instead of raw model IDs in Stage 1 responses (Updated MessageDisplay tabs and content)
 - [x] Fix TaskAnalysisCard to show dynamic dispatch brief instead of hardcoded "General" (Component already working - displays dispatchBrief from metadata)
 - [x] Verify all 66 tests pass after integration (ALL PASSING - added comprehensive end-to-end test for archetype names and secret instructions flow)
+
+
+## Sprint 25: Fix Hero Section Image Loading (COMPLETE ✅)
+- [x] Identify hero section image source and loading issue (CSS background-image not loading due to container sizing)
+- [x] Check image file path and public directory configuration (File exists and is accessible)
+- [x] Fix image loading and verify display (Changed from background-image to img tag with object-cover)
+- [x] Test and verify fix works (Hero image now displays correctly)

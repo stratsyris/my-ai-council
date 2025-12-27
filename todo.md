@@ -501,3 +501,12 @@
 - [x] Added safeguard defaults for chairman model throughout UI
 - [x] Verified chairmanModel is stored and retrieved correctly from database
 - [x] All fixes deployed and tested with restored OpenRouter credits
+
+## Sprint 20: Fix Verdict JSON Parsing Errors - COMPLETED
+- [x] Improved JSON extraction to handle incomplete JSON (looks for opening brace, captures to end)
+- [x] Enhanced unterminated string repair logic with proper escape handling
+- [x] Added brace/bracket counting to close unclosed structures
+- [x] Created comprehensive verdict parser test suite (11 tests)
+- [x] Fixed isVerdictResponse to return proper boolean instead of string value
+- [x] All 58 tests passing (100% success rate)
+- [x] Handles real-world LLM response issues: truncated JSON, unterminated strings, extra text

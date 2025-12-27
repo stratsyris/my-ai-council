@@ -102,7 +102,7 @@ export default function MessageDisplay({
             {shouldRenderVerdictCard && verdictData ? (
               <VerdictCard
                 data={verdictData}
-                chairmanName={getDisplayNameForModel(message.chairmanModel!)}
+                chairmanName={getDisplayNameForModel(message.chairmanModel || 'google/gemini-3-pro-preview')}
               />
             ) : (
               <div className="mb-3 md:mb-4 p-3 md:p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 rounded-lg w-full">
@@ -112,9 +112,9 @@ export default function MessageDisplay({
                   </h3>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     {message.chairmanModel && (
-                      <span className="text-xs md:text-sm bg-primary/20 text-primary px-2 py-1 rounded whitespace-nowrap">
-                        {getDisplayNameForModel(message.chairmanModel)}
-                      </span>
+                  <span className="text-xs md:text-sm bg-primary/20 text-primary px-2 py-1 rounded whitespace-nowrap">
+                    {getDisplayNameForModel(message.chairmanModel || 'google/gemini-3-pro-preview')}
+                  </span>
                     )}
                     <CopyButton text={chairmanAnswer} />
                   </div>

@@ -122,6 +122,16 @@ Do not include any text before or after the JSON object.
           .replace(/\n/g, ' ')
           .replace(/\r/g, ' ');
         
+        // Handle truncated JSON - if it ends with incomplete string, try to close it
+        if (!jsonContent.endsWith('}')) {
+          const lastCommaIndex = jsonContent.lastIndexOf(',');
+          if (lastCommaIndex !== -1) {
+            jsonContent = jsonContent.substring(0, lastCommaIndex) + '}';
+          } else {
+            jsonContent = jsonContent + '}';
+          }
+        }
+        
         const brief = JSON.parse(jsonContent) as DispatchBrief;
         console.log(`[dispatchPhase] Generated brief for task: ${brief.task_category}`);
         return brief;

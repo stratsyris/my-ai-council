@@ -554,3 +554,8 @@
 - [x] Auto-create conversation when user sends first message
 - [x] Set conversation as current after creation
 - [x] Send message to newly created conversation
+
+## Sprint 26: Center Hero Text
+- [x] Center text horizontally and vertically on desktop
+- [x] Center text horizontally and vertically on mobile
+- [x] Ensure text is readable over hero image

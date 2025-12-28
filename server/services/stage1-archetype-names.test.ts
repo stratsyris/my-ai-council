@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CouncilOrchestrator, Stage1Result, DispatchBrief } from "./council";
+import { classifyQuestion, getSpecializedPrompts } from "./question-classifier";
 
 // Mock OpenRouterClient
 vi.mock("./openrouter");
@@ -24,15 +25,15 @@ describe("CouncilOrchestrator - Stage 1 with Archetype Names", () => {
       content: "This is a test response from a council member.",
     });
 
+    // Use dynamic dispatch to get real archetype selection
+    const classification = classifyQuestion("Write a function to sort an array");
+    const specializedPrompts = getSpecializedPrompts(classification.type, classification.selectedArchetypes);
+    
     const dispatchBrief: DispatchBrief = {
-      task_category: "Technical/Code",
-      dispatch_strategy: "Focus on code quality",
-      assignments: {
-        Logician: "Check for edge cases",
-        Humanist: "Ensure readability",
-        Visionary: "Suggest improvements",
-        Realist: "Focus on efficiency",
-      },
+      task_category: classification.type.charAt(0).toUpperCase() + classification.type.slice(1),
+      dispatch_strategy: classification.reasoning,
+      selectedArchetypes: classification.selectedArchetypes,
+      assignments: specializedPrompts,
     };
 
     const results = await orchestrator.stage1CollectResponses(
@@ -42,21 +43,12 @@ describe("CouncilOrchestrator - Stage 1 with Archetype Names", () => {
     );
 
     // Verify all results have archetypeName
-    expect(results.length).toBeGreaterThan(0);
-    
+    expect(results.length).toBe(4);
     results.forEach((result: Stage1Result) => {
-      expect(result).toHaveProperty("archetypeName");
-      expect(result).toHaveProperty("secretInstruction");
       expect(result.archetypeName).toBeTruthy();
-      expect(result.response).toBeTruthy();
+      expect(result.archetypeName).toMatch(/^The /);
+      expect(result.secretInstruction).toBeDefined();
     });
-
-    // Verify specific archetype names are present
-    const archetypeNames = results.map((r: Stage1Result) => r.archetypeName);
-    expect(archetypeNames).toContain("The Logician");
-    expect(archetypeNames).toContain("The Humanist");
-    expect(archetypeNames).toContain("The Visionary");
-    expect(archetypeNames).toContain("The Realist");
   });
 
   it("should include secret instructions from dispatch brief", async () => {
@@ -64,15 +56,15 @@ describe("CouncilOrchestrator - Stage 1 with Archetype Names", () => {
       content: "Response from council member",
     });
 
+    // Use dynamic dispatch for creative writing
+    const classification = classifyQuestion("Help me write a story");
+    const specializedPrompts = getSpecializedPrompts(classification.type, classification.selectedArchetypes);
+    
     const dispatchBrief: DispatchBrief = {
-      task_category: "Creative/Writing",
-      dispatch_strategy: "Balance creativity with coherence",
-      assignments: {
-        Logician: "Ensure narrative consistency",
-        Humanist: "Focus on emotional resonance",
-        Visionary: "Suggest creative metaphors",
-        Realist: "Keep story grounded",
-      },
+      task_category: classification.type.charAt(0).toUpperCase() + classification.type.slice(1),
+      dispatch_strategy: classification.reasoning,
+      selectedArchetypes: classification.selectedArchetypes,
+      assignments: specializedPrompts,
     };
 
     const results = await orchestrator.stage1CollectResponses(
@@ -81,18 +73,20 @@ describe("CouncilOrchestrator - Stage 1 with Archetype Names", () => {
       dispatchBrief
     );
 
-    // Verify secret instructions are present
-    const logicianResult = results.find((r: Stage1Result) => r.memberId === "logician");
-    expect(logicianResult?.secretInstruction).toBe("Ensure narrative consistency");
-
-    const humanistResult = results.find((r: Stage1Result) => r.memberId === "humanist");
-    expect(humanistResult?.secretInstruction).toBe("Focus on emotional resonance");
-
-    const visionaryResult = results.find((r: Stage1Result) => r.memberId === "visionary");
-    expect(visionaryResult?.secretInstruction).toBe("Suggest creative metaphors");
-
-    const realistResult = results.find((r: Stage1Result) => r.memberId === "realist");
-    expect(realistResult?.secretInstruction).toBe("Keep story grounded");
+    // Verify secret instructions are present for all selected archetypes
+    expect(results.length).toBe(4);
+    
+    results.forEach((result) => {
+      expect(result.secretInstruction).toBeDefined();
+      expect(result.secretInstruction?.length).toBeGreaterThan(0);
+      expect(result.archetypeName).toBeDefined();
+      expect(result.archetypeName).toMatch(/^The /);
+    });
+    
+    // Verify the selected archetypes match what was in dispatch brief
+    const resultMemberIds = results.map(r => r.memberId).sort();
+    const dispatchMemberIds = dispatchBrief.selectedArchetypes.sort();
+    expect(resultMemberIds).toEqual(dispatchMemberIds);
   });
 
   it("should handle missing dispatch brief gracefully", async () => {
@@ -100,15 +94,16 @@ describe("CouncilOrchestrator - Stage 1 with Archetype Names", () => {
       content: "Response from council member",
     });
 
-    // Call without dispatch brief
+    // Call without dispatch brief - should query all 10 members
     const results = await orchestrator.stage1CollectResponses(
       "Test query"
     );
 
-    // Should still have archetypeNames but no secretInstructions
-    expect(results.length).toBeGreaterThan(0);
+    // Should have all 10 members with archetypeNames but no secretInstructions
+    expect(results.length).toBe(10);
     results.forEach((result: Stage1Result) => {
       expect(result.archetypeName).toBeTruthy();
+      expect(result.archetypeName).toMatch(/^The /);
       expect(result.secretInstruction).toBeUndefined();
     });
   });
@@ -120,8 +115,8 @@ describe("CouncilOrchestrator - Stage 1 with Archetype Names", () => {
 
     const results = await orchestrator.stage1CollectResponses("Test");
 
-    // Verify model IDs are preserved
-    expect(results.length).toBeGreaterThan(0);
+    // Verify model IDs are preserved for all 10 members (no dispatch brief)
+    expect(results.length).toBe(10);
     const models = results.map((r: Stage1Result) => r.model);
     models.forEach(model => {
       expect(model).toBeTruthy();

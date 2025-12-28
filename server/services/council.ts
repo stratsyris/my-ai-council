@@ -16,6 +16,11 @@ import {
   getCouncilMember,
 } from "../../shared/council_config";
 import { getGlobalRequestQueue } from "./request-queue";
+import {
+  classifyQuestion,
+  getSpecializedPrompts,
+  getArchetypeDisplayNames,
+} from "./question-classifier";
 
 export interface Stage1Result {
   memberId: string;
@@ -33,12 +38,8 @@ export interface Stage2Result {
 export interface DispatchBrief {
   task_category: string;
   dispatch_strategy: string;
-  assignments: {
-    Logician: string;
-    Humanist: string;
-    Visionary: string;
-    Realist: string;
-  };
+  selectedArchetypes: string[];  // IDs of selected archetypes (e.g., ["logician", "architect", "pragmatist", "skeptic"])
+  assignments: Record<string, string>;  // Dynamic assignments based on selected archetypes
 }
 
 export interface CouncilConfig {
@@ -56,127 +57,42 @@ export class CouncilOrchestrator {
   }
 
   /**
-   * Dispatch Phase: Chairman analyzes the prompt and generates dynamic mission briefs
-   * for each council member based on task type (Code, Creative, Emotional, etc.)
+   * Dispatch Phase: Classify question type and dynamically select 4 optimal archetypes
+   * Each question type gets a different council composition with specialized prompts
    */
   async dispatchPhase(
     userQuery: string,
     chairmanMemberId: string
   ): Promise<DispatchBrief> {
-    const chairman = getCouncilMember(chairmanMemberId);
-    if (!chairman) {
-      throw new Error(`Chairman "${chairmanMemberId}" not found in config`);
-    }
-
-    const dispatchPrompt = `You are a Chief Strategy Officer analyzing a user request to dynamically brief your council members.
-
-User Request: "${userQuery}"
-
-Analyze this request and determine:
-1. What type of task is this? (e.g., Technical/Code, Creative/Writing, Strategic/Planning, Emotional/Support, etc.)
-2. What specific focus should each council member have?
-
-For each member, provide a specific instruction that customizes their expertise:
-- The Logician (Logic & Truth): Focus on technical accuracy, edge cases, or logical consistency
-- The Humanist (Safety & Ethics): Focus on user experience, safety implications, or ethical concerns
-- The Visionary (Innovation & Context): Focus on creative solutions, novel approaches, or synthesis
-- The Realist (Speed & Efficiency): Focus on practical implementation, efficiency, or immediate action
-
-RESPOND WITH ONLY VALID JSON. NO MARKDOWN. NO CODE BLOCKS. NO EXPLANATION. NO EXTRA TEXT.
-Ensure all strings use double quotes and are properly escaped.
-Do not include any text before or after the JSON object.
-
-{"task_category": "string describing the type of task", "dispatch_strategy": "one sentence explaining your overall approach", "assignments": {"Logician": "specific instruction for the Logician", "Humanist": "specific instruction for the Humanist", "Visionary": "specific instruction for the Visionary", "Realist": "specific instruction for the Realist"}}`;
-
-    const messages: Message[] = [{ role: "user", content: dispatchPrompt }];
-
     try {
-      const response = await this.client.queryModel(chairman.model_id, messages);
-
-      if (!response || !response.content || response.content.trim().length === 0) {
-        console.error('[dispatchPhase] Empty response from chairman, using default brief');
-        return this.getDefaultBrief();
+      // Step 1: Classify the question to determine task type
+      const classification = classifyQuestion(userQuery);
+      console.log(`[dispatchPhase] Question classified as: ${classification.type} (${(classification.confidence * 100).toFixed(0)}% confidence)`);
+      console.log(`[dispatchPhase] Selected archetypes: ${getArchetypeDisplayNames(classification.selectedArchetypes).join(", ")}`);
+      
+      // Step 2: Get specialized prompts for each selected archetype
+      const specializedPrompts = getSpecializedPrompts(classification.type, classification.selectedArchetypes);
+      
+      // Step 3: Build assignments with archetype IDs as keys
+      const assignments: Record<string, string> = {};
+      for (const archetypeId of classification.selectedArchetypes) {
+        assignments[archetypeId] = specializedPrompts[archetypeId] || "Provide your expert perspective on this question.";
       }
-
-      // Parse the JSON response - handle markdown-wrapped JSON and malformed responses
-      try {
-        let jsonContent = response.content.trim();
-        console.log('[dispatchPhase] Raw response length:', jsonContent.length);
-        
-        // Remove markdown code blocks if present
-        if (jsonContent.startsWith('```json')) {
-          jsonContent = jsonContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-        } else if (jsonContent.startsWith('```')) {
-          jsonContent = jsonContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
-        }
-        
-        // Try to extract JSON object if there's extra text
-        const jsonStart = jsonContent.indexOf('{');
-        const jsonEnd = jsonContent.lastIndexOf('}');
-        
-        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
-          jsonContent = jsonContent.substring(jsonStart, jsonEnd + 1);
-        }
-        
-        // Clean up whitespace and fix common JSON issues
-        jsonContent = jsonContent.replace(/\n/g, ' ').replace(/\r/g, ' ');
-        jsonContent = jsonContent.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-        // Fix unquoted keys (common LLM mistake)
-        jsonContent = jsonContent.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
-        
-        // Validate we have content
-        if (!jsonContent || jsonContent.trim().length === 0) {
-          throw new Error('Empty JSON content');
-        }
-
-        // Try parsing first
-        let brief;
-        try {
-          console.log('[dispatchPhase] Attempting JSON parse...');
-          brief = JSON.parse(jsonContent) as DispatchBrief;
-          console.log('[dispatchPhase] Successfully parsed');
-        } catch (e) {
-          // If parsing fails, remove any trailing content
-          console.log('[dispatchPhase] Initial parse failed, attempting repairs...', e);
-          if (jsonContent.includes('}')) {
-            jsonContent = jsonContent.substring(0, jsonContent.lastIndexOf('}') + 1);
-          }
-          if (!jsonContent || jsonContent.trim().length === 0) {
-            throw new Error('No valid JSON after repair');
-          }
-          try {
-            brief = JSON.parse(jsonContent) as DispatchBrief;
-            console.log('[dispatchPhase] Successfully parsed after repair');
-          } catch (e2) {
-            console.error('[dispatchPhase] Repair failed:', e2);
-            throw new Error('JSON parse failed after repair');
-          }
-        }
-        
-        // Validate the brief has required fields
-        if (!brief.task_category || !brief.assignments) {
-          console.error('[dispatchPhase] Invalid brief:', brief);
-          throw new Error('Invalid dispatch brief structure');
-        }
-        
-        // Ensure all members have assignments
-        const members = ['Logician', 'Humanist', 'Visionary', 'Realist'];
-        for (const m of members) {
-          if (!brief.assignments[m as keyof typeof brief.assignments]) {
-            brief.assignments[m as keyof typeof brief.assignments] = `Default ${m} perspective`;
-          }
-        }
-        
-        console.log(`[dispatchPhase] Generated brief for task: ${brief.task_category}`);
-        return brief;
-      } catch (parseError) {
-        console.error("[dispatchPhase] Failed to parse dispatch JSON:", parseError);
-        console.error("[dispatchPhase] Raw response:", response.content.substring(0, 500));
-        console.error("[dispatchPhase] Using default brief as fallback");
-        return this.getDefaultBrief();
-      }
+      
+      // Step 4: Return the dispatch brief with dynamic selection
+      const brief: DispatchBrief = {
+        task_category: classification.type.charAt(0).toUpperCase() + classification.type.slice(1),
+        dispatch_strategy: classification.reasoning,
+        selectedArchetypes: classification.selectedArchetypes,
+        assignments
+      };
+      
+      console.log(`[dispatchPhase] Generated brief for task: ${brief.task_category}`);
+      console.log(`[dispatchPhase] Assignments: ${JSON.stringify(assignments)}`);
+      
+      return brief;
     } catch (error) {
-      console.error(`[dispatchPhase] Dispatch failed:`, error);
+      console.error(`[dispatchPhase] Classification failed:`, error);
       // Return default brief on error
       return this.getDefaultBrief();
     }
@@ -189,11 +105,12 @@ Do not include any text before or after the JSON object.
     return {
       task_category: "General",
       dispatch_strategy: "Using standard council personas without specialization",
+      selectedArchetypes: ["logician", "humanist", "visionary", "realist"],
       assignments: {
-        Logician: "Provide logical analysis and identify potential issues",
-        Humanist: "Consider user impact and safety implications",
-        Visionary: "Suggest creative alternatives and novel approaches",
-        Realist: "Focus on practical implementation and efficiency",
+        logician: "Provide logical analysis and identify potential issues",
+        humanist: "Consider user impact and safety implications",
+        visionary: "Suggest creative alternatives and novel approaches",
+        realist: "Focus on practical implementation and efficiency",
       },
     };
   }
@@ -230,11 +147,9 @@ Do not include any text before or after the JSON object.
     const stage1Results: Stage1Result[] = [];
 
     // Filter to only selected archetypes if dispatch brief is available
-    if (dispatchBrief && Object.keys(dispatchBrief.assignments).length > 0) {
-      const selectedArchetypes = Object.keys(dispatchBrief.assignments);
+    if (dispatchBrief && dispatchBrief.selectedArchetypes && dispatchBrief.selectedArchetypes.length > 0) {
       councilMemberIds = councilMemberIds.filter((memberId) => {
-        const displayName = this.getMemberDisplayName(memberId);
-        return selectedArchetypes.includes(displayName);
+        return dispatchBrief.selectedArchetypes.includes(memberId);
       });
       console.log(`[stage1] Filtered to ${councilMemberIds.length} selected archetypes: ${councilMemberIds.join(", ")}`);
     }
@@ -244,14 +159,13 @@ Do not include any text before or after the JSON object.
       let prompt = generateCouncilMemberPrompt(memberId, userQuery);
 
       // Inject dynamic brief if available
-      if (dispatchBrief) {
-        const displayName = this.getMemberDisplayName(memberId);
-        const dynamicBrief = dispatchBrief.assignments[displayName as keyof typeof dispatchBrief.assignments];
+      if (dispatchBrief && dispatchBrief.assignments) {
+        const dynamicBrief = dispatchBrief.assignments[memberId];
         if (dynamicBrief) {
           prompt = `${prompt}\n\nSpecial Brief for this task: ${dynamicBrief}`;
-          console.log(`[stage1] Injected brief for ${displayName}: ${dynamicBrief}`);
+          console.log(`[stage1] Injected brief for ${memberId}: ${dynamicBrief}`);
         } else {
-          console.log(`[stage1] No brief found for ${displayName} in assignments`);
+          console.log(`[stage1] No brief found for ${memberId} in assignments`);
         }
       } else {
         console.log(`[stage1] No dispatch brief available for ${memberId}`);
@@ -260,7 +174,7 @@ Do not include any text before or after the JSON object.
       return { memberId, prompt };
     });
 
-    // Query all 4 models in parallel
+    // Query all selected models in parallel
     for (const { memberId, prompt } of prompts) {
       const member = getCouncilMember(memberId);
       if (!member) continue;
@@ -289,8 +203,7 @@ Do not include any text before or after the JSON object.
 
         if (response) {
           // Get the secret instruction for this member from dispatch brief
-          const displayName = this.getMemberDisplayName(memberId);
-          const secretInstruction = dispatchBrief?.assignments[displayName as keyof typeof dispatchBrief.assignments];
+          const secretInstruction = dispatchBrief?.assignments[memberId];
           
           stage1Results.push({
             memberId,
@@ -301,11 +214,7 @@ Do not include any text before or after the JSON object.
           });
         }
       } catch (error) {
-        console.error(
-          `Failed to get response from ${member.display_name}:`,
-          error
-        );
-        throw error;
+        console.error(`[stage1] Error querying ${memberId}:`, error);
       }
     }
 
@@ -313,143 +222,113 @@ Do not include any text before or after the JSON object.
   }
 
   /**
-   * Stage 2: Chairman analyzes all responses and creates consensus-based final answer.
-   * Uses config-driven prompt generation to ensure the chairman's lens is applied.
+   * Stage 2: Chairman analyzes all Stage 1 responses and synthesizes final answer
    */
   async stage2ChairmanAnalysis(
     userQuery: string,
     stage1Results: Stage1Result[],
-    chairmanMemberId: string,
-    imageUrls?: string[]
+    chairmanMemberId: string
   ): Promise<Stage2Result> {
     const chairman = getCouncilMember(chairmanMemberId);
     if (!chairman) {
       throw new Error(`Chairman "${chairmanMemberId}" not found in config`);
     }
 
-    // Build the council responses object for the prompt generator
-    const councilResponses: {
-      logician: string;
-      humanist: string;
-      visionary: string;
-      realist: string;
-    } = {
-      logician: "",
-      humanist: "",
-      visionary: "",
-      realist: "",
-    };
-
-    // Map stage1 results to the council responses object
-    for (const result of stage1Results) {
-      const member = getCouncilMember(result.memberId);
-      if (member) {
-        councilResponses[result.memberId as keyof typeof councilResponses] =
-          result.response;
-      }
-    }
-
-    // Generate the chairman prompt using the config
-    const chairmanPrompt = generateChairmanPrompt(
+    // Build the synthesis prompt with all stage 1 responses
+    const synthesisPrompt = generateChairmanPrompt(
       chairmanMemberId,
       userQuery,
-      councilResponses
+      stage1Results
     );
 
-    const messages: Message[] = [{ role: "user", content: chairmanPrompt }];
-
-    // Add images to chairman message if provided
-    if (imageUrls?.length) {
-      const messageContent: any = [{ type: "text", text: chairmanPrompt }];
-
-      for (const imageUrl of imageUrls) {
-        messageContent.push({
-          type: "image_url",
-          image_url: {
-            url: imageUrl,
-            detail: "auto",
-          },
-        });
-      }
-
-      messages[0].content = messageContent;
-      console.log(`[stage2ChairmanAnalysis] Added ${imageUrls.length} images to chairman context`);
-    }
+    const messages: Message[] = [{ role: "user", content: synthesisPrompt }];
 
     try {
-      const chairmanResponse = await this.client.queryModel(
-        chairman.model_id,
-        messages
-      );
+      const response = await this.client.queryModel(chairman.model_id, messages);
 
-      if (!chairmanResponse) {
-        throw new Error("Chairman failed to generate response");
+      if (!response || !response.content) {
+        throw new Error("Empty response from chairman");
       }
 
-      // Parse chairman response - expect JSON format
-      const content = chairmanResponse.content;
-      console.log('[stage2ChairmanAnalysis] Chairman response length:', content.length);
-      console.log('[stage2ChairmanAnalysis] Chairman response preview:', content.substring(0, 200));
+      // Try to parse as JSON verdict, otherwise use as plain text
+      let analysis = "";
+      let finalAnswer = response.content;
 
-      // Try to parse as JSON (the chairman should return structured verdict)
-      let verdictData: any = null;
       try {
-        // Extract JSON from response (in case there's extra text)
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          verdictData = JSON.parse(jsonMatch[0]);
-          console.log('[stage2ChairmanAnalysis] Successfully parsed verdict JSON');
+        // Try to extract JSON if the response is a verdict
+        let jsonContent = response.content.trim();
+        
+        // Remove markdown code blocks if present
+        if (jsonContent.startsWith('```json')) {
+          jsonContent = jsonContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        } else if (jsonContent.startsWith('```')) {
+          jsonContent = jsonContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
         }
-      } catch (parseError) {
-        console.warn('[stage2ChairmanAnalysis] Failed to parse verdict JSON, using raw content:', parseError);
-        verdictData = null;
+        
+        // Try to extract JSON object
+        const jsonStart = jsonContent.indexOf('{');
+        const jsonEnd = jsonContent.lastIndexOf('}');
+        
+        if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+          jsonContent = jsonContent.substring(jsonStart, jsonEnd + 1);
+          const parsed = JSON.parse(jsonContent);
+          
+          if (parsed.final_verdict_markdown) {
+            analysis = parsed.evolution_logic || "";
+            finalAnswer = parsed.final_verdict_markdown;
+          }
+        }
+      } catch (e) {
+        // Not JSON, use as plain text
+        console.log("[stage2] Response is not JSON, using as plain text");
       }
-
-      // If we got valid verdict data, use it; otherwise use raw content
-      const analysis = verdictData ? JSON.stringify(verdictData) : content;
-      const finalAnswer = verdictData ? JSON.stringify(verdictData) : content;
 
       return {
         analysis,
-        finalAnswer,
+        finalAnswer
       };
     } catch (error) {
-      console.error(`Chairman synthesis failed:`, error);
+      console.error("[stage2] Chairman analysis failed:", error);
       throw error;
     }
   }
 
   /**
-   * Execute full council process: Dispatch -> Stage 1 + Stage 2
+   * Execute the full 3-stage council orchestration
    */
   async executeCouncil(
     userQuery: string,
     chairmanMemberId: string,
     imageUrls?: string[]
-  ) {
-    // Dispatch Phase: Chairman generates dynamic mission briefs
+  ): Promise<{
+    dispatchBrief: DispatchBrief;
+    stage1Results: Stage1Result[];
+    stage2Result: Stage2Result;
+  }> {
+    // Stage 0: Dispatch - Classify question and select 4 archetypes
     const dispatchBrief = await this.dispatchPhase(userQuery, chairmanMemberId);
-    console.log(`[executeCouncil] Dispatch brief generated for task: ${dispatchBrief.task_category}`);
+    console.log("[executeCouncil] Dispatch complete");
 
-    // Stage 1: Collect responses from all 4 models with dynamic briefs injected
+    // Stage 1: Collect responses from selected archetypes
     const stage1Results = await this.stage1CollectResponses(
       userQuery,
       imageUrls,
       dispatchBrief
     );
+    console.log(`[executeCouncil] Stage 1 complete with ${stage1Results.length} responses`);
 
-    // Stage 2: Chairman analyzes and synthesizes using config-driven prompt
+    // Stage 2: Chairman synthesizes final answer
     const stage2Result = await this.stage2ChairmanAnalysis(
       userQuery,
       stage1Results,
-      chairmanMemberId,
-      imageUrls
+      chairmanMemberId
     );
+    console.log("[executeCouncil] Stage 2 complete");
 
     return {
-      stage1: stage1Results,
-      stage2: stage2Result,
-      dispatchBrief: dispatchBrief,
+      dispatchBrief,
+      stage1Results,
+      stage2Result,
     };
   }
 }

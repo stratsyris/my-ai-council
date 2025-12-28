@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { CouncilOrchestrator, DispatchBrief } from "./council";
-import { OpenRouterClient } from "./openrouter";
+import { classifyQuestion, getSpecializedPrompts } from "./question-classifier";
 
 // Mock OpenRouterClient
 vi.mock("./openrouter");
@@ -19,148 +19,152 @@ describe("CouncilOrchestrator - Dispatch Phase", () => {
     });
   });
 
-  it("should generate valid dispatch brief for code task", async () => {
-    const codeBrief = {
-      task_category: "Technical/Code",
-      dispatch_strategy: "Prioritize code quality, performance, and maintainability",
-      assignments: {
-        Logician: "Focus on code correctness, edge cases, and potential bugs",
-        Humanist: "Ensure code readability and maintainability for team collaboration",
-        Visionary: "Suggest architectural improvements and design patterns",
-        Realist: "Optimize for performance and execution efficiency",
-      },
-    };
-
-    mockClient.queryModel.mockResolvedValue({
-      content: JSON.stringify(codeBrief),
-    });
-
+  it("should classify code questions and select appropriate archetypes", async () => {
     const result = await orchestrator.dispatchPhase(
       "Write a function to sort an array efficiently",
       "logician"
     );
 
-    expect(result.task_category).toBe("Technical/Code");
-    expect(result.assignments.Logician).toContain("correctness");
-    expect(result.assignments.Realist).toContain("performance");
+    expect(result.task_category).toBe("Code");
+    expect(result.selectedArchetypes).toContain("logician");
+    expect(result.selectedArchetypes).toContain("architect");
+    expect(result.selectedArchetypes.length).toBe(4);
+    expect(result.assignments).toBeDefined();
   });
 
-  it("should generate valid dispatch brief for creative task", async () => {
-    const creativeBrief = {
-      task_category: "Creative/Writing",
-      dispatch_strategy: "Balance creativity with coherence and emotional impact",
-      assignments: {
-        Logician: "Ensure narrative consistency and logical plot progression",
-        Humanist: "Focus on emotional resonance and character development",
-        Visionary: "Suggest creative metaphors and unique storytelling approaches",
-        Realist: "Keep story grounded in realistic details and practical outcomes",
-      },
-    };
-
-    mockClient.queryModel.mockResolvedValue({
-      content: JSON.stringify(creativeBrief),
-    });
-
+  it("should classify creative questions and select appropriate archetypes", async () => {
     const result = await orchestrator.dispatchPhase(
-      "Help me write a short story about time travel",
-      "visionary"
-    );
-
-    expect(result.task_category).toBe("Creative/Writing");
-    expect(result.assignments.Visionary).toContain("metaphors");
-    expect(result.assignments.Humanist).toContain("emotional");
-  });
-
-  it("should generate valid dispatch brief for emotional support task", async () => {
-    const emotionalBrief = {
-      task_category: "Emotional/Support",
-      dispatch_strategy: "Provide empathetic support while offering practical solutions",
-      assignments: {
-        Logician: "Identify root causes and potential solutions logically",
-        Humanist: "Provide validation and empathetic support",
-        Visionary: "Suggest creative coping strategies and new perspectives",
-        Realist: "Offer practical, immediate action steps",
-      },
-    };
-
-    mockClient.queryModel.mockResolvedValue({
-      content: JSON.stringify(emotionalBrief),
-    });
-
-    const result = await orchestrator.dispatchPhase(
-      "I'm feeling overwhelmed with work",
-      "humanist"
-    );
-
-    expect(result.task_category).toBe("Emotional/Support");
-    expect(result.assignments.Humanist).toContain("validation");
-    expect(result.assignments.Realist).toContain("practical");
-  });
-
-  it("should return default brief on JSON parse error", async () => {
-    mockClient.queryModel.mockResolvedValue({
-      content: "Invalid JSON {{{",
-    });
-
-    const result = await orchestrator.dispatchPhase(
-      "Some query",
+      "Help me write a compelling brand story",
       "logician"
     );
 
-    expect(result.task_category).toBe("General");
-    expect(result.dispatch_strategy).toContain("standard");
-    expect(result.assignments.Logician).toBeDefined();
-    expect(result.assignments.Humanist).toBeDefined();
-    expect(result.assignments.Visionary).toBeDefined();
-    expect(result.assignments.Realist).toBeDefined();
+    expect(result.task_category).toBe("Creative");
+    expect(result.selectedArchetypes).toContain("visionary");
+    expect(result.selectedArchetypes).toContain("orator");
+    expect(result.selectedArchetypes.length).toBe(4);
   });
 
-  it("should return default brief on API error", async () => {
-    mockClient.queryModel.mockRejectedValue(
-      new Error("API Error")
-    );
-
+  it("should classify strategic questions and select appropriate archetypes", async () => {
     const result = await orchestrator.dispatchPhase(
-      "Some query",
+      "What's the best strategy for startup growth?",
       "logician"
     );
 
-    expect(result.task_category).toBe("General");
-    expect(result.dispatch_strategy).toContain("standard");
+    expect(result.task_category).toBe("Strategic");
+    expect(result.selectedArchetypes).toContain("visionary");
+    expect(result.selectedArchetypes).toContain("financier");
+    expect(result.selectedArchetypes.length).toBe(4);
   });
 
-  it("should inject dispatch briefs into council member prompts", async () => {
+  it("should classify financial questions and select appropriate archetypes", async () => {
+    const result = await orchestrator.dispatchPhase(
+      "Should I invest in this startup? What's the ROI?",
+      "logician"
+    );
+
+    expect(result.task_category).toBe("Financial");
+    expect(result.selectedArchetypes).toContain("financier");
+    expect(result.selectedArchetypes).toContain("logician");
+    expect(result.selectedArchetypes.length).toBe(4);
+  });
+
+  it("should provide specialized prompts for each archetype", async () => {
+    const result = await orchestrator.dispatchPhase(
+      "Debug this Python function",
+      "logician"
+    );
+
+    // Verify assignments have specialized prompts
+    for (const archetypeId of result.selectedArchetypes) {
+      const prompt = result.assignments[archetypeId];
+      expect(prompt).toBeDefined();
+      expect(prompt.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("should return default brief on error", async () => {
+    // The classifier doesn't throw errors, so we test with an ambiguous query
+    // that will be classified as general
+    const result = await orchestrator.dispatchPhase(
+      "Hello world",
+      "logician"
+    );
+
+    // Should return default brief for ambiguous queries
+    expect(result.task_category).toBe("General");
+    expect(result.selectedArchetypes).toEqual(["logician", "humanist", "visionary", "realist"]);
+    expect(result.selectedArchetypes.length).toBe(4);
+  });
+
+  it("should select different archetypes for different question types", async () => {
+    const codeResult = await orchestrator.dispatchPhase(
+      "How do I debug this code?",
+      "logician"
+    );
+
+    const creativeResult = await orchestrator.dispatchPhase(
+      "Help me write a story",
+      "logician"
+    );
+
+    // Different question types should select different archetypes
+    expect(codeResult.selectedArchetypes).not.toEqual(creativeResult.selectedArchetypes);
+  });
+
+  it("should include reasoning in dispatch strategy", async () => {
+    const result = await orchestrator.dispatchPhase(
+      "Write a function to sort an array",
+      "logician"
+    );
+
+    expect(result.dispatch_strategy).toBeDefined();
+    expect(result.dispatch_strategy.length).toBeGreaterThan(0);
+    expect(result.dispatch_strategy).toContain("keyword matches");
+  });
+
+  it("should handle ambiguous questions with general classification", async () => {
+    const result = await orchestrator.dispatchPhase(
+      "What is the meaning of life?",
+      "logician"
+    );
+
+    // Should still have 4 archetypes even for ambiguous questions
+    expect(result.selectedArchetypes.length).toBe(4);
+    expect(result.assignments).toBeDefined();
+  });
+
+  it("should inject specialized briefs into council member prompts", async () => {
+    // Mock the queryModel to capture the prompts sent
+    const capturedCalls: any[] = [];
+    mockClient.queryModel.mockImplementation((model: string, messages: any[]) => {
+      capturedCalls.push([model, messages]);
+      return Promise.resolve({ content: "Response" });
+    });
+
+    // Execute stage 1 with a dispatch brief
+    const classification = classifyQuestion("Debug this function");
+    const specializedPrompts = getSpecializedPrompts(classification.type, classification.selectedArchetypes);
+    
     const dispatchBrief: DispatchBrief = {
-      task_category: "Technical/Code",
-      dispatch_strategy: "Optimize for performance",
-      assignments: {
-        Logician: "Check for edge cases",
-        Humanist: "Ensure readability",
-        Visionary: "Suggest improvements",
-        Realist: "Focus on efficiency",
-      },
+      task_category: classification.type,
+      dispatch_strategy: classification.reasoning,
+      selectedArchetypes: classification.selectedArchetypes,
+      assignments: specializedPrompts,
     };
 
-    // Mock the stage1 response
-    mockClient.queryModel.mockResolvedValue({
-      content: "Test response",
-    });
-
-    const results = await orchestrator.stage1CollectResponses(
-      "Write a sorting function",
+    await orchestrator.stage1CollectResponses(
+      "Debug this function",
       undefined,
       dispatchBrief
     );
 
-    // Verify that queryModel was called (Chairman + 4 council members)
-    // With dynamic dispatch: 1 call for Chairman analysis + 4 calls for council responses
-    expect(mockClient.queryModel.mock.calls.length).toBeGreaterThanOrEqual(4);
-
-    // Check that the prompts contain the dispatch briefs
-    const calls = mockClient.queryModel.mock.calls;
-    for (const call of calls) {
+    // Verify that specialized briefs were injected into prompts
+    expect(capturedCalls.length).toBeGreaterThan(0);
+    
+    for (const call of capturedCalls) {
       const messages = call[1];
       const prompt = messages[0].content;
+      // Each prompt should contain the special brief
       expect(prompt).toContain("Special Brief for this task:");
     }
   });

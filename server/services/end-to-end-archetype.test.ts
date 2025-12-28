@@ -32,11 +32,11 @@ describe("End-to-End: Archetype Names and Secret Instructions", () => {
     );
 
     // Verify stage1 has archetype names
-    expect(result.stage1).toBeDefined();
-    expect(result.stage1.length).toBeGreaterThan(0);
+    expect(result.stage1Results).toBeDefined();
+    expect(result.stage1Results.length).toBeGreaterThan(0);
 
     // Verify each stage1 result has archetype name
-    result.stage1.forEach((member: any) => {
+    result.stage1Results.forEach((member: any) => {
       expect(member).toHaveProperty("archetypeName");
       expect(member).toHaveProperty("model");
       expect(member).toHaveProperty("response");
@@ -45,7 +45,7 @@ describe("End-to-End: Archetype Names and Secret Instructions", () => {
     });
 
     // Verify specific archetype names are present
-    const archetypeNames = result.stage1.map((m: any) => m.archetypeName);
+    const archetypeNames = result.stage1Results.map((m: any) => m.archetypeName);
     expect(archetypeNames).toContain("The Logician");
     expect(archetypeNames).toContain("The Humanist");
     expect(archetypeNames).toContain("The Visionary");
@@ -64,8 +64,8 @@ describe("End-to-End: Archetype Names and Secret Instructions", () => {
     );
 
     // Verify stage1 has secret instructions
-    expect(result.stage1).toBeDefined();
-    result.stage1.forEach((member: any) => {
+    expect(result.stage1Results).toBeDefined();
+    result.stage1Results.forEach((member: any) => {
       // Secret instructions may be undefined if dispatch brief wasn't generated
       // but archetype names should always be present
       expect(member.archetypeName).toBeTruthy();
@@ -83,7 +83,7 @@ describe("End-to-End: Archetype Names and Secret Instructions", () => {
     );
 
     // Simulate what database does: JSON stringify and parse
-    const serialized = JSON.stringify(result.stage1);
+    const serialized = JSON.stringify(result.stage1Results);
     const deserialized = JSON.parse(serialized);
 
     // Verify archetype names survive serialization
@@ -103,25 +103,19 @@ describe("End-to-End: Archetype Names and Secret Instructions", () => {
 
     const result = await orchestrator.executeCouncil("Test query", "visionary"); // Valid chairman member ID
 
-    // Verify all 10 members are present with archetype names
-    expect(result.stage1.length).toBe(10);
+    // Verify exactly 4 dynamically selected members are present with archetype names
+    expect(result.stage1Results.length).toBe(4);
     
-    const expectedArchetypes = [
-      "The Logician",
-      "The Humanist",
-      "The Visionary",
-      "The Realist",
-      "The Skeptic",
-      "The Pragmatist",
-      "The Financier",
-      "The Ethicist",
-      "The Architect",
-      "The Orator",
-    ];
-
-    const actualArchetypes = result.stage1.map((m: any) => m.archetypeName);
-    expectedArchetypes.forEach(archetype => {
-      expect(actualArchetypes).toContain(archetype);
+    // Each result should have archetype name and secret instruction
+    result.stage1Results.forEach((member: any) => {
+      expect(member.archetypeName).toBeDefined();
+      expect(member.archetypeName).toMatch(/^The /);
+      expect(member.secretInstruction).toBeDefined();
+      expect(member.response).toBeDefined();
     });
+    
+    // Verify dispatch brief has the selected archetypes
+    expect(result.dispatchBrief.selectedArchetypes).toBeDefined();
+    expect(result.dispatchBrief.selectedArchetypes.length).toBe(4);
   });
 });

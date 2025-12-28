@@ -183,8 +183,8 @@ export const councilRouter = router({
         // Add assistant message with chairman model info and dispatch brief
         await dbService.addAssistantMessage(
           input.conversationId,
-          result.stage1,
-          result.stage2,
+          result.stage1Results,
+          result.stage2Result,
           input.chairmanModel,
           result.dispatchBrief
         );
@@ -201,8 +201,8 @@ export const councilRouter = router({
         }
 
         return {
-          stage1: result.stage1,
-          stage2: result.stage2,
+          stage1: result.stage1Results,
+          stage2: result.stage2Result,
         };
       } catch (error) {
         console.error('[sendMessage] Council execution failed:', error);

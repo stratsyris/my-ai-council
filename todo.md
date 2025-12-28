@@ -608,3 +608,13 @@
 - [ ] Display Stage 0 dispatch analysis in UI (task category + which 4 archetypes selected)
 - [ ] Display Stage 2 chairman verdict prominently in UI
 - [ ] Test end-to-end with new message to verify all 3 stages work
+
+## Sprint 29: Dynamic Council Member Selection with Specialized Prompts (COMPLETE ✅)
+- [x] Create question type classifier to detect task category from user query (Code, Creative, Strategic, Emotional, etc.)
+- [x] Build archetype selection matrix mapping question types to optimal 4-member combinations
+- [x] Implement specialized secret prompts for each archetype based on question type
+- [x] Update dispatch phase to select 4 archetypes dynamically instead of always using same 4
+- [x] Ensure different question types select different council member combinations
+- [x] Test with multiple question types to verify dynamic selection works
+- [x] Verify each council member receives specialized secret prompt for their role
+- [x] Save checkpoint with fully working dynamic selection system

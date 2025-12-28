@@ -62,12 +62,7 @@ Remember: Be independent. Do NOT reference other council members or speculate wh
 export function generateChairmanPrompt(
   chairmanMemberId: string,
   userQuery: string,
-  councilResponses: {
-    logician: string;
-    humanist: string;
-    visionary: string;
-    realist: string;
-  }
+  councilResponses: any
 ): string {
   const chairman = getCouncilMember(chairmanMemberId);
   if (!chairman) {

@@ -110,12 +110,8 @@ export default function ChatInterface({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[handleSubmit] Called with input:', input, 'images:', attachedImages.length);
     if (!input.trim() && attachedImages.length === 0) return;
-    
-    // If no conversation exists, we need to create one first
-    // This will be handled by the parent component (Council.tsx)
-    // For now, just return if no conversation
-    if (!conversation) return;
 
     const enabledImages = attachedImages.filter((img) => !img.disabled);
     let imageUrls: string[] = [];
@@ -142,14 +138,22 @@ export default function ChatInterface({
           })
         );
       } catch (error) {
+        console.error('[handleSubmit] Image upload error:', error);
         alert(`Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`);
         return;
       }
     }
 
+    const messageContent = input;  // Capture before clearing
+    console.log('[handleSubmit] Sending message:', messageContent);
     setInput("");
     setAttachedImages([]);
-    await onSendMessage(input, imageUrls);
+    try {
+      await onSendMessage(messageContent, imageUrls);
+      console.log('[handleSubmit] Message sent successfully');
+    } catch (error) {
+      console.error('[handleSubmit] Error sending message:', error);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

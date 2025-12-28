@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,6 +8,7 @@ import DocumentUpload from "./DocumentUpload";
 import EnhancedHeader from "./EnhancedHeader";
 import AnimatedCard from "./AnimatedCard";
 import HeroSection from "./HeroSection";
+import CommandCenterLoader from "./CommandCenterLoader";
 import { getDisplayNameForModel } from "@/lib/council_utils";
 
 interface Message {
@@ -59,9 +60,28 @@ export default function ChatInterface({
   const [input, setInput] = useState("");
   const [showDocumentUpload, setShowDocumentUpload] = useState(false);
   const [attachedImages, setAttachedImages] = useState<AttachedImage[]>([]);
+  const [currentSquad, setCurrentSquad] = useState<string[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle loading state transitions - Dynamic Loading State
+  useEffect(() => {
+    if (isLoading) {
+      // Step 1: Immediately clear squad (Scanning phase)
+      setCurrentSquad([]);
+
+      // Step 2: After 1.5 seconds, simulate dispatch decision (Selection phase)
+      const dispatchTimer = setTimeout(() => {
+        setCurrentSquad(['logician', 'skeptic', 'financier', 'visionary']);
+      }, 1500);
+
+      return () => clearTimeout(dispatchTimer);
+    } else {
+      // When loading ends, clear the squad
+      setCurrentSquad([]);
+    }
+  }, [isLoading]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.currentTarget.files;
@@ -193,13 +213,8 @@ export default function ChatInterface({
                   </AnimatedCard>
                 ))}
                 {isLoading && (
-                  <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    <div className="text-center">
-                      <p className="text-sm font-medium">Chairman is briefing the Council...</p>
-                      <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman || 'google/gemini-3-pro-preview')} as Chairman</p>
-                      <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
-                    </div>
+                  <div className="w-full">
+                    <CommandCenterLoader activeSquad={currentSquad} showTerminal={true} />
                   </div>
                 )}
               </div>
@@ -208,15 +223,8 @@ export default function ChatInterface({
           
           {/* Loading indicator when no messages yet but processing */}
           {conversation && conversation.messages.length === 0 && isLoading && (
-            <div className="p-3 md:p-4 w-full flex justify-center">
-              <div className="flex flex-col items-center gap-3 text-muted-foreground py-8">
-                <Loader2 className="w-6 h-6 animate-spin" />
-                <div className="text-center">
-                  <p className="text-sm font-medium">Chairman is briefing the Council...</p>
-                  <p className="text-xs mt-1">Analyzing your {attachedImages.length > 0 ? 'image and question' : 'question'} with {getDisplayNameForModel(selectedChairman || 'google/gemini-3-pro-preview')} as Chairman</p>
-                  <p className="text-xs mt-2 text-yellow-600">This may take 30-60 seconds...</p>
-                </div>
-              </div>
+            <div className="w-full">
+              <CommandCenterLoader activeSquad={currentSquad} showTerminal={true} />
             </div>
           )}
         </div>

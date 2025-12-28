@@ -227,6 +227,60 @@ export const MODEL_AFFINITY_MATRIX: Record<string, string[]> = {
 };
 
 /**
+ * MODEL SUPERPOWER MATRIX
+ * 
+ * Each model has a unique superpower that maps to specific archetypes.
+ * The Chairman analyzes the user's query for required superpowers and
+ * selects the optimal model + archetype combinations.
+ * 
+ * This enables intelligent dispatch: different questions get different
+ * model combinations based on what superpowers they need.
+ */
+export interface ModelSuperpower {
+  model_id: string;
+  superpower_name: string;
+  superpower_description: string;
+  primary_archetypes: string[];
+  secondary_archetypes: string[];
+  dispatch_guidance: string;
+}
+
+export const MODEL_SUPERPOWER_MATRIX: Record<string, ModelSuperpower> = {
+  "openai/gpt-5.2": {
+    model_id: "openai/gpt-5.2",
+    superpower_name: "Deep Reasoning",
+    superpower_description: "Master of chain-of-thought, math, and rigid instruction following. The 'High IQ' model.",
+    primary_archetypes: ["logician", "financier"],
+    secondary_archetypes: ["pragmatist", "skeptic"],
+    dispatch_guidance: "Send GPT for binary decisions, financial analysis, complex step-by-step logic, and rigorous proof requirements.",
+  },
+  "anthropic/claude-sonnet-4.5": {
+    model_id: "anthropic/claude-sonnet-4.5",
+    superpower_name: "Nuance & Safety",
+    superpower_description: "Excels at writing that feels human, navigating moral gray areas, and producing safe, ethical code. The 'High EQ' model.",
+    primary_archetypes: ["humanist", "ethicist"],
+    secondary_archetypes: ["orator", "architect"],
+    dispatch_guidance: "Send Claude for tasks involving feelings, ethics, PR, safety concerns, and human-centered design.",
+  },
+  "google/gemini-3-pro-preview": {
+    model_id: "google/gemini-3-pro-preview",
+    superpower_name: "Infinite Context",
+    superpower_description: "Largest context window and best web grounding. Sees the 'Big Picture' and synthesizes massive data into new ideas.",
+    primary_archetypes: ["visionary", "realist"],
+    secondary_archetypes: ["architect", "orator"],
+    dispatch_guidance: "Send Gemini for big-picture synthesis, fact-checking, real-time data analysis, and cross-domain pattern recognition.",
+  },
+  "x-ai/grok-4": {
+    model_id: "x-ai/grok-4",
+    superpower_name: "Wild Card",
+    superpower_description: "Less filtered, real-time web access, and willingness to suggest unconventional solutions. The 'Anti-Corporate' model.",
+    primary_archetypes: ["skeptic", "pragmatist"],
+    secondary_archetypes: ["visionary", "realist"],
+    dispatch_guidance: "Send Grok to attack plans, find dirty hacks, challenge assumptions, and provide unfiltered perspective.",
+  },
+};
+
+/**
  * TENSION-BASED SQUAD SELECTION PATTERNS
  * 
  * The Chairman analyzes the user's query for its "Central Tension"

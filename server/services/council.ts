@@ -9,11 +9,14 @@ import { OpenRouterClient, Message } from "./openrouter";
 import {
   generateCouncilMemberPrompt,
   generateChairmanPrompt,
+  generateSuperpowerDispatchPrompt,
+  SuperpowerDispatchResult,
 } from "../../shared/prompt_generators";
 import {
   COUNCIL_CONFIG,
   getAllCouncilMemberIds,
   getCouncilMember,
+  MODEL_SUPERPOWER_MATRIX,
 } from "../../shared/council_config";
 import { getGlobalRequestQueue } from "./request-queue";
 import {
@@ -54,6 +57,85 @@ export class CouncilOrchestrator {
   constructor(client: OpenRouterClient, config: CouncilConfig) {
     this.client = client;
     this.config = config;
+  }
+
+  /**
+   * Superpower-Based Dispatch: Use LLM to detect required superpowers and select optimal squad
+   * This is more sophisticated than the question classifier - it routes based on model strengths
+   */
+  async superpowerDispatchPhase(
+    userQuery: string,
+    chairmanMemberId: string
+  ): Promise<DispatchBrief> {
+    try {
+      const chairman = getCouncilMember(chairmanMemberId);
+      if (!chairman) {
+        throw new Error(`Chairman "${chairmanMemberId}" not found`);
+      }
+
+      // Generate the superpower dispatch prompt
+      const dispatchPrompt = generateSuperpowerDispatchPrompt(userQuery);
+      const messages: Message[] = [{ role: "user", content: dispatchPrompt }];
+
+      // Query the chairman model to analyze superpowers
+      const response = await this.client.queryModel(chairman.model_id, messages);
+      
+      if (!response || !response.content) {
+        throw new Error("Empty response from chairman dispatch");
+      }
+
+      // Parse the JSON response
+      let dispatchResult: SuperpowerDispatchResult | null = null;
+      try {
+        let jsonContent = response.content.trim();
+        
+        // Remove markdown code blocks
+        if (jsonContent.startsWith('```json')) {
+          jsonContent = jsonContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        } else if (jsonContent.startsWith('```')) {
+          jsonContent = jsonContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+        }
+        
+        // Extract JSON object
+        const jsonStart = jsonContent.indexOf('{');
+        const jsonEnd = jsonContent.lastIndexOf('}');
+        
+        if (jsonStart !== -1 && jsonEnd !== -1) {
+          jsonContent = jsonContent.substring(jsonStart, jsonEnd + 1);
+          dispatchResult = JSON.parse(jsonContent);
+        }
+      } catch (e) {
+        console.error("[superpowerDispatch] Failed to parse dispatch JSON:", e);
+      }
+
+      if (!dispatchResult || !dispatchResult.selected_squad || dispatchResult.selected_squad.length !== 4) {
+        throw new Error("Invalid dispatch result structure");
+      }
+
+      // Convert the superpower dispatch result to DispatchBrief format
+      const selectedArchetypes = dispatchResult.selected_squad.map(s => s.archetype);
+      const assignments: Record<string, string> = {};
+      
+      for (const squadMember of dispatchResult.selected_squad) {
+        assignments[squadMember.archetype] = squadMember.reason;
+      }
+
+      const brief: DispatchBrief = {
+        task_category: dispatchResult.required_superpowers.join(" + "),
+        dispatch_strategy: dispatchResult.superpower_rationale,
+        selectedArchetypes,
+        assignments
+      };
+
+      console.log(`[superpowerDispatch] Detected superpowers: ${dispatchResult.required_superpowers.join(", ")}`);
+      console.log(`[superpowerDispatch] Selected archetypes: ${selectedArchetypes.join(", ")}`);
+
+      return brief;
+    } catch (error) {
+      console.error("[superpowerDispatch] Failed:", error);
+      // Fall back to question classifier
+      return this.dispatchPhase(userQuery, chairmanMemberId);
+    }
   }
 
   /**

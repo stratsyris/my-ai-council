@@ -633,3 +633,29 @@
 - [x] Update UI to display archetype icons (🖥️ 🤝 🔭 ⚓ 🛡️ 🔧 💰 ⚖️ 📐 🎤)
 - [x] Test autonomous squad selection with multiple question types
 - [x] Verify high-contrast personalities create meaningful debate (93 tests passing)
+
+
+## Sprint 32: Improved Dispatch Matrix (Model Superpowers) (COMPLETE ✅)
+- [x] Build dispatch matrix with model superpowers and archetype mappings
+  - [x] Claude: Nuance & Safety (Humanist, Ethicist, Orator, Architect)
+  - [x] GPT 5.2: Deep Reasoning (Logician, Financier, Pragmatist, Skeptic)
+  - [x] Gemini 3: Infinite Context (Realist, Visionary, Architect, Orator)
+  - [x] Grok 4: Wild Card (Skeptic, Pragmatist, Visionary, Realist)
+- [x] Update Chairman prompt to detect required superpowers from user query
+- [x] Implement dynamic squad selection based on superpower requirements
+- [x] Add superpower dispatch phase to CouncilOrchestrator
+- [x] Maintain backward compatibility with question classifier fallback
+
+
+## Sprint 33: Visual Command Center Loader (COMPLETE ✅)
+- [x] Create CommandCenterLoader.tsx component
+  - [x] System Status HUD (CORE_CONFLICT, LATENCY, SECURITY)
+  - [x] Network Graph with Chairman at center
+  - [x] 10 Archetypes in orbit with correct icons and colors (exact mappings)
+  - [x] SVG connections from Chairman to active members
+  - [x] Data packet animation along connection lines
+  - [x] Terminal log with scrolling text
+  - [x] Phase cycling: scanning -> selecting -> briefing -> debating
+- [x] Integrate CommandCenterLoader into ChatInterface
+- [x] Implement dynamic loading state with two-step latency
+- [x] Verify component compiles and renders correctly

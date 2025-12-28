@@ -210,15 +210,113 @@ export function parseVerdictJSON(text: string): VerdictCardData | null {
   }
 }
 
+/**
+ * Superpower Dispatch Result Interface
+ */
+export interface SuperpowerDispatchResult {
+  required_superpowers: string[];
+  superpower_rationale: string;
+  selected_squad: Array<{
+    model: string;
+    archetype: string;
+    reason: string;
+  }>;
+}
 
 /**
- * AUTONOMOUS DISPATCH LOGIC
+ * SUPERPOWER-BASED DISPATCH ANALYSIS
+ * 
+ * This function generates a prompt for the Chairman to analyze the user's query
+ * and detect which MODEL SUPERPOWERS are required, then select the optimal
+ * model + archetype combinations based on the superpower matrix.
+ */
+export function generateSuperpowerDispatchPrompt(userQuery: string): string {
+  return `You are the CHAIRMAN OF THE COUNCIL, and your first task is to analyze the user's query and assemble the optimal 4-member expert squad based on REQUIRED SUPERPOWERS.
+
+---
+
+## YOUR MISSION: SUPERPOWER-BASED SQUAD SELECTION
+
+Analyze the user's query to determine which MODEL SUPERPOWERS are required to answer it well.
+
+**The Four Model Superpowers:**
+
+1. **Deep Reasoning** (GPT 5.2)
+   - Master of chain-of-thought, math, and rigid instruction following
+   - Best for: Binary decisions, financial analysis, complex step-by-step logic, rigorous proof
+   - Archetypes: Logician, Financier, Pragmatist, Skeptic
+
+2. **Nuance & Safety** (Claude Sonnet 4.5)
+   - Excels at human-centered writing, moral gray areas, and safe code
+   - Best for: Feelings, ethics, PR, safety concerns, human-centered design
+   - Archetypes: Humanist, Ethicist, Orator, Architect
+
+3. **Infinite Context** (Gemini 3 Pro)
+   - Largest context window, best web grounding, sees the big picture
+   - Best for: Big-picture synthesis, fact-checking, real-time data, cross-domain patterns
+   - Archetypes: Visionary, Realist, Architect, Orator
+
+4. **Wild Card** (Grok 4)
+   - Less filtered, real-time web access, unconventional solutions
+   - Best for: Attacking plans, finding dirty hacks, challenging assumptions
+   - Archetypes: Skeptic, Pragmatist, Visionary, Realist
+
+---
+
+## DISPATCH LOGIC
+
+Your job is to:
+1. Identify which superpowers the query requires (you may need 2-4 different superpowers)
+2. Select the models that embody those superpowers
+3. For each selected model, choose the archetype that best fits the query context
+
+Example: A query about "ethical AI safety" requires:
+- **Nuance & Safety** (Claude) -> Ethicist archetype
+- **Deep Reasoning** (GPT) -> Logician archetype
+- **Infinite Context** (Gemini) -> Visionary archetype (to see big picture)
+- **Wild Card** (Grok) -> Skeptic archetype (to red-team the safety measures)
+
+---
+
+## THE USER'S QUERY
+
+"${userQuery}"
+
+---
+
+## OUTPUT FORMAT
+
+You MUST output ONLY a valid JSON object with this exact structure. No markdown, no extra text before or after the JSON.
+
+{
+  "required_superpowers": ["Deep Reasoning", "Nuance & Safety"],
+  "superpower_rationale": "Why these superpowers are needed for this query",
+  "selected_squad": [
+    {"model": "openai/gpt-5.2", "archetype": "logician", "reason": "..."},
+    {"model": "anthropic/claude-sonnet-4.5", "archetype": "humanist", "reason": "..."},
+    {"model": "google/gemini-3-pro-preview", "archetype": "visionary", "reason": "..."},
+    {"model": "x-ai/grok-4", "archetype": "skeptic", "reason": "..."}
+  ]
+}
+
+**CRITICAL REQUIREMENTS:**
+
+1. Output ONLY valid JSON. No markdown, no extra text before or after.
+2. required_superpowers must be an array of 2-4 superpower names
+3. selected_squad must have exactly 4 entries with model, archetype, and reason
+4. Each model must appear exactly once in selected_squad
+5. Escape any quotes inside JSON strings with backslashes
+
+---
+
+Remember: Your job is to route to the MODELS with the right superpowers, then select ARCHETYPES that create the best debate.`;
+}
+
+/**
+ * AUTONOMOUS DISPATCH LOGIC (Legacy - Tension-Based)
  * 
  * This function generates a prompt for the Chairman to analyze the user's query
  * and autonomously select the 4 best archetypes based on "Central Tension".
- * 
- * The Chairman has autonomy to create novel squad combinations if the query
- * doesn't fit the predefined patterns.
  */
 export function generateDispatchAnalysisPrompt(userQuery: string): string {
   return `You are the CHAIRMAN OF THE COUNCIL, and your first task is to analyze the user's query and assemble the optimal 4-member expert squad.
@@ -241,16 +339,16 @@ Analyze the user's query for its **"Central Tension"** - the fundamental conflic
 
 ## THE ROSTER (10 ARCHETYPES AVAILABLE)
 
-1. **The Logician** 🖥️ (Cold/Robotic) - Demands proof, despises ambiguity
-2. **The Humanist** 🤝 (Warm/Protective) - Prioritizes feelings and human impact
-3. **The Visionary** 🔭 (Grandiose/Abstract) - Ignores limitations, speaks in metaphors
-4. **The Realist** ⚓ (Grumpy/Cynical) - Points out friction and cost
-5. **The Skeptic** 🛡️ (Paranoid/Sharp) - Assumes failure, looks for leaks
-6. **The Pragmatist** 🔧 (Impatient/Scrappy) - Done is better than perfect
-7. **The Financier** 💰 (Greedy/Corporate) - Ruthless about ROI
-8. **The Ethicist** ⚖️ (Judgmental/Strict) - Moral compass, scolds if needed
-9. **The Architect** 📐 (Structured/Pedantic) - Obsesses over long-term stability
-10. **The Orator** 🎤 (Dramatic/Charming) - It's how you say it, not what you say
+1. **The Logician** (Cold/Robotic) - Demands proof, despises ambiguity
+2. **The Humanist** (Warm/Protective) - Prioritizes feelings and human impact
+3. **The Visionary** (Grandiose/Abstract) - Ignores limitations, speaks in metaphors
+4. **The Realist** (Grumpy/Cynical) - Points out friction and cost
+5. **The Skeptic** (Paranoid/Sharp) - Assumes failure, looks for leaks
+6. **The Pragmatist** (Impatient/Scrappy) - Done is better than perfect
+7. **The Financier** (Greedy/Corporate) - Ruthless about ROI
+8. **The Ethicist** (Judgmental/Strict) - Moral compass, scolds if needed
+9. **The Architect** (Structured/Pedantic) - Obsesses over long-term stability
+10. **The Orator** (Dramatic/Charming) - It's how you say it, not what you say
 
 ---
 

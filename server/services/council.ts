@@ -386,12 +386,28 @@ Do not include any text before or after the JSON object.
         throw new Error("Chairman failed to generate response");
       }
 
-      // Parse chairman response - entire response is the final answer
+      // Parse chairman response - expect JSON format
       const content = chairmanResponse.content;
+      console.log('[stage2ChairmanAnalysis] Chairman response length:', content.length);
+      console.log('[stage2ChairmanAnalysis] Chairman response preview:', content.substring(0, 200));
 
-      // Chairman's full analysis and synthesis is the final answer
-      const analysis = content;
-      const finalAnswer = content;
+      // Try to parse as JSON (the chairman should return structured verdict)
+      let verdictData: any = null;
+      try {
+        // Extract JSON from response (in case there's extra text)
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          verdictData = JSON.parse(jsonMatch[0]);
+          console.log('[stage2ChairmanAnalysis] Successfully parsed verdict JSON');
+        }
+      } catch (parseError) {
+        console.warn('[stage2ChairmanAnalysis] Failed to parse verdict JSON, using raw content:', parseError);
+        verdictData = null;
+      }
+
+      // If we got valid verdict data, use it; otherwise use raw content
+      const analysis = verdictData ? JSON.stringify(verdictData) : content;
+      const finalAnswer = verdictData ? JSON.stringify(verdictData) : content;
 
       return {
         analysis,

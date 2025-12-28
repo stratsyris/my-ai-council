@@ -47,32 +47,28 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   // Determine if we're in active state
   const isActiveState = activeSquad.length > 0;
 
-  // LLM Providers data with branded colors and Lucide icons
-  const llmProviders = [
+  // LLM Engines - Only 4 (Top Row - Primary Hierarchy)
+  const llmEngines = [
     { 
-      name: "GPT", 
-      model: "GPT-5.2", 
+      name: "GPT 5.2", 
       icon: Sparkles, 
       bgColor: "bg-emerald-600",
       iconColor: "text-white"
     },
     { 
-      name: "Gemini", 
-      model: "Gemini 3 Pro", 
+      name: "Gemini Pro 3", 
       icon: Star, 
       bgColor: "bg-blue-600",
       iconColor: "text-white"
     },
     { 
-      name: "Claude", 
-      model: "Claude 4.5", 
+      name: "Sonnet 4.5", 
       icon: MessageSquareQuote, 
       bgColor: "bg-orange-600",
       iconColor: "text-white"
     },
     { 
-      name: "Grok", 
-      model: "Grok 4", 
+      name: "Grok 4", 
       icon: Zap, 
       bgColor: "bg-neutral-900",
       iconColor: "text-white"
@@ -81,20 +77,20 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
 
   const getModelName = (modelId: string) => {
     const parts = modelId.split("/");
-    if (parts[0] === "openai") return "GPT-5.2";
-    if (parts[0] === "anthropic") return "Claude 4.5";
-    if (parts[0] === "google") return "Gemini 3 Pro";
+    if (parts[0] === "openai") return "GPT 5.2";
+    if (parts[0] === "anthropic") return "Sonnet 4.5";
+    if (parts[0] === "google") return "Gemini Pro 3";
     if (parts[0] === "x-ai") return "Grok 4";
     return modelId;
   };
 
   return (
-    <div className="w-full bg-black/75 backdrop-blur-xl border-b border-white/10">
+    <div className="w-full bg-slate-900/30 backdrop-blur-xl border-b border-white/10">
       {/* DESKTOP LAYOUT */}
       <div className="hidden md:block">
-        {/* Header Container - Premium Frosted Glass HUD */}
-        <div className="px-8 py-3 flex flex-col gap-3">
-          {/* Top Row: Title + Chairman Dropdown + Theme */}
+        {/* Header Container - Glass HUD */}
+        <div className="px-8 py-8 flex flex-col gap-8">
+          {/* Top Section: Title + Chairman + Theme */}
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-white font-bold text-2xl">My AI Council</h1>
@@ -102,7 +98,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
             </div>
             
             <div className="flex items-center gap-3">
-              {/* Chairman Dropdown - Ghost Button Style */}
+              {/* Chairman Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
@@ -130,7 +126,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Theme Toggle - Ghost Button Style */}
+              {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
                 className="border border-white/30 bg-transparent hover:bg-white/10 text-white p-2 rounded-md transition-colors"
@@ -145,31 +141,36 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
             </div>
           </div>
 
-          {/* ROW 1: All 10 Archetype Icons */}
+          {/* TOP ROW: 4 LLM Engines (Primary Hierarchy) */}
           <AnimatePresence mode="wait">
             {!isActiveState && (
               <motion.div
-                key="row1-idle"
+                key="llm-engines"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
-                className="flex items-center justify-center gap-8 mb-1"
+                className="flex items-center justify-center gap-12"
               >
-                {allArchetypes.map((archetype) => (
-                  <div key={archetype.id} className="flex flex-col items-center gap-1 hover:opacity-100 opacity-80 transition-opacity cursor-pointer group">
-                    <div className="w-6 h-6 text-xl group-hover:scale-110 transition-transform">{archetype.icon}</div>
-                    <span className="text-white/90 text-[10px] font-mono font-bold uppercase whitespace-nowrap tracking-widest opacity-70">
-                      {archetype.display_name.replace("The ", "")}
-                    </span>
-                  </div>
-                ))}
+                {llmEngines.map((engine) => {
+                  const IconComponent = engine.icon;
+                  return (
+                    <div key={engine.name} className="flex flex-col items-center gap-3 hover:opacity-100 opacity-90 transition-opacity">
+                      {/* Large Engine Icon */}
+                      <div className={`w-12 h-12 rounded-lg ${engine.bgColor} flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow`}>
+                        <IconComponent className={`w-7 h-7 ${engine.iconColor}`} />
+                      </div>
+                      {/* Engine Name */}
+                      <p className="text-white font-medium text-sm text-center">{engine.name}</p>
+                    </div>
+                  );
+                })}
               </motion.div>
             )}
 
             {isActiveState && (
               <motion.div
-                key="row1-active"
+                key="active-engines"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
@@ -189,61 +190,27 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
             )}
           </AnimatePresence>
 
-          {/* Horizontal Divider - Only show in idle state */}
+          {/* BOTTOM ROW: 10 Archetypes (Secondary Hierarchy) */}
           <AnimatePresence mode="wait">
             {!isActiveState && (
               <motion.div
-                key="divider"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full h-px bg-white/5 my-2"
-              />
-            )}
-          </AnimatePresence>
-
-          {/* ROW 2: LLM Providers - Bold App Icons */}
-          <AnimatePresence mode="wait">
-            {!isActiveState && (
-              <motion.div
-                key="row2-engines"
+                key="archetypes"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-col items-center gap-2"
+                className="flex items-center justify-between gap-6"
               >
-                {/* Label */}
-                <p className="text-white/70 text-xs font-mono uppercase tracking-widest mt-1">POWERED BY TOP LLMs:</p>
-                
-                {/* LLM Providers - Bold App Icons */}
-                <div className="flex items-center justify-center gap-8">
-                  {llmProviders.map((provider, idx) => {
-                    const IconComponent = provider.icon;
-                    return (
-                      <div key={provider.name} className="flex items-center gap-8">
-                        {/* Bold App Icon */}
-                        <div className="flex flex-col items-center gap-2 hover:opacity-100 opacity-90 transition-opacity">
-                          {/* Icon Container - Bold App Icon Style */}
-                          <div className={`w-10 h-10 rounded-md ${provider.bgColor} flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow`}>
-                            <IconComponent className={`w-6 h-6 ${provider.iconColor}`} />
-                          </div>
-                          {/* Provider Name & Model */}
-                          <div className="text-center">
-                            <p className="text-white font-bold text-xs">{provider.name}</p>
-                            <p className="text-gray-300 text-[10px] font-mono">{provider.model}</p>
-                          </div>
-                        </div>
-
-                        {/* Vertical Divider - Only between items, not after last */}
-                        {idx < llmProviders.length - 1 && (
-                          <div className="h-16 w-px bg-white/10"></div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                {allArchetypes.map((archetype) => (
+                  <div key={archetype.id} className="flex flex-col items-center gap-2 hover:opacity-100 opacity-70 transition-opacity cursor-pointer group">
+                    {/* Small Archetype Icon */}
+                    <div className="w-6 h-6 text-lg group-hover:scale-110 transition-transform">{archetype.icon}</div>
+                    {/* Archetype Label - Semi-transparent */}
+                    <span className="text-white/60 text-[10px] font-mono font-bold uppercase whitespace-nowrap tracking-widest text-center">
+                      {archetype.display_name.replace("The ", "")}
+                    </span>
+                  </div>
+                ))}
               </motion.div>
             )}
           </AnimatePresence>
@@ -251,7 +218,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
       </div>
 
       {/* MOBILE LAYOUT */}
-      <div className="md:hidden px-4 py-3 space-y-2">
+      <div className="md:hidden px-4 py-4 space-y-4">
         {/* Top Row: Menu + Title + Theme */}
         <div className="flex items-center justify-between gap-2">
           <button
@@ -305,36 +272,39 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Row 1: Archetype Icons - Compact */}
+        {/* Mobile Top Row: 4 LLM Engines */}
         <AnimatePresence mode="wait">
           {!isActiveState && (
             <motion.div
-              key="mobile-row1"
+              key="mobile-llm-engines"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center justify-center gap-2 flex-wrap mb-1"
+              className="flex items-center justify-center gap-4"
             >
-              {allArchetypes.map((archetype) => (
-                <div key={archetype.id} className="flex flex-col items-center gap-0.5 opacity-80 hover:opacity-100 transition-opacity">
-                  <div className="text-xl">{archetype.icon}</div>
-                  <span className="text-white/70 text-xs font-mono whitespace-nowrap">
-                    {archetype.display_name.split(" ").pop()}
-                  </span>
-                </div>
-              ))}
+              {llmEngines.map((engine) => {
+                const IconComponent = engine.icon;
+                return (
+                  <div key={engine.name} className="flex flex-col items-center gap-1 opacity-90 hover:opacity-100 transition-opacity">
+                    <div className={`w-8 h-8 rounded-md ${engine.bgColor} flex items-center justify-center shadow-lg`}>
+                      <IconComponent className={`w-5 h-5 ${engine.iconColor}`} />
+                    </div>
+                    <p className="text-white font-medium text-xs text-center">{engine.name.split(" ")[0]}</p>
+                  </div>
+                );
+              })}
             </motion.div>
           )}
 
           {isActiveState && (
             <motion.div
-              key="mobile-row1-active"
+              key="mobile-active-engines"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center justify-center gap-2 flex-wrap"
+              className="flex items-center justify-center gap-3 flex-wrap"
             >
               {activeMembers.map((member) => (
                 <div key={member?.id} className="flex flex-col items-center gap-1">
@@ -346,54 +316,25 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
           )}
         </AnimatePresence>
 
-        {/* Horizontal Divider - Only show in idle state */}
+        {/* Mobile Bottom Row: 10 Archetypes */}
         <AnimatePresence mode="wait">
           {!isActiveState && (
             <motion.div
-              key="mobile-divider"
+              key="mobile-archetypes"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="w-full h-px bg-white/5 my-1"
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Row 2: LLM Providers - Mobile Bold App Icons */}
-        <AnimatePresence mode="wait">
-          {!isActiveState && (
-            <motion.div
-              key="mobile-row2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-col items-center gap-1"
+              className="flex items-center justify-between gap-2 flex-wrap"
             >
-              <p className="text-white/60 text-xs font-mono uppercase tracking-widest mt-1">POWERED BY TOP LLMs:</p>
-              <div className="flex items-center gap-2 flex-wrap justify-center">
-                {llmProviders.map((provider, idx) => {
-                  const IconComponent = provider.icon;
-                  return (
-                    <div key={provider.name} className="flex items-center gap-2">
-                      {/* Mobile Bold App Icon */}
-                      <div className="flex flex-col items-center gap-1">
-                        <div className={`w-9 h-9 rounded-md ${provider.bgColor} flex items-center justify-center shadow-lg`}>
-                          <IconComponent className={`w-5 h-5 ${provider.iconColor}`} />
-                        </div>
-                        <div className="text-center">
-                          <p className="text-white font-bold text-xs">{provider.name}</p>
-                          <p className="text-gray-300 text-[10px] font-mono">{provider.model}</p>
-                        </div>
-                      </div>
-                      {idx < llmProviders.length - 1 && (
-                        <div className="h-6 w-px bg-white/10"></div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              {allArchetypes.map((archetype) => (
+                <div key={archetype.id} className="flex flex-col items-center gap-0.5 opacity-70 hover:opacity-100 transition-opacity">
+                  <div className="text-lg">{archetype.icon}</div>
+                  <span className="text-white/60 text-[10px] font-mono whitespace-nowrap text-center">
+                    {archetype.display_name.split(" ").pop()}
+                  </span>
+                </div>
+              ))}
             </motion.div>
           )}
         </AnimatePresence>

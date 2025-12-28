@@ -794,3 +794,16 @@
 - [x] Ensure brand colors are vivid (emerald-600, blue-600, orange-600, neutral-900)
 - [x] Test HUD-like compact appearance on desktop
 - [x] Test responsive layout on mobile with adjusted spacing
+
+
+## GLASS HUD REFACTOR (COMPLETED ✅)
+- [x] Implement container glassmorphism: bg-slate-900/30 backdrop-blur-xl border-b border-white/10
+- [x] Set container padding to py-8 for breathing room
+- [x] Create top row with 4 LLM engines only (remove Mistral, rename Claude to Sonnet 4.5)
+- [x] Style LLM icons as LARGE: w-12 h-12, centered, gap-12
+- [x] Style LLM labels: text-sm font-medium text-white (GPT 5.2, Gemini Pro 3, Sonnet 4.5, Grok 4)
+- [x] Create bottom row with all 10 archetypes in single horizontal row
+- [x] Style archetype icons: w-6 h-6, justify-between or gap-6
+- [x] Style archetype labels: text-[10px] text-white/60, semi-transparent
+- [x] Remove subheadings between rows
+- [x] Test visual hierarchy on desktop and mobile

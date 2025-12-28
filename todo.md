@@ -727,3 +727,13 @@
 - [x] Test Draft Day header on desktop and mobile
 - [x] Verify animations are smooth and performant
 - [x] Extract and persist active squad from conversation messages
+
+
+## COMMAND DECK HEADER REFACTOR (COMPLETED ✅)
+- [x] Increase header height to h-40 with glassmorphism background
+- [x] Build Row 1: Display all 10 archetype icons with labels in tight row
+- [x] Build Row 2: Create "POWERED BY TOP LLMs:" section with provider logos
+- [x] Add OpenAI (GPT), Google (Gemini), Anthropic (Claude), X (Grok) logos
+- [x] Implement state transitions: Engines row fades out on active state
+- [x] Test Command Deck on desktop and mobile
+- [x] Verify smooth animations and proper spacing

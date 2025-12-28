@@ -114,10 +114,22 @@ export class CouncilOrchestrator {
 
       // Convert the superpower dispatch result to DispatchBrief format
       const selectedArchetypes = dispatchResult.selected_squad.map(s => s.archetype);
+      
+      // Get specialized prompts for the selected archetypes based on question classification
+      // This combines superpower dispatch with Sprint 29 specialized secret prompts
+      const classification = classifyQuestion(userQuery);
+      const specializedPrompts = getSpecializedPrompts(classification.type, selectedArchetypes);
+      
       const assignments: Record<string, string> = {};
       
       for (const squadMember of dispatchResult.selected_squad) {
-        assignments[squadMember.archetype] = squadMember.reason;
+        // Use specialized prompt if available, otherwise use the superpower reason
+        const specializedBrief = specializedPrompts[squadMember.archetype];
+        assignments[squadMember.archetype] = specializedBrief || squadMember.reason;
+        
+        if (specializedBrief) {
+          console.log(`[superpowerDispatch] Using specialized prompt for ${squadMember.archetype}`);
+        }
       }
 
       const brief: DispatchBrief = {

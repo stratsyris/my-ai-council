@@ -683,3 +683,12 @@
 - [x] Document test results in TEST_RESULTS.md
 - [x] Verify 3-stage council execution works end-to-end
 - [x] Confirm all features working as designed
+
+
+## Sprint 36: Integrate Specialized Prompts with Superpower Dispatch (COMPLETE ✅)
+- [x] Update superpowerDispatchPhase to use specialized prompts from Sprint 29
+- [x] Combine superpower-based squad selection with specialized secret briefs
+- [x] Test specialized prompts are being injected into council member prompts
+- [x] Verify council responses reflect the specialized prompt guidance
+- [x] Confirm Task Analysis displays the dispatch strategy
+- [x] Verify end-to-end flow with both features integrated

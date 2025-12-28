@@ -11,7 +11,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { COUNCIL_CONFIG } from "@shared/council_config";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Moon, Sun } from "lucide-react";
 
 interface EnhancedHeaderProps {
   onOpenSidebar?: () => void;
@@ -49,12 +49,32 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   // Determine if we're in active state
   const isActiveState = activeSquad.length > 0;
 
-  // LLM Providers data
+  // LLM Providers data with proper logos
   const llmProviders = [
-    { name: "GPT", model: "GPT-5.2", logo: "🔷", color: "from-green-400 to-green-600" },
-    { name: "Gemini", model: "Gemini 3 Pro", logo: "🔵", color: "from-blue-400 to-blue-600" },
-    { name: "Claude", model: "Claude 4.5", logo: "🟠", color: "from-orange-400 to-orange-600" },
-    { name: "Grok", model: "Grok 4", logo: "❌", color: "from-gray-300 to-gray-500" },
+    { 
+      name: "GPT", 
+      model: "GPT-5.2", 
+      logo: "🔷",
+      logoEmoji: "⚡"
+    },
+    { 
+      name: "Gemini", 
+      model: "Gemini 3 Pro", 
+      logo: "🔵",
+      logoEmoji: "🔷"
+    },
+    { 
+      name: "Claude", 
+      model: "Claude 4.5", 
+      logo: "🟠",
+      logoEmoji: "🧠"
+    },
+    { 
+      name: "Grok", 
+      model: "Grok 4", 
+      logo: "❌",
+      logoEmoji: "⚙️"
+    },
   ];
 
   const getModelName = (modelId: string) => {
@@ -67,64 +87,63 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   };
 
   return (
-    <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 shadow-lg">
+    <div className="relative bg-black/30 backdrop-blur-md border-b border-white/10">
       {/* DESKTOP LAYOUT */}
       <div className="hidden md:block">
-        {/* Taller Command Deck Container - h-40 */}
-        <div className="h-40 px-6 py-4 flex flex-col justify-between">
+        {/* Glassmorphic Command Deck Container - h-40 */}
+        <div className="h-40 px-8 py-4 flex flex-col justify-between">
           {/* Top Row: Title + Chairman Dropdown + Theme */}
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-white font-bold text-2xl">My AI Council</h1>
-              <p className="text-white/80 text-sm">Multiple LLMs collaborate to answer your questions</p>
+              <p className="text-white/70 text-sm">Multiple LLMs collaborate to answer your questions</p>
             </div>
             
             <div className="flex items-center gap-3">
-              {/* Chairman Dropdown */}
+              {/* Chairman Dropdown - Ghost Button Style */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="outline" 
-                    className="border-white/30 bg-white/10 hover:bg-white/20 text-white text-sm"
+                    className="border border-white/30 bg-transparent hover:bg-white/10 text-white text-sm font-medium transition-colors"
                   >
                     Chairman: {chairmanName} ({chairmanModel})
                     <ChevronDown className="w-4 h-4 ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-white/20">
                   {allArchetypes.map((archetype) => (
                     <DropdownMenuItem
                       key={archetype.id}
                       onClick={() => onChairmanChange?.(archetype.model_id)}
-                      className="cursor-pointer"
+                      className="cursor-pointer text-white hover:bg-white/10"
                     >
-                      <span className="mr-2">{archetype.icon}</span>
-                      {archetype.display_name} ({archetype.ui_badge})
+                      <span className="mr-2 text-lg">{archetype.icon}</span>
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{archetype.display_name}</span>
+                        <span className="text-xs text-white/60">{archetype.ui_badge}</span>
+                      </div>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Theme Toggle */}
+              {/* Theme Toggle - Ghost Button Style */}
               <button
                 onClick={toggleTheme}
-                className="text-white hover:opacity-80 transition-opacity p-2"
+                className="border border-white/30 bg-transparent hover:bg-white/10 text-white p-2 rounded-md transition-colors"
                 aria-label="Toggle theme"
               >
                 {theme === "dark" ? (
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                  </svg>
+                  <Sun className="w-5 h-5" />
                 ) : (
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.536l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.828-2.828a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm.707 5.657a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707zM9 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z" clipRule="evenodd" />
-                  </svg>
+                  <Moon className="w-5 h-5" />
                 )}
               </button>
             </div>
           </div>
 
-          {/* Row 1: All 10 Archetype Icons */}
+          {/* Row 1: All 10 Archetype Icons - "The Personas" */}
           <AnimatePresence mode="wait">
             {!isActiveState && (
               <motion.div
@@ -133,13 +152,13 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
-                className="flex items-center justify-center gap-6"
+                className="flex items-center justify-center gap-8"
               >
                 {allArchetypes.map((archetype) => (
-                  <div key={archetype.id} className="flex flex-col items-center gap-1 hover:opacity-100 opacity-70 transition-opacity">
-                    <div className="text-3xl">{archetype.icon}</div>
-                    <span className="text-white/90 text-xs font-mono font-bold uppercase whitespace-nowrap">
-                      {archetype.display_name.split(" ").pop()}
+                  <div key={archetype.id} className="flex flex-col items-center gap-2 hover:opacity-100 opacity-80 transition-opacity cursor-pointer group">
+                    <div className="text-4xl group-hover:scale-110 transition-transform">{archetype.icon}</div>
+                    <span className="text-white/90 text-xs font-mono font-bold uppercase whitespace-nowrap tracking-wide">
+                      {archetype.display_name.replace("The ", "")}
                     </span>
                   </div>
                 ))}
@@ -153,14 +172,14 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
-                className="flex items-center justify-center gap-8"
+                className="flex items-center justify-center gap-12"
               >
                 {activeMembers.map((member) => (
                   <div key={member?.id} className="flex flex-col items-center gap-2">
-                    <div className="text-4xl">{member?.icon}</div>
+                    <div className="text-5xl">{member?.icon}</div>
                     <div className="text-center">
-                      <p className="text-white font-bold text-sm">{member?.display_name}</p>
-                      <p className="text-white/70 text-xs">{getModelName(member?.model_id || "")}</p>
+                      <p className="text-white font-bold text-sm uppercase tracking-wide">{member?.display_name.replace("The ", "")}</p>
+                      <p className="text-white/60 text-xs font-mono">{getModelName(member?.model_id || "")}</p>
                     </div>
                   </div>
                 ))}
@@ -168,7 +187,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
             )}
           </AnimatePresence>
 
-          {/* Row 2: LLM Providers (Engines) - Only show in idle state */}
+          {/* Row 2: LLM Providers - "The Engines" - Only show in idle state */}
           <AnimatePresence mode="wait">
             {!isActiveState && (
               <motion.div
@@ -177,17 +196,20 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-col items-center gap-2"
+                className="flex flex-col items-center gap-3"
               >
-                <p className="text-white/60 text-xs font-mono">POWERED BY TOP LLMs:</p>
-                <div className="flex items-center gap-6">
+                <p className="text-white/60 text-xs font-mono uppercase tracking-widest">POWERED BY TOP LLMs:</p>
+                <div className="flex items-center gap-8">
                   {llmProviders.map((provider, idx) => (
-                    <div key={provider.name} className="flex items-center gap-2">
-                      <div className="text-2xl">{provider.logo}</div>
-                      <span className="text-white/80 text-xs font-mono">{provider.name}</span>
-                      {idx < llmProviders.length - 1 && (
-                        <span className="text-white/40 ml-2">|</span>
-                      )}
+                    <div key={provider.name} className="flex flex-col items-center gap-1.5 hover:opacity-100 opacity-90 transition-opacity">
+                      {/* Logo - Large and Prominent */}
+                      <div className="w-12 h-12 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-2xl hover:bg-white/20 transition-colors">
+                        {provider.logoEmoji}
+                      </div>
+                      {/* Provider Name */}
+                      <span className="text-white/90 text-xs font-mono font-semibold">{provider.name}</span>
+                      {/* Model Version */}
+                      <span className="text-white/60 text-xs font-mono">{provider.model}</span>
                     </div>
                   ))}
                 </div>
@@ -203,7 +225,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
         <div className="flex items-center justify-between gap-2">
           <button
             onClick={onOpenSidebar}
-            className="flex-shrink-0 text-white hover:opacity-80 transition-opacity"
+            className="flex-shrink-0 text-white hover:opacity-80 transition-opacity p-2"
             aria-label="Open sidebar"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,21 +234,17 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
           </button>
           <div className="flex-1">
             <h1 className="text-white font-bold text-lg">My AI Council</h1>
-            <p className="text-white/70 text-xs">Multiple LLMs collaborate</p>
+            <p className="text-white/60 text-xs">Multiple LLMs collaborate</p>
           </div>
           <button
             onClick={toggleTheme}
-            className="flex-shrink-0 text-white hover:opacity-80 transition-opacity"
+            className="flex-shrink-0 text-white hover:opacity-80 transition-opacity p-2"
             aria-label="Toggle theme"
           >
             {theme === "dark" ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-              </svg>
+              <Sun className="w-5 h-5" />
             ) : (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.536l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.828-2.828a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm.707 5.657a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 1.414l-.707.707zM9 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
+              <Moon className="w-5 h-5" />
             )}
           </button>
         </div>
@@ -236,20 +254,20 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
           <DropdownMenuTrigger asChild>
             <Button 
               variant="outline" 
-              className="w-full border-white/30 bg-white/10 hover:bg-white/20 text-white text-xs"
+              className="w-full border border-white/30 bg-transparent hover:bg-white/10 text-white text-xs font-medium"
             >
               Chairman: {chairmanName}
               <ChevronDown className="w-3 h-3 ml-2" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="w-48">
+          <DropdownMenuContent align="center" className="w-48 bg-gray-900 border-white/20">
             {allArchetypes.map((archetype) => (
               <DropdownMenuItem
                 key={archetype.id}
                 onClick={() => onChairmanChange?.(archetype.model_id)}
-                className="cursor-pointer text-xs"
+                className="cursor-pointer text-white hover:bg-white/10 text-xs"
               >
-                <span className="mr-2">{archetype.icon}</span>
+                <span className="mr-2 text-lg">{archetype.icon}</span>
                 {archetype.display_name}
               </DropdownMenuItem>
             ))}
@@ -265,12 +283,12 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center justify-center gap-2 flex-wrap"
+              className="flex items-center justify-center gap-3 flex-wrap"
             >
               {allArchetypes.map((archetype) => (
-                <div key={archetype.id} className="flex flex-col items-center gap-0.5 opacity-70 hover:opacity-100 transition-opacity">
-                  <div className="text-xl">{archetype.icon}</div>
-                  <span className="text-white/80 text-xs font-mono whitespace-nowrap">
+                <div key={archetype.id} className="flex flex-col items-center gap-0.5 opacity-80 hover:opacity-100 transition-opacity">
+                  <div className="text-2xl">{archetype.icon}</div>
+                  <span className="text-white/70 text-xs font-mono whitespace-nowrap">
                     {archetype.display_name.split(" ").pop()}
                   </span>
                 </div>
@@ -285,12 +303,12 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center justify-center gap-3 flex-wrap"
+              className="flex items-center justify-center gap-2 flex-wrap"
             >
               {activeMembers.map((member) => (
                 <div key={member?.id} className="flex flex-col items-center gap-1">
-                  <div className="text-2xl">{member?.icon}</div>
-                  <p className="text-white font-bold text-xs text-center">{member?.display_name}</p>
+                  <div className="text-3xl">{member?.icon}</div>
+                  <p className="text-white font-bold text-xs text-center">{member?.display_name.replace("The ", "")}</p>
                 </div>
               ))}
             </motion.div>
@@ -306,17 +324,16 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center gap-2"
             >
-              <p className="text-white/60 text-xs font-mono">POWERED BY TOP LLMs:</p>
-              <div className="flex items-center gap-3 flex-wrap justify-center">
-                {llmProviders.map((provider, idx) => (
-                  <div key={provider.name} className="flex items-center gap-1">
-                    <div className="text-lg">{provider.logo}</div>
+              <p className="text-white/60 text-xs font-mono uppercase tracking-widest">POWERED BY TOP LLMs:</p>
+              <div className="flex items-center gap-2 flex-wrap justify-center">
+                {llmProviders.map((provider) => (
+                  <div key={provider.name} className="flex flex-col items-center gap-1">
+                    <div className="w-8 h-8 rounded bg-white/10 border border-white/20 flex items-center justify-center text-lg">
+                      {provider.logoEmoji}
+                    </div>
                     <span className="text-white/80 text-xs font-mono">{provider.name}</span>
-                    {idx < llmProviders.length - 1 && (
-                      <span className="text-white/40 ml-1">|</span>
-                    )}
                   </div>
                 ))}
               </div>

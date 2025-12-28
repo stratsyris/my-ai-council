@@ -93,13 +93,15 @@ Do not include any text before or after the JSON object.
     try {
       const response = await this.client.queryModel(chairman.model_id, messages);
 
-      if (!response) {
-        throw new Error("Chairman failed to generate dispatch brief");
+      if (!response || !response.content || response.content.trim().length === 0) {
+        console.error('[dispatchPhase] Empty response from chairman, using default brief');
+        return this.getDefaultBrief();
       }
 
       // Parse the JSON response - handle markdown-wrapped JSON and malformed responses
       try {
         let jsonContent = response.content.trim();
+        console.log('[dispatchPhase] Raw response length:', jsonContent.length);
         
         // Remove markdown code blocks if present
         if (jsonContent.startsWith('```json')) {
@@ -119,6 +121,8 @@ Do not include any text before or after the JSON object.
         // Clean up whitespace and fix common JSON issues
         jsonContent = jsonContent.replace(/\n/g, ' ').replace(/\r/g, ' ');
         jsonContent = jsonContent.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
+        // Fix unquoted keys (common LLM mistake)
+        jsonContent = jsonContent.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
         
         // Validate we have content
         if (!jsonContent || jsonContent.trim().length === 0) {
@@ -128,10 +132,12 @@ Do not include any text before or after the JSON object.
         // Try parsing first
         let brief;
         try {
+          console.log('[dispatchPhase] Attempting JSON parse...');
           brief = JSON.parse(jsonContent) as DispatchBrief;
+          console.log('[dispatchPhase] Successfully parsed');
         } catch (e) {
           // If parsing fails, remove any trailing content
-          console.log('[dispatchPhase] Initial parse failed, attempting repairs...');
+          console.log('[dispatchPhase] Initial parse failed, attempting repairs...', e);
           if (jsonContent.includes('}')) {
             jsonContent = jsonContent.substring(0, jsonContent.lastIndexOf('}') + 1);
           }
@@ -140,14 +146,25 @@ Do not include any text before or after the JSON object.
           }
           try {
             brief = JSON.parse(jsonContent) as DispatchBrief;
+            console.log('[dispatchPhase] Successfully parsed after repair');
           } catch (e2) {
+            console.error('[dispatchPhase] Repair failed:', e2);
             throw new Error('JSON parse failed after repair');
           }
         }
         
         // Validate the brief has required fields
         if (!brief.task_category || !brief.assignments) {
+          console.error('[dispatchPhase] Invalid brief:', brief);
           throw new Error('Invalid dispatch brief structure');
+        }
+        
+        // Ensure all members have assignments
+        const members = ['Logician', 'Humanist', 'Visionary', 'Realist'];
+        for (const m of members) {
+          if (!brief.assignments[m as keyof typeof brief.assignments]) {
+            brief.assignments[m as keyof typeof brief.assignments] = `Default ${m} perspective`;
+          }
         }
         
         console.log(`[dispatchPhase] Generated brief for task: ${brief.task_category}`);

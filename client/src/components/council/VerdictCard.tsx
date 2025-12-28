@@ -17,7 +17,7 @@ export default function VerdictCard({
   chairmanIcon,
 }: VerdictCardProps) {
   return (
-    <div className="mb-4 border-l-4 border-amber-500 bg-gradient-to-r from-amber-50/50 to-yellow-50/50 rounded-r-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+    <div className="mb-4 border-l-4 border-amber-500 bg-gradient-to-r from-amber-50/50 to-yellow-50/50 rounded-r-lg shadow-md hover:shadow-lg transition-shadow">
       {/* Header with premium styling */}
       <div className="bg-gradient-to-r from-amber-100 to-yellow-100 px-4 py-3 border-b border-amber-200">
         <div className="flex items-center justify-between gap-3 mb-2">
@@ -37,7 +37,7 @@ export default function VerdictCard({
       </div>
 
       {/* Main content */}
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 w-full overflow-visible">
         {/* Primary Conflict */}
         <div className="bg-white/60 rounded p-3 border border-amber-200/50">
           <p className="text-xs font-semibold text-amber-700 mb-1">
@@ -57,24 +57,24 @@ export default function VerdictCard({
             <h4 className="font-bold text-gray-900 text-sm">The Ruling</h4>
             <CopyButton text={data.final_verdict_markdown} />
           </div>
-          <div className="prose prose-sm max-w-none text-sm text-gray-700 break-words">
+          <div className="prose prose-sm max-w-none text-sm text-gray-700 break-words overflow-visible w-full">
             <ReactMarkdown
               components={{
                 p: ({ children }) => (
-                  <p className="break-words whitespace-pre-wrap mb-2">
+                  <p className="break-words whitespace-pre-wrap mb-2 overflow-visible">
                     {children}
                   </p>
                 ),
                 li: ({ children }) => (
-                  <li className="break-words whitespace-pre-wrap ml-4">
+                  <li className="break-words whitespace-pre-wrap ml-4 overflow-visible">
                     {children}
                   </li>
                 ),
                 ul: ({ children }) => (
-                  <ul className="list-disc space-y-1">{children}</ul>
+                  <ul className="list-disc space-y-1 overflow-visible">{children}</ul>
                 ),
                 strong: ({ children }) => (
-                  <strong className="font-bold text-gray-900">
+                  <strong className="font-bold text-gray-900 overflow-visible">
                     {children}
                   </strong>
                 ),

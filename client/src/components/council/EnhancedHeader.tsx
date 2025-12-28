@@ -89,11 +89,11 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   };
 
   return (
-    <div className="w-full bg-black/80 backdrop-blur-xl border-b border-white/10">
+    <div className="w-full bg-black/75 backdrop-blur-xl border-b border-white/10">
       {/* DESKTOP LAYOUT */}
       <div className="hidden md:block">
-        {/* Header Container - Ultra-Compact Two-Row Structure */}
-        <div className="px-8 py-4 flex flex-col gap-3">
+        {/* Header Container - Premium Frosted Glass HUD */}
+        <div className="px-8 py-3 flex flex-col gap-3">
           {/* Top Row: Title + Chairman Dropdown + Theme */}
           <div className="flex items-center justify-between">
             <div>
@@ -154,7 +154,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
-                className="flex items-center justify-center gap-8"
+                className="flex items-center justify-center gap-8 mb-1"
               >
                 {allArchetypes.map((archetype) => (
                   <div key={archetype.id} className="flex flex-col items-center gap-1 hover:opacity-100 opacity-80 transition-opacity cursor-pointer group">
@@ -203,7 +203,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
             )}
           </AnimatePresence>
 
-          {/* ROW 2: LLM Providers - Branded App Icons */}
+          {/* ROW 2: LLM Providers - Bold App Icons */}
           <AnimatePresence mode="wait">
             {!isActiveState && (
               <motion.div
@@ -212,22 +212,22 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-col items-center gap-3"
+                className="flex flex-col items-center gap-2"
               >
                 {/* Label */}
-                <p className="text-white/70 text-xs font-mono uppercase tracking-widest">POWERED BY TOP LLMs:</p>
+                <p className="text-white/70 text-xs font-mono uppercase tracking-widest mt-1">POWERED BY TOP LLMs:</p>
                 
-                {/* LLM Providers - Branded App Icons */}
+                {/* LLM Providers - Bold App Icons */}
                 <div className="flex items-center justify-center gap-8">
                   {llmProviders.map((provider, idx) => {
                     const IconComponent = provider.icon;
                     return (
                       <div key={provider.name} className="flex items-center gap-8">
-                        {/* Branded App Icon */}
+                        {/* Bold App Icon */}
                         <div className="flex flex-col items-center gap-2 hover:opacity-100 opacity-90 transition-opacity">
-                          {/* Icon Container - Rounded App Icon Style */}
-                          <div className={`w-8 h-8 rounded-md ${provider.bgColor} flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow`}>
-                            <IconComponent className={`w-5 h-5 ${provider.iconColor}`} />
+                          {/* Icon Container - Bold App Icon Style */}
+                          <div className={`w-10 h-10 rounded-md ${provider.bgColor} flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow`}>
+                            <IconComponent className={`w-6 h-6 ${provider.iconColor}`} />
                           </div>
                           {/* Provider Name & Model */}
                           <div className="text-center">
@@ -251,7 +251,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
       </div>
 
       {/* MOBILE LAYOUT */}
-      <div className="md:hidden px-4 py-3 space-y-3">
+      <div className="md:hidden px-4 py-3 space-y-2">
         {/* Top Row: Menu + Title + Theme */}
         <div className="flex items-center justify-between gap-2">
           <button
@@ -314,7 +314,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center justify-center gap-2 flex-wrap"
+              className="flex items-center justify-center gap-2 flex-wrap mb-1"
             >
               {allArchetypes.map((archetype) => (
                 <div key={archetype.id} className="flex flex-col items-center gap-0.5 opacity-80 hover:opacity-100 transition-opacity">
@@ -355,12 +355,12 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="w-full h-px bg-white/5 my-2"
+              className="w-full h-px bg-white/5 my-1"
             />
           )}
         </AnimatePresence>
 
-        {/* Row 2: LLM Providers - Mobile Branded App Icons */}
+        {/* Row 2: LLM Providers - Mobile Bold App Icons */}
         <AnimatePresence mode="wait">
           {!isActiveState && (
             <motion.div
@@ -369,18 +369,18 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex flex-col items-center gap-2"
+              className="flex flex-col items-center gap-1"
             >
-              <p className="text-white/60 text-xs font-mono uppercase tracking-widest">POWERED BY TOP LLMs:</p>
-              <div className="flex items-center gap-3 flex-wrap justify-center">
+              <p className="text-white/60 text-xs font-mono uppercase tracking-widest mt-1">POWERED BY TOP LLMs:</p>
+              <div className="flex items-center gap-2 flex-wrap justify-center">
                 {llmProviders.map((provider, idx) => {
                   const IconComponent = provider.icon;
                   return (
-                    <div key={provider.name} className="flex items-center gap-3">
-                      {/* Mobile Branded App Icon */}
+                    <div key={provider.name} className="flex items-center gap-2">
+                      {/* Mobile Bold App Icon */}
                       <div className="flex flex-col items-center gap-1">
-                        <div className={`w-7 h-7 rounded-md ${provider.bgColor} flex items-center justify-center shadow-lg`}>
-                          <IconComponent className={`w-4 h-4 ${provider.iconColor}`} />
+                        <div className={`w-9 h-9 rounded-md ${provider.bgColor} flex items-center justify-center shadow-lg`}>
+                          <IconComponent className={`w-5 h-5 ${provider.iconColor}`} />
                         </div>
                         <div className="text-center">
                           <p className="text-white font-bold text-xs">{provider.name}</p>

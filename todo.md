@@ -767,3 +767,18 @@
 - [x] Color-code LLM icons (Emerald, Blue, Orange, White)
 - [x] Ensure archetype icons are w-6 h-6 with text-[10px] uppercase
 - [x] Test responsive design on mobile and desktop
+
+
+## HEADER DESIGN OVERRIDES (COMPLETED ✅)
+- [x] Apply deep space glass background: bg-black/80 backdrop-blur-xl
+- [x] Add border-b border-white/10 to define bottom edge
+- [x] Reduce main container padding to py-4 max
+- [x] Reduce gap between rows to gap-3
+- [x] Add thin divider line between rows (h-px bg-white/5 my-2)
+- [x] Brand LLM badges as rounded app icons (w-8 h-8 rounded-md)
+- [x] GPT badge: bg-emerald-600 with white Sparkles icon
+- [x] Gemini badge: bg-blue-600 with white Star icon
+- [x] Claude badge: bg-orange-600 with white MessageSquare icon
+- [x] Grok badge: bg-neutral-900 with white Zap icon
+- [x] Style text labels below icons in text-[10px] text-gray-300
+- [x] Test responsive design on mobile and desktop

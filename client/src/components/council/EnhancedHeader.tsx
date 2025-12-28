@@ -47,12 +47,36 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   // Determine if we're in active state
   const isActiveState = activeSquad.length > 0;
 
-  // LLM Providers data with Lucide icons
+  // LLM Providers data with branded colors and Lucide icons
   const llmProviders = [
-    { name: "GPT", model: "GPT-5.2", icon: Sparkles, color: "text-emerald-400" },
-    { name: "Gemini", model: "Gemini 3 Pro", icon: Star, color: "text-blue-400" },
-    { name: "Claude", model: "Claude 4.5", icon: MessageSquareQuote, color: "text-orange-400" },
-    { name: "Grok", model: "Grok 4", icon: Zap, color: "text-white" },
+    { 
+      name: "GPT", 
+      model: "GPT-5.2", 
+      icon: Sparkles, 
+      bgColor: "bg-emerald-600",
+      iconColor: "text-white"
+    },
+    { 
+      name: "Gemini", 
+      model: "Gemini 3 Pro", 
+      icon: Star, 
+      bgColor: "bg-blue-600",
+      iconColor: "text-white"
+    },
+    { 
+      name: "Claude", 
+      model: "Claude 4.5", 
+      icon: MessageSquareQuote, 
+      bgColor: "bg-orange-600",
+      iconColor: "text-white"
+    },
+    { 
+      name: "Grok", 
+      model: "Grok 4", 
+      icon: Zap, 
+      bgColor: "bg-neutral-900",
+      iconColor: "text-white"
+    },
   ];
 
   const getModelName = (modelId: string) => {
@@ -65,11 +89,11 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   };
 
   return (
-    <div className="w-full bg-black/60 backdrop-blur-md border-b border-white/10">
+    <div className="w-full bg-black/80 backdrop-blur-xl border-b border-white/10">
       {/* DESKTOP LAYOUT */}
       <div className="hidden md:block">
-        {/* Header Container - Compact Two-Row Structure */}
-        <div className="px-8 py-4 flex flex-col gap-4">
+        {/* Header Container - Ultra-Compact Two-Row Structure */}
+        <div className="px-8 py-4 flex flex-col gap-3">
           {/* Top Row: Title + Chairman Dropdown + Theme */}
           <div className="flex items-center justify-between">
             <div>
@@ -174,12 +198,12 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="h-px bg-white/10 mx-10"
+                className="w-full h-px bg-white/5 my-2"
               />
             )}
           </AnimatePresence>
 
-          {/* ROW 2: LLM Providers - Premium Tech Badges */}
+          {/* ROW 2: LLM Providers - Branded App Icons */}
           <AnimatePresence mode="wait">
             {!isActiveState && (
               <motion.div
@@ -193,22 +217,22 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                 {/* Label */}
                 <p className="text-white/70 text-xs font-mono uppercase tracking-widest">POWERED BY TOP LLMs:</p>
                 
-                {/* LLM Providers with Dividers */}
-                <div className="flex items-center justify-center gap-6">
+                {/* LLM Providers - Branded App Icons */}
+                <div className="flex items-center justify-center gap-8">
                   {llmProviders.map((provider, idx) => {
                     const IconComponent = provider.icon;
                     return (
-                      <div key={provider.name} className="flex items-center gap-6">
-                        {/* Tech Badge */}
+                      <div key={provider.name} className="flex items-center gap-8">
+                        {/* Branded App Icon */}
                         <div className="flex flex-col items-center gap-2 hover:opacity-100 opacity-90 transition-opacity">
-                          {/* Badge Container */}
-                          <div className="bg-white/5 rounded-lg p-2 border border-white/10 hover:bg-white/10 transition-colors">
-                            <IconComponent className={`w-6 h-6 ${provider.color}`} />
+                          {/* Icon Container - Rounded App Icon Style */}
+                          <div className={`w-8 h-8 rounded-md ${provider.bgColor} flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow`}>
+                            <IconComponent className={`w-5 h-5 ${provider.iconColor}`} />
                           </div>
                           {/* Provider Name & Model */}
                           <div className="text-center">
                             <p className="text-white font-bold text-xs">{provider.name}</p>
-                            <p className="text-white/60 text-xs font-mono">{provider.model}</p>
+                            <p className="text-gray-300 text-[10px] font-mono">{provider.model}</p>
                           </div>
                         </div>
 
@@ -331,12 +355,12 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="h-px bg-white/10 mx-4"
+              className="w-full h-px bg-white/5 my-2"
             />
           )}
         </AnimatePresence>
 
-        {/* Row 2: LLM Providers - Mobile Tech Badges */}
+        {/* Row 2: LLM Providers - Mobile Branded App Icons */}
         <AnimatePresence mode="wait">
           {!isActiveState && (
             <motion.div
@@ -353,14 +377,14 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
                   const IconComponent = provider.icon;
                   return (
                     <div key={provider.name} className="flex items-center gap-3">
-                      {/* Mobile Tech Badge */}
+                      {/* Mobile Branded App Icon */}
                       <div className="flex flex-col items-center gap-1">
-                        <div className="bg-white/5 rounded-lg p-1.5 border border-white/10">
-                          <IconComponent className={`w-4 h-4 ${provider.color}`} />
+                        <div className={`w-7 h-7 rounded-md ${provider.bgColor} flex items-center justify-center shadow-lg`}>
+                          <IconComponent className={`w-4 h-4 ${provider.iconColor}`} />
                         </div>
                         <div className="text-center">
                           <p className="text-white font-bold text-xs">{provider.name}</p>
-                          <p className="text-white/60 text-xs font-mono">{provider.model}</p>
+                          <p className="text-gray-300 text-[10px] font-mono">{provider.model}</p>
                         </div>
                       </div>
                       {idx < llmProviders.length - 1 && (

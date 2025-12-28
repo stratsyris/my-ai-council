@@ -78,10 +78,22 @@ export default function ChatInterface({
 
       return () => clearTimeout(dispatchTimer);
     } else {
-      // When loading ends, clear the squad
-      setCurrentSquad([]);
+      // When loading ends, extract squad from conversation if available
+      if (conversation && conversation.messages.length > 0) {
+        const lastAssistantMessage = [...conversation.messages]
+          .reverse()
+          .find(msg => msg.role === 'assistant' && msg.stage1);
+        
+        if (lastAssistantMessage?.stage1) {
+          const allArchetypes = ['logician', 'humanist', 'visionary', 'realist', 'skeptic', 'pragmatist', 'financier', 'ethicist', 'architect', 'orator'];
+          const squadKeys = Object.keys(lastAssistantMessage.stage1).filter(
+            key => allArchetypes.includes(key)
+          );
+          setCurrentSquad(squadKeys);
+        }
+      }
     }
-  }, [isLoading]);
+  }, [isLoading, conversation]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.currentTarget.files;

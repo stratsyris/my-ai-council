@@ -716,3 +716,14 @@
 - [x] CSS text overflow fix - TaskAnalysisCard now has whitespace-normal and break-words
 - [x] Math equation formatting - VerdictCard now renders code blocks with proper styling
 - [x] Enhanced Chairman's verdict - Added "Weighing of Souls" section to prompt and VerdictCard display
+
+
+## DRAFT DAY HEADER REFACTOR (COMPLETED ✅)
+- [x] Create all 10 archetype icons and metadata in council_config.ts
+- [x] Build STATE 1 (Idle) - Display all 10 archetypes in compact row with grayscale/hover color
+- [x] Add "System Online: Calibrated with Gemini 3 Pro • Claude 4.5 • GPT-5.2 • Grok 4" badge
+- [x] Build STATE 2 (Active) - Display 4 active members with LLM assignments (Player Cards)
+- [x] Implement framer-motion animations for smooth icon transitions
+- [x] Test Draft Day header on desktop and mobile
+- [x] Verify animations are smooth and performant
+- [x] Extract and persist active squad from conversation messages

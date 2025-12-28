@@ -10,7 +10,7 @@
  */
 
 import { invokeLLM } from "../_core/llm";
-import { getAllArchetypeIds, getArchetype, getBestModelForArchetype } from "../../shared/council_config";
+import { getAllArchetypeIds, getCouncilMember, getBestModelForArchetype } from "../../shared/council_config";
 
 export interface SelectedArchetype {
   archetype_id: string;
@@ -35,7 +35,7 @@ export async function stage0ChairmanDispatch(
   const allArchetypeIds = getAllArchetypeIds();
   const archetypeDescriptions = allArchetypeIds
     .map((id: string) => {
-      const archetype = getArchetype(id);
+      const archetype = getCouncilMember(id);
       return `- ${archetype?.archetype_name} (${id}): ${archetype?.archetype_bias}`;
     })
     .join("\n");
@@ -135,7 +135,7 @@ function getFallbackDispatch(userQuery: string): ChairmanDispatch {
     core_conflict: "General inquiry",
     dispatch_strategy: "Default balanced council selection",
     selected_archetypes: defaultSelection.map((id) => {
-      const archetype = getArchetype(id);
+      const archetype = getCouncilMember(id);
       const modelId = getBestModelForArchetype(id) || "openai/gpt-5.2";
       return {
         archetype_id: id,

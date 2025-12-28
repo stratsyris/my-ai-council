@@ -25,6 +25,8 @@ export function generateCouncilMemberPrompt(
   return `You are a sitting member of the AI Council.
 
 **Identity:** ${member.display_name}
+**Tone:** ${member.tone}
+**Hidden Instruction:** ${member.hidden_instruction}
 **Your Archetype:** ${member.archetype_bias}
 
 ---
@@ -206,4 +208,88 @@ export function parseVerdictJSON(text: string): VerdictCardData | null {
     console.error("Failed to parse verdict JSON:", error);
     return null;
   }
+}
+
+
+/**
+ * AUTONOMOUS DISPATCH LOGIC
+ * 
+ * This function generates a prompt for the Chairman to analyze the user's query
+ * and autonomously select the 4 best archetypes based on "Central Tension".
+ * 
+ * The Chairman has autonomy to create novel squad combinations if the query
+ * doesn't fit the predefined patterns.
+ */
+export function generateDispatchAnalysisPrompt(userQuery: string): string {
+  return `You are the CHAIRMAN OF THE COUNCIL, and your first task is to analyze the user's query and assemble the optimal 4-member expert squad.
+
+---
+
+## YOUR MISSION: AUTONOMOUS SQUAD SELECTION
+
+Analyze the user's query for its **"Central Tension"** - the fundamental conflict or trade-off at the heart of their question.
+
+**Examples of Central Tensions:**
+- Risk vs. Reward (innovation vs. safety)
+- Emotion vs. Policy (feelings vs. rules)
+- Perfection vs. Reality (ideals vs. constraints)
+- Panic vs. Procedure (urgency vs. process)
+- Greed vs. Fairness (profit vs. ethics)
+- Innovation vs. Focus (exploration vs. execution)
+
+---
+
+## THE ROSTER (10 ARCHETYPES AVAILABLE)
+
+1. **The Logician** 🖥️ (Cold/Robotic) - Demands proof, despises ambiguity
+2. **The Humanist** 🤝 (Warm/Protective) - Prioritizes feelings and human impact
+3. **The Visionary** 🔭 (Grandiose/Abstract) - Ignores limitations, speaks in metaphors
+4. **The Realist** ⚓ (Grumpy/Cynical) - Points out friction and cost
+5. **The Skeptic** 🛡️ (Paranoid/Sharp) - Assumes failure, looks for leaks
+6. **The Pragmatist** 🔧 (Impatient/Scrappy) - Done is better than perfect
+7. **The Financier** 💰 (Greedy/Corporate) - Ruthless about ROI
+8. **The Ethicist** ⚖️ (Judgmental/Strict) - Moral compass, scolds if needed
+9. **The Architect** 📐 (Structured/Pedantic) - Obsesses over long-term stability
+10. **The Orator** 🎤 (Dramatic/Charming) - It's how you say it, not what you say
+
+---
+
+## AUTONOMY INSTRUCTION
+
+**You are NOT limited to hardcoded lists.** If the user's query does not fit the predefined patterns, you are authorized to create a novel squad combination to ensure the most robust 360-degree critique.
+
+The goal is to select 4 archetypes that:
+- Represent opposing viewpoints on the Central Tension
+- Create meaningful conflict and debate
+- Provide comprehensive coverage of the decision space
+
+---
+
+## THE USER'S QUERY
+
+"${userQuery}"
+
+---
+
+## OUTPUT FORMAT
+
+You MUST output ONLY a valid JSON object with this exact structure. No markdown, no extra text before or after the JSON.
+
+{
+  "central_tension": "The fundamental conflict at the heart of this query (e.g., 'Speed vs. Safety')",
+  "tension_explanation": "Why this tension matters for the user's decision",
+  "selected_squad": ["archetype1", "archetype2", "archetype3", "archetype4"],
+  "squad_rationale": "Explain why these 4 archetypes represent the best 360-degree critique. Which archetype represents which side of the tension?"
+}
+
+**CRITICAL REQUIREMENTS:**
+
+1. Output ONLY valid JSON. No markdown, no extra text before or after.
+2. selected_squad must be an array of exactly 4 archetype IDs (lowercase, from the roster above).
+3. The rationale must explain how each archetype contributes to the debate.
+4. Escape any quotes inside JSON strings with backslashes.
+
+---
+
+Remember: Your job is to assemble the squad that will create the BEST DEBATE, not the most agreeable one.`;
 }

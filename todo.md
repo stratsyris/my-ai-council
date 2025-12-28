@@ -624,3 +624,12 @@
 - [x] Verify API endpoint creates conversation before processing query
 - [x] Test with real question to confirm responses work
 - [x] Verify no regression in existing tests (93 tests passing)
+
+## Sprint 31: Autonomous Dynamic Dispatch System (COMPLETE ✅)
+- [x] Update archetype personalities with high-contrast hidden instructions (tone + core belief)
+- [x] Implement central tension detection in Chairman prompt
+- [x] Build tension-based squad selection logic (6 scenario patterns + autonomy rule)
+- [x] Add iconography mapping for all 10 archetypes (emoji icons)
+- [x] Update UI to display archetype icons (🖥️ 🤝 🔭 ⚓ 🛡️ 🔧 💰 ⚖️ 📐 🎤)
+- [x] Test autonomous squad selection with multiple question types
+- [x] Verify high-contrast personalities create meaningful debate (93 tests passing)

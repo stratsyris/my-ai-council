@@ -8,7 +8,7 @@
 
 import { invokeLLM } from "../_core/llm";
 import { SelectedArchetype } from "./chairman_dispatch";
-import { getArchetype } from "../../shared/council_config";
+import { getCouncilMember } from "../../shared/council_config";
 
 export interface CouncilResponse {
   archetype_id: string;
@@ -42,7 +42,7 @@ async function dispatchArchetype(
   userQuery: string,
   archetype: SelectedArchetype
 ): Promise<CouncilResponse> {
-  const archetypeConfig = getArchetype(archetype.archetype_id);
+  const archetypeConfig = getCouncilMember(archetype.archetype_id);
 
   const systemPrompt = `You are ${archetypeConfig?.display_name}.
 

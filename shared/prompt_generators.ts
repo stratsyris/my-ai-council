@@ -133,6 +133,7 @@ You MUST output ONLY a valid JSON object with this exact structure. No markdown,
   "conflict_level": "Low or High",
   "primary_conflict": "Brief description of the main tension between council members",
   "evolution_logic": "Explicitly state your evolution: Initially I favored X. However, after reviewing [Role Name]'s argument regarding Y, I have updated my decision to Z. If you didn't change your mind, explain why the evidence confirmed your initial stance.",
+  "weighing_of_souls": "CRITICAL: Before giving your final ruling, analyze which Council Member's argument was the strongest and why. Explicitly state the trade-off you accepted (e.g., 'I am accepting the technical debt warning from The Architect because the financial risk identified by The Skeptic is too high'). Show your reasoning for why you chose this path over the alternatives.",
   "final_verdict_markdown": "The final, unified answer in markdown format. This should be actionable and synthesize the best insights from all four members. Include 2-3 bullets explaining why this verdict balances the Council's competing priorities."
 }
 
@@ -174,6 +175,7 @@ export interface VerdictCardData {
   conflict_level: "Low" | "High";
   primary_conflict: string;
   evolution_logic: string;
+  weighing_of_souls?: string; // Optional: The reasoning behind which member's argument was strongest
   final_verdict_markdown: string;
 }
 

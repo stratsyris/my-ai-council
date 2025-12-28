@@ -46,6 +46,7 @@ interface EnhancedHeaderProps {
   isMobile?: boolean;
   selectedChairman?: string;
   onChairmanChange?: (chairmanId: string) => void;
+  activeSquad?: string[]; // Array of archetype IDs currently debating
 }
 
 const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
@@ -53,10 +54,24 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   isMobile = false,
   selectedChairman = "google/gemini-3-pro-preview",
   onChairmanChange,
+  activeSquad = [],
 }) => {
   const { theme, toggleTheme } = useTheme();
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
   const currentAgent = AGENTS.find((a) => a.modelId === selectedChairman) || AGENTS[2];
+  
+  // Map archetype IDs to AGENTS for display
+  const archetypeToAgent: Record<string, any> = {
+    logician: AGENTS[0],
+    humanist: AGENTS[1],
+    visionary: AGENTS[2],
+    realist: AGENTS[3],
+  };
+  
+  // Show active squad if available, otherwise show default 4
+  const displayAgents = activeSquad.length > 0 
+    ? activeSquad.map(id => archetypeToAgent[id]).filter(Boolean)
+    : AGENTS;
 
   return (
     <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-4 md:px-6 py-3 md:py-6 shadow-lg">
@@ -96,7 +111,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
 
         {/* Council Members: 2x2 Grid */}
         <div className="grid grid-cols-2 gap-2">
-          {AGENTS.map((agent) => (
+          {displayAgents.map((agent) => (
             <div key={agent.id} className="flex flex-col items-center group cursor-pointer hover:opacity-80 transition-opacity">
               <div className="mb-1 p-2 bg-white/20 rounded-full text-white backdrop-blur-sm shadow-sm">
                 <div className="w-6 h-6 flex items-center justify-center text-lg">
@@ -146,7 +161,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
 
           {/* Council Members Grid */}
           <div className="flex gap-4 justify-start">
-            {AGENTS.map((agent) => (
+            {displayAgents.map((agent) => (
               <div key={agent.id} className="flex flex-col items-center group cursor-pointer hover:opacity-80 transition-opacity">
                 <div className="mb-2 p-3 bg-white/20 rounded-full text-white backdrop-blur-sm shadow-sm transition-all">
                   <div className="w-8 h-8 flex items-center justify-center text-2xl">

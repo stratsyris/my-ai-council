@@ -39,7 +39,8 @@ export function getChairmanModelMap(): Record<string, string> {
  */
 export function getDisplayNameForModel(modelId: string): string {
   const member = getAllCouncilMembers().find((m) => m.model_id === modelId);
-  return member ? member.display_name : "Unknown";
+  // Default to "The Visionary" if model not found, instead of "Unknown"
+  return member ? member.display_name : "The Visionary";
 }
 
 /**

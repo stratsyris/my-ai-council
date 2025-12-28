@@ -193,6 +193,7 @@ export default function ChatInterface({
         isMobile={isMobile}
         selectedChairman={selectedChairman}
         onChairmanChange={onChairmanChange}
+        activeSquad={currentSquad}
       />
 
       {/* Messages Area - Always show ScrollArea */}

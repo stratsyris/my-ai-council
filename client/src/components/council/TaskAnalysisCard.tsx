@@ -36,7 +36,7 @@ export default function TaskAnalysisCard({ dispatchBrief }: TaskAnalysisCardProp
             <p className="font-semibold text-amber-900 dark:text-amber-200">
               Task Analysis: {dispatchBrief.task_category}
             </p>
-            <p className="text-sm text-amber-800 dark:text-amber-300 mt-1">
+            <p className="text-sm text-amber-800 dark:text-amber-300 mt-1 whitespace-normal break-words">
               {dispatchBrief.dispatch_strategy}
             </p>
           </div>
@@ -62,7 +62,7 @@ export default function TaskAnalysisCard({ dispatchBrief }: TaskAnalysisCardProp
                 <p className="font-semibold text-amber-900 dark:text-amber-200 text-sm">
                   {member}
                 </p>
-                <p className="text-sm text-amber-800 dark:text-amber-300 mt-1">
+                <p className="text-sm text-amber-800 dark:text-amber-300 mt-1 whitespace-normal break-words">
                   {assignment}
                 </p>
               </div>

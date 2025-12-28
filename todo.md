@@ -699,3 +699,20 @@
 - [x] Ensure conversationId is properly passed to sendMessage mutation
 - [x] Test message sending with new conversation creation
 - [x] Verify War Room flow works end-to-end
+
+
+## UI POLISH & CONTENT EXPANSION (IN PROGRESS)
+- [ ] Fix Unknown Chairman bug in VerdictCard and LoadingScreen components
+- [ ] Refactor Header to display dynamic active squad icons instead of static default 4
+- [ ] Fix CSS text overflow in Task Analysis box with whitespace-normal and break-words
+- [ ] Format math equations with code blocks and distinctive formula card styling
+- [ ] Enhance Chairman's verdict prompt with "Weighing of Souls" synthesis logic section
+- [ ] Test all fixes end-to-end and verify no regressions
+
+
+## UI POLISH & CONTENT EXPANSION (COMPLETED ✅)
+- [x] Fix Unknown Chairman bug - getDisplayNameForModel now defaults to "The Visionary"
+- [x] Dynamic Header upgrade - EnhancedHeader now displays active squad icons
+- [x] CSS text overflow fix - TaskAnalysisCard now has whitespace-normal and break-words
+- [x] Math equation formatting - VerdictCard now renders code blocks with proper styling
+- [x] Enhanced Chairman's verdict - Added "Weighing of Souls" section to prompt and VerdictCard display

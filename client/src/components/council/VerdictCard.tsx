@@ -51,6 +51,18 @@ export default function VerdictCard({
         {/* Evolution Box - The Magic Moment */}
         <EvolutionBox evolutionLogic={data.evolution_logic} />
 
+        {/* Weighing of Souls - The Reasoning */}
+        {data.weighing_of_souls && (
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded p-3 border border-purple-200/50">
+            <p className="text-xs font-semibold text-purple-700 mb-2">
+              The Weighing of Souls
+            </p>
+            <p className="text-sm text-gray-700 break-words whitespace-pre-wrap">
+              {data.weighing_of_souls}
+            </p>
+          </div>
+        )}
+
         {/* Final Verdict */}
         <div className="bg-white/80 rounded p-4 border border-amber-200/50">
           <div className="flex items-start justify-between gap-2 mb-3">
@@ -77,6 +89,11 @@ export default function VerdictCard({
                   <strong className="font-bold text-gray-900 overflow-visible">
                     {children}
                   </strong>
+                ),
+                code: ({ children }) => (
+                  <code className="bg-gray-800 text-gray-100 px-2 py-1 rounded font-mono text-xs break-words overflow-visible">
+                    {children}
+                  </code>
                 ),
               }}
             >

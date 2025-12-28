@@ -746,3 +746,11 @@
 - [x] Improve LLM provider logo sizing and contrast
 - [x] Test glassmorphism effect on Council Chamber background
 - [x] Verify mobile responsiveness with new glass effect
+
+
+## HEADER LAYOUT FIX (COMPLETED ✅)
+- [x] Fix header container with proper glassmorphism background
+- [x] Establish strict two-row vertical flex structure
+- [x] Fix Row 1: Display 10 archetypes in horizontal line
+- [x] Fix Row 2: Add POWERED BY label and 4 LLM logos with dividers
+- [x] Verify layout matches target design

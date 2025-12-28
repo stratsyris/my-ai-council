@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { COUNCIL_CONFIG } from "@shared/council_config";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Moon, Sun } from "lucide-react";
@@ -29,7 +28,6 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   activeSquad = [],
 }) => {
   const { theme, toggleTheme } = useTheme();
-  const isSmallScreen = useMediaQuery("(max-width: 768px)");
   
   // Get chairman display name
   const chairmanEntry = Object.values(COUNCIL_CONFIG).find(
@@ -38,10 +36,10 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   const chairmanName = chairmanEntry?.display_name || "The Visionary";
   const chairmanModel = chairmanEntry?.ui_badge || "Gemini 3 Pro";
 
-  // Get all 10 archetypes for idle state
+  // Get all 10 archetypes
   const allArchetypes = Object.values(COUNCIL_CONFIG);
   
-  // Get active squad members for active state
+  // Get active squad members
   const activeMembers = activeSquad
     .map((id) => Object.values(COUNCIL_CONFIG).find((m) => m.id === id))
     .filter(Boolean);
@@ -49,32 +47,12 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   // Determine if we're in active state
   const isActiveState = activeSquad.length > 0;
 
-  // LLM Providers data with proper logos
+  // LLM Providers data
   const llmProviders = [
-    { 
-      name: "GPT", 
-      model: "GPT-5.2", 
-      logo: "🔷",
-      logoEmoji: "⚡"
-    },
-    { 
-      name: "Gemini", 
-      model: "Gemini 3 Pro", 
-      logo: "🔵",
-      logoEmoji: "🔷"
-    },
-    { 
-      name: "Claude", 
-      model: "Claude 4.5", 
-      logo: "🟠",
-      logoEmoji: "🧠"
-    },
-    { 
-      name: "Grok", 
-      model: "Grok 4", 
-      logo: "❌",
-      logoEmoji: "⚙️"
-    },
+    { name: "GPT", model: "GPT-5.2", emoji: "⚡" },
+    { name: "Gemini", model: "Gemini 3 Pro", emoji: "🔷" },
+    { name: "Claude", model: "Claude 4.5", emoji: "🧠" },
+    { name: "Grok", model: "Grok 4", emoji: "⚙️" },
   ];
 
   const getModelName = (modelId: string) => {
@@ -87,11 +65,11 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
   };
 
   return (
-    <div className="relative bg-black/30 backdrop-blur-md border-b border-white/10">
+    <div className="w-full bg-black/40 backdrop-blur-lg border-b border-white/10">
       {/* DESKTOP LAYOUT */}
       <div className="hidden md:block">
-        {/* Glassmorphic Command Deck Container - h-40 */}
-        <div className="h-40 px-8 py-4 flex flex-col justify-between">
+        {/* Header Container - Proper Two-Row Structure */}
+        <div className="px-8 py-6 flex flex-col gap-6">
           {/* Top Row: Title + Chairman Dropdown + Theme */}
           <div className="flex items-center justify-between">
             <div>
@@ -143,79 +121,93 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
             </div>
           </div>
 
-          {/* Row 1: All 10 Archetype Icons - "The Personas" */}
-          <AnimatePresence mode="wait">
-            {!isActiveState && (
-              <motion.div
-                key="row1-idle"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
-                className="flex items-center justify-center gap-8"
-              >
-                {allArchetypes.map((archetype) => (
-                  <div key={archetype.id} className="flex flex-col items-center gap-2 hover:opacity-100 opacity-80 transition-opacity cursor-pointer group">
-                    <div className="text-4xl group-hover:scale-110 transition-transform">{archetype.icon}</div>
-                    <span className="text-white/90 text-xs font-mono font-bold uppercase whitespace-nowrap tracking-wide">
-                      {archetype.display_name.replace("The ", "")}
-                    </span>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-
-            {isActiveState && (
-              <motion.div
-                key="row1-active"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
-                className="flex items-center justify-center gap-12"
-              >
-                {activeMembers.map((member) => (
-                  <div key={member?.id} className="flex flex-col items-center gap-2">
-                    <div className="text-5xl">{member?.icon}</div>
-                    <div className="text-center">
-                      <p className="text-white font-bold text-sm uppercase tracking-wide">{member?.display_name.replace("The ", "")}</p>
-                      <p className="text-white/60 text-xs font-mono">{getModelName(member?.model_id || "")}</p>
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Row 2: LLM Providers - "The Engines" - Only show in idle state */}
-          <AnimatePresence mode="wait">
-            {!isActiveState && (
-              <motion.div
-                key="row2-engines"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
-                className="flex flex-col items-center gap-3"
-              >
-                <p className="text-white/60 text-xs font-mono uppercase tracking-widest">POWERED BY TOP LLMs:</p>
-                <div className="flex items-center gap-8">
-                  {llmProviders.map((provider, idx) => (
-                    <div key={provider.name} className="flex flex-col items-center gap-1.5 hover:opacity-100 opacity-90 transition-opacity">
-                      {/* Logo - Large and Prominent */}
-                      <div className="w-12 h-12 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-2xl hover:bg-white/20 transition-colors">
-                        {provider.logoEmoji}
-                      </div>
-                      {/* Provider Name */}
-                      <span className="text-white/90 text-xs font-mono font-semibold">{provider.name}</span>
-                      {/* Model Version */}
-                      <span className="text-white/60 text-xs font-mono">{provider.model}</span>
+          {/* Central Content: Two-Row Structure */}
+          <div className="flex flex-col gap-6">
+            {/* ROW 1: All 10 Archetype Icons - "The Personas" */}
+            <AnimatePresence mode="wait">
+              {!isActiveState && (
+                <motion.div
+                  key="row1-idle"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center justify-center gap-6"
+                >
+                  {allArchetypes.map((archetype) => (
+                    <div key={archetype.id} className="flex flex-col items-center gap-1 hover:opacity-100 opacity-80 transition-opacity cursor-pointer group">
+                      <div className="text-3xl group-hover:scale-110 transition-transform">{archetype.icon}</div>
+                      <span className="text-white/90 text-xs font-mono font-bold uppercase whitespace-nowrap tracking-wide">
+                        {archetype.display_name.replace("The ", "")}
+                      </span>
                     </div>
                   ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                </motion.div>
+              )}
+
+              {isActiveState && (
+                <motion.div
+                  key="row1-active"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center justify-center gap-12"
+                >
+                  {activeMembers.map((member) => (
+                    <div key={member?.id} className="flex flex-col items-center gap-2">
+                      <div className="text-5xl">{member?.icon}</div>
+                      <div className="text-center">
+                        <p className="text-white font-bold text-sm uppercase tracking-wide">{member?.display_name.replace("The ", "")}</p>
+                        <p className="text-white/60 text-xs font-mono">{getModelName(member?.model_id || "")}</p>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* ROW 2: LLM Providers - "The Engines" - Only show in idle state */}
+            <AnimatePresence mode="wait">
+              {!isActiveState && (
+                <motion.div
+                  key="row2-engines"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center gap-3"
+                >
+                  {/* Label */}
+                  <p className="text-white/70 text-xs font-mono uppercase tracking-widest">POWERED BY TOP LLMs:</p>
+                  
+                  {/* LLM Providers with Dividers */}
+                  <div className="flex items-center justify-center gap-4">
+                    {llmProviders.map((provider, idx) => (
+                      <div key={provider.name} className="flex items-center gap-4">
+                        {/* Provider Group */}
+                        <div className="flex flex-col items-center gap-1.5 hover:opacity-100 opacity-90 transition-opacity">
+                          {/* Logo */}
+                          <div className="w-14 h-14 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-3xl hover:bg-white/20 transition-colors">
+                            {provider.emoji}
+                          </div>
+                          {/* Provider Name */}
+                          <span className="text-white/90 text-xs font-mono font-semibold">{provider.name}</span>
+                          {/* Model Version */}
+                          <span className="text-white/60 text-xs font-mono">{provider.model}</span>
+                        </div>
+
+                        {/* Vertical Divider - Only between items, not after last */}
+                        {idx < llmProviders.length - 1 && (
+                          <div className="h-16 w-px bg-white/20"></div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 
@@ -283,11 +275,11 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center justify-center gap-3 flex-wrap"
+              className="flex items-center justify-center gap-2 flex-wrap"
             >
               {allArchetypes.map((archetype) => (
                 <div key={archetype.id} className="flex flex-col items-center gap-0.5 opacity-80 hover:opacity-100 transition-opacity">
-                  <div className="text-2xl">{archetype.icon}</div>
+                  <div className="text-xl">{archetype.icon}</div>
                   <span className="text-white/70 text-xs font-mono whitespace-nowrap">
                     {archetype.display_name.split(" ").pop()}
                   </span>
@@ -307,7 +299,7 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
             >
               {activeMembers.map((member) => (
                 <div key={member?.id} className="flex flex-col items-center gap-1">
-                  <div className="text-3xl">{member?.icon}</div>
+                  <div className="text-2xl">{member?.icon}</div>
                   <p className="text-white font-bold text-xs text-center">{member?.display_name.replace("The ", "")}</p>
                 </div>
               ))}
@@ -327,13 +319,18 @@ const EnhancedHeaderComponent: React.FC<EnhancedHeaderProps> = ({
               className="flex flex-col items-center gap-2"
             >
               <p className="text-white/60 text-xs font-mono uppercase tracking-widest">POWERED BY TOP LLMs:</p>
-              <div className="flex items-center gap-2 flex-wrap justify-center">
-                {llmProviders.map((provider) => (
-                  <div key={provider.name} className="flex flex-col items-center gap-1">
-                    <div className="w-8 h-8 rounded bg-white/10 border border-white/20 flex items-center justify-center text-lg">
-                      {provider.logoEmoji}
+              <div className="flex items-center gap-1 flex-wrap justify-center">
+                {llmProviders.map((provider, idx) => (
+                  <div key={provider.name} className="flex items-center gap-1">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="w-8 h-8 rounded bg-white/10 border border-white/20 flex items-center justify-center text-lg">
+                        {provider.emoji}
+                      </div>
+                      <span className="text-white/80 text-xs font-mono">{provider.name}</span>
                     </div>
-                    <span className="text-white/80 text-xs font-mono">{provider.name}</span>
+                    {idx < llmProviders.length - 1 && (
+                      <div className="h-6 w-px bg-white/20 mx-1"></div>
+                    )}
                   </div>
                 ))}
               </div>

@@ -396,9 +396,16 @@ export class CouncilOrchestrator {
     stage1Results: Stage1Result[];
     stage2Result: Stage2Result;
   }> {
-    // Stage 0: Dispatch - Classify question and select 4 archetypes
-    const dispatchBrief = await this.dispatchPhase(userQuery, chairmanMemberId);
-    console.log("[executeCouncil] Dispatch complete");
+    // Stage 0: Dispatch - Use superpower-based dispatch (with fallback to question classifier)
+    let dispatchBrief: DispatchBrief;
+    try {
+      dispatchBrief = await this.superpowerDispatchPhase(userQuery, chairmanMemberId);
+      console.log("[executeCouncil] Superpower dispatch complete");
+    } catch (error) {
+      console.warn("[executeCouncil] Superpower dispatch failed, falling back to question classifier:", error);
+      dispatchBrief = await this.dispatchPhase(userQuery, chairmanMemberId);
+      console.log("[executeCouncil] Question classifier dispatch complete");
+    }
 
     // Stage 1: Collect responses from selected archetypes
     const stage1Results = await this.stage1CollectResponses(

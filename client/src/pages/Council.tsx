@@ -125,9 +125,11 @@ export default function Council() {
       try {
         console.log('[handleSendMessage] No conversation ID, creating new conversation');
         const newConversation = await createConversation.mutateAsync();
-        console.log('[handleSendMessage] New conversation response:', JSON.stringify(newConversation));
+        console.log('[handleSendMessage] New conversation response:', newConversation);
         console.log('[handleSendMessage] New conversation type:', typeof newConversation);
         console.log('[handleSendMessage] New conversation keys:', newConversation ? Object.keys(newConversation) : 'null');
+        console.log('[handleSendMessage] New conversation.id:', newConversation?.id);
+        console.log('[handleSendMessage] New conversation.id type:', typeof newConversation?.id);
         
         if (!newConversation || !newConversation.id) {
           console.error('[handleSendMessage] Invalid response:', newConversation);

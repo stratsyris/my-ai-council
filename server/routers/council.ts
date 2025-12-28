@@ -64,7 +64,11 @@ export const councilRouter = router({
       console.log("[createConversation] Creating with userId:", userId);
       const conversation = await dbService.createConversation(userId);
       console.log("[createConversation] Created:", conversation);
-      return conversation;
+      // Return plain object with ISO string to avoid Superjson serialization
+      return {
+        id: conversation.id,
+        createdAt: conversation.createdAt.toISOString(),
+      };
     } catch (error) {
       console.error("[createConversation] Error:", error);
       throw error;

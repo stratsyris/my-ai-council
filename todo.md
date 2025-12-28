@@ -618,3 +618,9 @@
 - [x] Test with multiple question types to verify dynamic selection works
 - [x] Verify each council member receives specialized secret prompt for their role
 - [x] Save checkpoint with fully working dynamic selection system
+
+## Sprint 30: Fix conversationId Null Error (COMPLETE ✅)
+- [x] Fix conversationId being null when creating new conversation
+- [x] Verify API endpoint creates conversation before processing query
+- [x] Test with real question to confirm responses work
+- [x] Verify no regression in existing tests (93 tests passing)

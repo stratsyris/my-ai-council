@@ -692,3 +692,10 @@
 - [x] Verify council responses reflect the specialized prompt guidance
 - [x] Confirm Task Analysis displays the dispatch strategy
 - [x] Verify end-to-end flow with both features integrated
+
+
+## CRITICAL BUG: conversationId null error (FIXED ✅)
+- [x] Fix createConversation endpoint to return proper conversation object
+- [x] Ensure conversationId is properly passed to sendMessage mutation
+- [x] Test message sending with new conversation creation
+- [x] Verify War Room flow works end-to-end

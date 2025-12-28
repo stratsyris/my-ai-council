@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import Sidebar from "@/components/council/Sidebar";
 import ChatInterface from "@/components/council/ChatInterface";
@@ -47,6 +47,7 @@ export default function Council() {
 
   const createConversation = trpc.council.createConversation.useMutation({
     onSuccess: (data) => {
+      console.log('[createConversation] Success:', data);
       setCurrentConversationId(data.id);
       refetchConversations();
       setSidebarOpen(false);
@@ -124,31 +125,39 @@ export default function Council() {
     if (!currentConversationId) {
       try {
         console.log('[handleSendMessage] No conversation ID, creating new conversation');
+        
+        // Create conversation and wait for it to complete
         const newConversation = await createConversation.mutateAsync();
-        console.log('[handleSendMessage] New conversation response:', newConversation);
-        console.log('[handleSendMessage] New conversation type:', typeof newConversation);
-        console.log('[handleSendMessage] New conversation keys:', newConversation ? Object.keys(newConversation) : 'null');
-        console.log('[handleSendMessage] New conversation.id:', newConversation?.id);
-        console.log('[handleSendMessage] New conversation.id type:', typeof newConversation?.id);
+        console.log('[handleSendMessage] New conversation created:', newConversation);
         
         if (!newConversation || !newConversation.id) {
           console.error('[handleSendMessage] Invalid response:', newConversation);
           throw new Error(`Failed to create conversation: received ${JSON.stringify(newConversation)}`);
         }
         
-        // Send message to the newly created conversation
         const conversationId = newConversation.id;
-        console.log('[handleSendMessage] Sending message to new conversation:', conversationId);
+        console.log('[handleSendMessage] Got conversation ID:', conversationId);
         
+        // Update state with new conversation ID
+        setCurrentConversationId(conversationId);
+        
+        // Wait for state update to complete before sending message
+        // This ensures the conversation is properly set up
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        console.log('[handleSendMessage] Sending message to conversation:', conversationId);
+        
+        // Send the message with the new conversation ID
         await sendMessage.mutateAsync({
-          conversationId,
+          conversationId: conversationId,
           content,
           chairmanModel: selectedChairman || 'google/gemini-3-pro-preview',
           imageUrls,
         });
       } catch (error) {
         console.error("Error creating conversation or sending message:", error);
-        setConfigError(error instanceof Error ? error.message : 'Failed to send message');
+        const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
+        setConfigError(errorMessage);
       }
       return;
     }
@@ -201,75 +210,57 @@ export default function Council() {
     bulkDeleteConversations.mutate({ conversationIds: ids });
   };
 
-  // Removed auto-creation logic - users should explicitly click "New Conversation"
-
-  // DO NOT auto-load conversations
-  // Users should explicitly click "New Conversation" or select from sidebar
-  // This prevents new conversations from loading old test data
-
-  // Clear current conversation if it's no longer in the list
-  useEffect(() => {
-    if (currentConversationId && !conversations.find(c => c.id === currentConversationId)) {
-      setCurrentConversationId(null);
-    }
-  }, [conversations, currentConversationId]);
-
-  // Handle conversation not found errors
-  useEffect(() => {
-    if (currentConversationId && currentConversation === undefined && conversations.length > 0) {
-      // If we have conversations but the current one is not found, clear it
-      const conversationExists = conversations.some(c => c.id === currentConversationId);
-      if (!conversationExists) {
-        setCurrentConversationId(null);
-      }
-    }
-  }, [currentConversation, currentConversationId, conversations]);
-
-  // Show configuration guide if API key is missing
   if (configError === "OPENROUTER_API_KEY") {
-    return <ConfigurationGuide missingKeys={["OPENROUTER_API_KEY"]} />;
+    return <ConfigurationGuide />;
   }
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
-      {isMobile ? (
-        <MobileSidebar
-          conversations={conversations}
-          currentConversationId={currentConversationId}
-          onSelectConversation={handleSelectConversation}
-          onNewConversation={handleNewConversation}
-          onDeleteConversation={handleDeleteConversation}
-          onBulkDeleteConversations={handleBulkDeleteConversations}
-          onRenameConversation={handleRenameConversation}
-          open={sidebarOpen}
-          onOpenChange={setSidebarOpen}
-        />
-      ) : (
+    <div className="flex h-screen bg-background">
+      {/* Desktop Sidebar */}
+      {!isMobile && (
         <Sidebar
           conversations={conversations}
           currentConversationId={currentConversationId}
           onSelectConversation={handleSelectConversation}
           onNewConversation={handleNewConversation}
           onDeleteConversation={handleDeleteConversation}
-          onBulkDeleteConversations={handleBulkDeleteConversations}
           onRenameConversation={handleRenameConversation}
+          onBulkDeleteConversations={handleBulkDeleteConversations}
         />
       )}
-      <ChatInterface
-        conversation={currentConversation}
-        onSendMessage={handleSendMessage}
-        isLoading={isProcessing}
-        onOpenSidebar={() => setSidebarOpen(true)}
-        isMobile={isMobile}
-        selectedChairman={selectedChairman}
-        onChairmanChange={handleChairmanChange}
-      />
-      {configError && configError !== "OPENROUTER_API_KEY" && (
-        <div className="fixed bottom-4 right-4 bg-destructive text-destructive-foreground px-4 py-3 rounded-lg shadow-lg max-w-sm z-50">
-          <p className="text-sm font-medium">Error</p>
-          <p className="text-xs mt-1 break-words">{configError}</p>
-        </div>
-      )}
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {isMobile && (
+        <MobileSidebar
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onSelectConversation={handleSelectConversation}
+          onNewConversation={handleNewConversation}
+          onDeleteConversation={handleDeleteConversation}
+          onRenameConversation={handleRenameConversation}
+          onBulkDeleteConversations={handleBulkDeleteConversations}
+          open={sidebarOpen}
+          onOpenChange={setSidebarOpen}
+        />
+        )}
+
+        <ChatInterface
+          conversation={currentConversation}
+          onSendMessage={handleSendMessage}
+          isLoading={isProcessing}
+          onOpenSidebar={() => setSidebarOpen(true)}
+          isMobile={isMobile}
+          selectedChairman={selectedChairman}
+          onChairmanChange={handleChairmanChange}
+        />
+
+        {configError && configError !== "OPENROUTER_API_KEY" && (
+          <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg max-w-sm">
+            <p className="text-sm">{configError}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

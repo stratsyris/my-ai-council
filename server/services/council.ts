@@ -326,11 +326,20 @@ export class CouncilOrchestrator {
     const messages: Message[] = [{ role: "user", content: synthesisPrompt }];
 
     try {
+      console.log(`[stage2] Querying chairman ${chairman.model_id} for synthesis...`);
       const response = await this.client.queryModel(chairman.model_id, messages);
 
-      if (!response || !response.content) {
+      if (!response) {
+        console.error(`[stage2] Null response from chairman ${chairman.model_id}`);
         throw new Error("Empty response from chairman");
       }
+
+      if (!response.content) {
+        console.error(`[stage2] Empty content from chairman ${chairman.model_id}`, response);
+        throw new Error("Empty response from chairman");
+      }
+
+      console.log(`[stage2] Chairman response received (${response.content.length} chars)`);
 
       // Try to parse as JSON verdict, otherwise use as plain text
       let analysis = "";
@@ -369,8 +378,8 @@ export class CouncilOrchestrator {
         analysis,
         finalAnswer
       };
-    } catch (error) {
-      console.error("[stage2] Chairman analysis failed:", error);
+    } catch (error: any) {
+      console.error(`[stage2] Chairman analysis failed:`, error.message);
       throw error;
     }
   }

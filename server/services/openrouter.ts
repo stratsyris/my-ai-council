@@ -57,6 +57,8 @@ export class OpenRouterClient {
       max_tokens: maxTokens,
     };
 
+    console.log(`[OpenRouter] Querying model ${model} with max_tokens=${maxTokens}`);
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -72,26 +74,42 @@ export class OpenRouterClient {
 
       if (!response.ok) {
         const errorText = await response.text();
-        const errorData = JSON.parse(errorText);
-        const errorMsg = errorData?.error?.message || errorText;
-        console.error(`Error querying model ${model}: ${response.status} ${errorMsg}`);
+        try {
+          const errorData = JSON.parse(errorText);
+          const errorMsg = errorData?.error?.message || errorText;
+          console.error(`[OpenRouter] Error querying model ${model}: ${response.status} ${errorMsg}`);
+        } catch {
+          console.error(`[OpenRouter] Error querying model ${model}: ${response.status} ${errorText}`);
+        }
         return null;
       }
 
       const data = await response.json();
+      console.log(`[OpenRouter] Response data keys:`, Object.keys(data));
       const message = data.choices?.[0]?.message;
 
       if (!message) {
-        console.error(`No message in response from model ${model}`);
+        console.error(`[OpenRouter] No message in response from model ${model}`, data);
         return null;
       }
 
+      // Handle Gemini extended thinking: if content is empty, use reasoning
+      let content = message.content || "";
+      if (!content && message.reasoning) {
+        console.log(`[OpenRouter] Using reasoning field for ${model}`);
+        content = message.reasoning;
+      }
+
+      if (!content) {
+        console.warn(`[OpenRouter] Empty content from model ${model}`, message);
+      }
+
       return {
-        content: message.content || "",
+        content,
         reasoning_details: message.reasoning_details,
       };
     } catch (error: any) {
-      console.error(`Error querying model ${model}:`, error);
+      console.error(`[OpenRouter] Exception querying model ${model}:`, error.message);
       return null;
     }
   }

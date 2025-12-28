@@ -160,7 +160,9 @@ export default function ChatInterface({
     // Only allow Enter to send if we have text (not just images)
     if (e.key === "Enter" && !e.shiftKey && input.trim()) {
       e.preventDefault();
-      handleSubmit(e as any);
+      const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as any;
+      formEvent.preventDefault = () => {};
+      handleSubmit(formEvent);
     }
   };
 

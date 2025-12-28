@@ -73,8 +73,11 @@ export default function Council() {
   };
 
   const sendMessage = trpc.council.sendMessage.useMutation({
-    onSuccess: () => {
-      // Refetch conversation immediately and then poll for updates
+    onMutate: (variables) => {
+      console.log('[sendMessage] Mutation started with:', variables);
+    },
+    onSuccess: (data) => {
+      console.log('[sendMessage] Success:', data);   // Refetch conversation immediately and then poll for updates
       // since council orchestration can take 10-30+ seconds
       refetchConversation();
       refetchConversations();
@@ -122,23 +125,25 @@ export default function Council() {
       try {
         console.log('[handleSendMessage] No conversation ID, creating new conversation');
         const newConversation = await createConversation.mutateAsync();
-        console.log('[handleSendMessage] New conversation created:', newConversation);
+        console.log('[handleSendMessage] New conversation response:', JSON.stringify(newConversation));
+        console.log('[handleSendMessage] New conversation type:', typeof newConversation);
+        console.log('[handleSendMessage] New conversation keys:', newConversation ? Object.keys(newConversation) : 'null');
         
-        if (!newConversation?.id) {
-          throw new Error('Failed to create conversation: no ID returned');
+        if (!newConversation || !newConversation.id) {
+          console.error('[handleSendMessage] Invalid response:', newConversation);
+          throw new Error(`Failed to create conversation: received ${JSON.stringify(newConversation)}`);
         }
         
         // Send message to the newly created conversation
-        console.log('[handleSendMessage] Sending message to new conversation:', newConversation.id);
+        const conversationId = newConversation.id;
+        console.log('[handleSendMessage] Sending message to new conversation:', conversationId);
+        
         await sendMessage.mutateAsync({
-          conversationId: newConversation.id,
+          conversationId,
           content,
           chairmanModel: selectedChairman || 'google/gemini-3-pro-preview',
           imageUrls,
         });
-        
-        // Update current conversation ID after successful send
-        setCurrentConversationId(newConversation.id);
       } catch (error) {
         console.error("Error creating conversation or sending message:", error);
         setConfigError(error instanceof Error ? error.message : 'Failed to send message');
@@ -146,7 +151,7 @@ export default function Council() {
       return;
     }
 
-    console.log('[handleSendMessage] selectedChairman:', selectedChairman, 'conversationId:', currentConversationId);
+    console.log('[handleSendMessage] Using existing conversation:', currentConversationId);
     try {
       await sendMessage.mutateAsync({
         conversationId: currentConversationId,

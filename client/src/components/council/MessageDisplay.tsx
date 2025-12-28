@@ -39,6 +39,24 @@ export default function MessageDisplay({
   const [stage1Open, setStage1Open] = useState(!isMobile);
   const [stage2Open, setStage2Open] = useState(true);
 
+  // Helper function to safely parse stage data
+  const parseStageData = (data: any) => {
+    if (!data) return null;
+    if (typeof data === 'string') {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        console.error('Failed to parse stage data:', e);
+        return null;
+      }
+    }
+    return data;
+  };
+
+  // Safely parse stage1 and stage2
+  const stage1Data = parseStageData(message.stage1);
+  const stage2Data = parseStageData(message.stage2);
+
   if (message.role === "user") {
     return (
       <div className="flex gap-2 md:gap-3">
@@ -97,7 +115,7 @@ export default function MessageDisplay({
         })()}
 
         {/* Stage 2: Chairman Final Answer (shown first - most important) */}
-        {message.stage2 && (
+        {stage2Data && (
           <>
             {shouldRenderVerdictCard && verdictData ? (
               <VerdictCard
@@ -148,7 +166,7 @@ export default function MessageDisplay({
         )}
 
         {/* Stage 1: Individual Responses from Council Members */}
-        {message.stage1 && message.stage1.length > 0 && (
+        {stage1Data && stage1Data.length > 0 && (
           <Collapsible open={stage1Open} onOpenChange={setStage1Open}>
             <div className="border border-muted rounded-lg overflow-hidden">
               <CollapsibleTrigger asChild>
@@ -170,7 +188,7 @@ export default function MessageDisplay({
                 <div className="p-3 md:p-4">
                   <Tabs defaultValue="0" className="w-full">
                     <TabsList className="w-full justify-start flex-wrap h-auto gap-1 bg-muted/50 p-1">
-                      {message.stage1.map((result: any, index: number) => (
+                      {stage1Data.map((result: any, index: number) => (
                         <TabsTrigger
                           key={index}
                           value={index.toString()}
@@ -183,7 +201,7 @@ export default function MessageDisplay({
                         </TabsTrigger>
                       ))}
                     </TabsList>
-                    {message.stage1.map((result: any, index: number) => (
+                    {stage1Data.map((result: any, index: number) => (
                       <TabsContent
                         key={index}
                         value={index.toString()}

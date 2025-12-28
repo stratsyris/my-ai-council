@@ -173,6 +173,30 @@ export class DatabaseService {
     const id = nanoid();
     const now = new Date();
 
+    // Validate conversationId
+    if (!conversationId || typeof conversationId !== 'string') {
+      throw new Error(`Invalid conversationId: expected string, received ${typeof conversationId}`);
+    }
+
+    // Helper function to safely stringify data (avoid double-stringify)
+    const safeStringify = (data: any): string => {
+      if (typeof data === 'string') {
+        return data;
+      }
+      if (data === null || data === undefined) {
+        return JSON.stringify(null);
+      }
+      return JSON.stringify(data);
+    };
+
+    // Validate data structure
+    if (!Array.isArray(stage1) || stage1.length === 0) {
+      console.warn('[addAssistantMessage] Invalid stage1 structure:', stage1);
+    }
+    if (!stage2 || typeof stage2 !== 'object') {
+      console.warn('[addAssistantMessage] Invalid stage2 structure:', stage2);
+    }
+
     const metadata = dispatchBrief ? { dispatchBrief } : null;
 
     const insertData: InsertMessage = {
@@ -180,12 +204,19 @@ export class DatabaseService {
       conversationId,
       role: "assistant",
       content: null,
-      stage1: JSON.stringify(stage1),
-      stage2: JSON.stringify(stage2),
-      metadata: metadata ? JSON.stringify(metadata) : null,
+      stage1: safeStringify(stage1),
+      stage2: safeStringify(stage2),
+      metadata: metadata ? safeStringify(metadata) : null,
       chairmanModel: chairmanModel || null,
       createdAt: now,
     };
+
+    console.log('[addAssistantMessage] Inserting message:', {
+      id,
+      conversationId,
+      stage1Length: Array.isArray(stage1) ? stage1.length : 'not-array',
+      stage2Keys: typeof stage2 === 'object' ? Object.keys(stage2 || {}) : 'not-object',
+    });
 
     await db.insert(messages).values(insertData);
 

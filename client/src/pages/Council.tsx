@@ -120,21 +120,33 @@ export default function Council() {
     // If no conversation exists, create one first
     if (!currentConversationId) {
       try {
+        console.log('[handleSendMessage] No conversation ID, creating new conversation');
         const newConversation = await createConversation.mutateAsync();
+        console.log('[handleSendMessage] New conversation created:', newConversation);
+        
+        if (!newConversation?.id) {
+          throw new Error('Failed to create conversation: no ID returned');
+        }
+        
         // Send message to the newly created conversation
+        console.log('[handleSendMessage] Sending message to new conversation:', newConversation.id);
         await sendMessage.mutateAsync({
           conversationId: newConversation.id,
           content,
           chairmanModel: selectedChairman || 'google/gemini-3-pro-preview',
           imageUrls,
         });
+        
+        // Update current conversation ID after successful send
+        setCurrentConversationId(newConversation.id);
       } catch (error) {
         console.error("Error creating conversation or sending message:", error);
+        setConfigError(error instanceof Error ? error.message : 'Failed to send message');
       }
       return;
     }
 
-    console.log('[handleSendMessage] selectedChairman:', selectedChairman);
+    console.log('[handleSendMessage] selectedChairman:', selectedChairman, 'conversationId:', currentConversationId);
     try {
       await sendMessage.mutateAsync({
         conversationId: currentConversationId,

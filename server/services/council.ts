@@ -120,17 +120,29 @@ Do not include any text before or after the JSON object.
         jsonContent = jsonContent.replace(/\n/g, ' ').replace(/\r/g, ' ');
         jsonContent = jsonContent.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
         
+        // Validate we have content
+        if (!jsonContent || jsonContent.trim().length === 0) {
+          throw new Error('Empty JSON content');
+        }
+
         // Try parsing first
         let brief;
         try {
           brief = JSON.parse(jsonContent) as DispatchBrief;
         } catch (e) {
-          // If parsing fails, remove any trailing content after the last }
+          // If parsing fails, remove any trailing content
           console.log('[dispatchPhase] Initial parse failed, attempting repairs...');
           if (jsonContent.includes('}')) {
             jsonContent = jsonContent.substring(0, jsonContent.lastIndexOf('}') + 1);
           }
-          brief = JSON.parse(jsonContent) as DispatchBrief;
+          if (!jsonContent || jsonContent.trim().length === 0) {
+            throw new Error('No valid JSON after repair');
+          }
+          try {
+            brief = JSON.parse(jsonContent) as DispatchBrief;
+          } catch (e2) {
+            throw new Error('JSON parse failed after repair');
+          }
         }
         
         // Validate the brief has required fields
@@ -143,6 +155,7 @@ Do not include any text before or after the JSON object.
       } catch (parseError) {
         console.error("[dispatchPhase] Failed to parse dispatch JSON:", parseError);
         console.error("[dispatchPhase] Raw response:", response.content.substring(0, 500));
+        console.error("[dispatchPhase] Using default brief as fallback");
         return this.getDefaultBrief();
       }
     } catch (error) {

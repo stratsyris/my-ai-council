@@ -754,3 +754,16 @@
 - [x] Fix Row 1: Display 10 archetypes in horizontal line
 - [x] Fix Row 2: Add POWERED BY label and 4 LLM logos with dividers
 - [x] Verify layout matches target design
+
+
+## HEADER VISUAL REFINEMENT (COMPLETED ✅)
+- [x] Darken glassmorphism background to bg-black/60 with backdrop-blur-md
+- [x] Add subtle bottom border (border-b border-white/10)
+- [x] Reduce header height with py-4 or py-6 max
+- [x] Reduce gap between archetype row and LLM row
+- [x] Add horizontal divider between rows (border-t border-white/10)
+- [x] Style LLM badges with bg-white/5 rounded-lg containers
+- [x] Replace generic icons with Lucide icons (Sparkles, Star, MessageSquareQuote, Zap)
+- [x] Color-code LLM icons (Emerald, Blue, Orange, White)
+- [x] Ensure archetype icons are w-6 h-6 with text-[10px] uppercase
+- [x] Test responsive design on mobile and desktop

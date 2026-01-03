@@ -1,42 +1,40 @@
+import { useState } from "react";
+import { Switch, Route } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { httpBatchLink } from "@trpc/client";
+import { trpc } from "@/lib/trpc";
 import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import Council from "./pages/Council";
 
-function Router() {
-  // make sure to consider if you need authentication for certain routes
+// 1. IMPORT ONLY THE COUNCIL
+import CouncilPage from "@/pages/Council"; 
+
+export default function App() {
+  const [queryClient] = useState(() => new QueryClient());
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      links: [
+        httpBatchLink({
+          url: "/api/trpc",
+        }),
+      ],
+    })
+  );
+
   return (
-    <Switch>
-      <Route path={"/"} component={Council} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <Switch>
+          {/* 2. FORCE THE HOME URL TO LOAD THE COUNCIL */}
+          <Route path="/" component={CouncilPage} />
+          
+          <Route>
+            <div className="flex items-center justify-center h-screen text-slate-500">
+              404: Page Not Found
+            </div>
+          </Route>
+        </Switch>
+        <Toaster />
+      </QueryClientProvider>
+    </trpc.Provider>
   );
 }
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
-function App() {
-  return (
-    <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        switchable
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  );
-}
-
-export default App;

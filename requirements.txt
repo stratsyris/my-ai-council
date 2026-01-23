@@ -1,0 +1,7 @@
+# Antigravity Agent Dependencies (fully pinned)
+# Generated from requirements.in - do not edit manually
+
+annotated-types==0.7.0
+pydantic==2.10.5
+pydantic-core==2.27.2
+typing-extensions==4.12.2

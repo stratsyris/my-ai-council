@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Antigravity Agent
+.tmp/
+runs.db
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/

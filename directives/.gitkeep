@@ -1,0 +1,3 @@
+# Directives Directory
+# Each directive specifies: goal, scope, inputs, outputs, execution tools,
+# success criteria (machine-checkable), failure modes, policy constraints, version.
